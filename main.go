@@ -1,5 +1,9 @@
 package main
 
+import (
+	Zen "github.com/tylerconlee/slab/zendesk"
+)
+
 func main() {
 	initLog()
 	log.Debugf("debug %s")
@@ -9,4 +13,5 @@ func main() {
 	log.Error("err")
 	log.Critical("crit")
 
+	Zen.GetAllTickets()
 }
