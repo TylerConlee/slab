@@ -1,13 +1,78 @@
 package zendesk
 
 import (
+	"encoding/json"
+	"io/ioutil"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/op/go-logging"
 )
 
 var log = logging.MustGetLogger("zendesk")
+
+type ZenOutput struct {
+	Tickets []struct {
+		URL        string      `json:"url"`
+		ID         int         `json:"id"`
+		ExternalID interface{} `json:"external_id"`
+		Via        struct {
+			Channel string `json:"channel"`
+			Source  struct {
+				From struct {
+				} `json:"from"`
+				To struct {
+				} `json:"to"`
+				Rel string `json:"rel"`
+			} `json:"source"`
+		} `json:"via"`
+		CreatedAt       time.Time     `json:"created_at"`
+		UpdatedAt       time.Time     `json:"updated_at"`
+		Type            interface{}   `json:"type"`
+		Subject         string        `json:"subject"`
+		RawSubject      string        `json:"raw_subject"`
+		Description     string        `json:"description"`
+		Priority        interface{}   `json:"priority"`
+		Status          string        `json:"status"`
+		Recipient       interface{}   `json:"recipient"`
+		RequesterID     int64         `json:"requester_id"`
+		SubmitterID     int64         `json:"submitter_id"`
+		AssigneeID      interface{}   `json:"assignee_id"`
+		OrganizationID  int64         `json:"organization_id"`
+		GroupID         int           `json:"group_id"`
+		CollaboratorIds []interface{} `json:"collaborator_ids"`
+		FollowerIds     []interface{} `json:"follower_ids"`
+		ForumTopicID    interface{}   `json:"forum_topic_id"`
+		ProblemID       interface{}   `json:"problem_id"`
+		HasIncidents    bool          `json:"has_incidents"`
+		IsPublic        bool          `json:"is_public"`
+		DueAt           interface{}   `json:"due_at"`
+		Tags            []string      `json:"tags"`
+		CustomFields    []struct {
+			ID    int         `json:"id"`
+			Value interface{} `json:"value"`
+		} `json:"custom_fields"`
+		SatisfactionRating struct {
+			Score string `json:"score"`
+		} `json:"satisfaction_rating"`
+		SharingAgreementIds []interface{} `json:"sharing_agreement_ids"`
+		Fields              []struct {
+			ID    int         `json:"id"`
+			Value interface{} `json:"value"`
+		} `json:"fields"`
+		TicketFormID            int         `json:"ticket_form_id"`
+		BrandID                 int         `json:"brand_id"`
+		SatisfactionProbability interface{} `json:"satisfaction_probability"`
+		Slas                    struct {
+			PolicyMetrics []interface{} `json:"policy_metrics"`
+		} `json:"slas"`
+		AllowChannelback bool `json:"allow_channelback"`
+	} `json:"tickets"`
+	NextPage     interface{} `json:"next_page"`
+	PreviousPage interface{} `json:"previous_page"`
+	Count        int         `json:"count"`
+}
 
 // GetAllTickets grabs the latest tickets from Zendesk and returns the JSON
 func GetAllTickets(user string, key string, url string) {
@@ -18,7 +83,16 @@ func GetAllTickets(user string, key string, url string) {
 
 	zenURL := url + "/api/v2/tickets.json?include=slas"
 
-	req, err := http.NewRequest("GET", zenURL, nil)
+	resp := makeRequest(user, key, zenURL)
+	tickets := parseJSON(resp)
+	log.Info("Request Complete. Parsing Ticket Data for", len(tickets.Tickets), "tickets")
+	for i := 0; i < len(tickets.Tickets); i++ {
+		log.Debug("Ticket ID:", tickets.Tickets[i].ID, ", SLA:", tickets.Tickets[i].Slas)
+	}
+}
+
+func makeRequest(user string, key string, url string) (responseData []byte) {
+	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
 		log.Critical(err)
 		os.Exit(1)
@@ -33,7 +107,21 @@ func GetAllTickets(user string, key string, url string) {
 		os.Exit(1)
 	}
 	defer resp.Body.Close()
+	responseData, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Critical(err)
+		os.Exit(1)
+	}
+	return responseData
+}
 
-	// Output raw response
-	log.Debug(resp)
+func parseJSON(data []byte) (output ZenOutput) {
+	// Read response from HTTP client
+	bytes := json.RawMessage(data)
+	err := json.Unmarshal(bytes, &output)
+	if err != nil {
+		log.Error("error:", err)
+		os.Exit(1)
+	}
+	return output
 }
