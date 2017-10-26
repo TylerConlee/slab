@@ -8,10 +8,16 @@ import (
 
 var log = logging.MustGetLogger("zemdesk")
 
-func GetAllTickets() {
-	key := os.Getenv("SLAB_ZENDESK_API")
+func verifyAPIKey() (key string) {
+	key = os.Getenv("SLAB_ZENDESK_API")
 	if "" == key {
 		log.Critical("No key provided for Zendesk API")
 		os.Exit(1)
 	}
+	return key
+}
+
+func GetAllTickets() {
+	key := verifyAPIKey()
+	log.Debugf("Zendesk API Key Found: %s", key)
 }
