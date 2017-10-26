@@ -22,5 +22,5 @@ func main() {
 	log.Noticef("Version: %s", VERSION)
 
 	// Get all tickets from Zendesk using the configuration values
-	Zen.GetAllTickets(config.ZendeskUser, config.ZendeskAPI, config.ZendeskURL)
+	Zen.GetAllTickets(config.Zendesk.User, config.Zendesk.APIKey, config.Zendesk.URL)
 }
