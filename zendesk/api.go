@@ -86,9 +86,7 @@ func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 	resp := makeRequest(user, key, zenURL)
 	tickets = parseJSON(resp)
 	Log.Info("Request Complete. Parsing Ticket Data for", len(tickets.Tickets), "tickets")
-	for i := 0; i < len(tickets.Tickets); i++ {
-		Log.Debug("ID:", tickets.Tickets[i].ID, ", Title:", tickets.Tickets[i].Subject, ", SLA:", tickets.Tickets[i].Slas, ", Tags:", tickets.Tickets[i].Tags)
-	}
+
 	return tickets
 }
 

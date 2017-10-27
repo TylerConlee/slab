@@ -8,7 +8,10 @@ import (
 func CheckSLA() {
 	config := c.LoadConfig()
 	tickets := GetAllTickets(config.Zendesk.User, config.Zendesk.APIKey, config.Zendesk.URL)
-	Log.Debug(tickets)
+
+	for _, ticket := range tickets.Tickets {
+		Log.Debug("ID:", ticket.ID, ", Title:", ticket.Subject, ", SLA:", ticket.Slas, ", Tags:", ticket.Tags)
+	}
 
 }
 
