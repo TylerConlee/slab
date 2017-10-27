@@ -10,12 +10,25 @@ func CheckSLA() {
 	tickets := GetAllTickets(config.Zendesk.User, config.Zendesk.APIKey, config.Zendesk.URL)
 
 	for _, ticket := range tickets.Tickets {
-		Log.Debug("ID:", ticket.ID, ", Title:", ticket.Subject, ", SLA:", ticket.Slas, ", Tags:", ticket.Tags)
-	}
+		priority := getPriorityLevel(ticket.Tags)
 
+		Log.Debug("ID:", ticket.ID, ", Title:", ticket.Subject, ", SLA:", ticket.Slas, ", Tags:", ticket.Tags, ", Priority:", priority)
+
+	}
 }
 
 // getPriorityLevel takes an individual ticket row from the Zendesk output and // returns a string of what priority level the ticket is tagged with
-func getPriorityLevel() {
-
+func getPriorityLevel(tags []string) (priLvl int) {
+	for _, v := range tags {
+		if v == "platinum" {
+			return 1
+		}
+		if v == "gold" {
+			return 2
+		}
+		if v == "silver" {
+			return 3
+		}
+	}
+	return
 }
