@@ -29,6 +29,7 @@ func LoadConfig() (config Config) {
 			log.Critical(err)
 			return
 		}
+		log.Info("Configuration file", os.Args[1], "loaded successfully.")
 		return config
 	} else {
 		log.Critical("Error. Configuration file must be specified when launching SLAB")
