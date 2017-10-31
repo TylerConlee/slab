@@ -2,7 +2,6 @@ package main
 
 import (
 	logging "github.com/op/go-logging"
-	Zen "github.com/tylerconlee/slab/zendesk"
 )
 
 var log = logging.MustGetLogger("slab")
@@ -17,5 +16,6 @@ func main() {
 	log.Notice("SLABot by Tyler Conlee")
 	log.Noticef("Version: %s", VERSION)
 
-	Zen.CheckSLA()
+	// Start timer process
+	StartTimer(15)
 }
