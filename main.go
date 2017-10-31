@@ -16,6 +16,6 @@ func main() {
 	log.Notice("SLABot by Tyler Conlee")
 	log.Noticef("Version: %s", VERSION)
 
-	// Start timer process
-	StartTimer(15)
+	// Start timer process. Takes an int as the number of minutes to loop
+	RunTimer(15)
 }

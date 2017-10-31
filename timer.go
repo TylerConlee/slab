@@ -6,10 +6,11 @@ import (
 	Zen "github.com/tylerconlee/slab/zendesk"
 )
 
-func StartTimer(interval int) {
+func RunTimer(interval int) {
 	t := time.NewTicker(time.Duration(interval) * time.Minute)
 	for {
-		Zen.CheckSLA()
+		active := Zen.CheckSLA()
+		log.Debug(active)
 		<-t.C
 	}
 }
