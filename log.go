@@ -13,6 +13,8 @@ var errorFormatStr = logging.MustStringFormatter(
 	`%{color} %{longpkg} %{shortfunc} ▶ %{shortfile}`,
 )
 
+// initLog starts an instance of go-logging and formats it to show the
+// line numbers for ERROR and CRITICAL level log messages
 func initLog() {
 	// Create a new backend for logs
 	backend := logging.NewLogBackend(os.Stderr, "", 0)

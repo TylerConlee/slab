@@ -19,8 +19,6 @@ func CheckSLA() {
 		}
 
 	}
-
-	Log.Debug(sla)
 }
 
 // getPriorityLevel takes an individual ticket row from the Zendesk output and // returns a string of what priority level the ticket is tagged with

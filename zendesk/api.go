@@ -12,6 +12,8 @@ import (
 
 var Log = logging.MustGetLogger("zendesk")
 
+// ZenOutput is the top level JSON-based struct that whatever is
+// returned by Zendesk goes into
 type ZenOutput struct {
 	Tickets      `json:"tickets"`
 	NextPage     interface{} `json:"next_page"`
@@ -19,6 +21,8 @@ type ZenOutput struct {
 	Count        int         `json:"count"`
 }
 
+// Tickets is a subset of ZenOutput that contains the details of the tickets
+// outputted from the request to Zendesk
 type Tickets []struct {
 	URL        string      `json:"url"`
 	ID         int         `json:"id"`
