@@ -4,6 +4,9 @@ import (
 	c "github.com/tylerconlee/slab/config"
 )
 
+// ActiveTicket is the individual ticket details for a ticket
+// that's nearing SLA breach. This is passed to the main function so the
+// breach time can be compared
 type ActiveTicket struct {
 	ID       int
 	Subject  string
