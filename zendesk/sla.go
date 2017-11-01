@@ -12,7 +12,8 @@ type ActiveTicket struct {
 	Subject  string
 	SLA      []interface{}
 	Tags     []string
-	Priority int
+	Level    int
+	Priority interface{}
 }
 
 // CheckSLA will grab the tickets from GetAllTickets, parse the SLA fields and // compare them to the current time
@@ -28,10 +29,11 @@ func CheckSLA() (sla []ActiveTicket) {
 		if priority > 0 {
 			t := ActiveTicket{
 				ID:       ticket.ID,
-				Priority: priority,
+				Level:    priority,
 				SLA:      ticket.Slas.PolicyMetrics,
 				Tags:     ticket.Tags,
 				Subject:  ticket.Subject,
+				Priority: ticket.Priority,
 			}
 			sla = append(sla, t)
 		}

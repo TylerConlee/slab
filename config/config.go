@@ -15,12 +15,20 @@ var log = logging.MustGetLogger("config")
 type Config struct {
 	Zendesk  Zendesk
 	SlackAPI string
+	SLA      SLA
 }
 
 type Zendesk struct {
 	User   string
 	APIKey string
 	URL    string
+}
+
+type SLA struct {
+	Low    string
+	Normal string
+	High   string
+	Urgent string
 }
 
 func LoadConfig() (config Config) {
