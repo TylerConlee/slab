@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"time"
 
 	logging "github.com/op/go-logging"
 
@@ -25,10 +26,27 @@ type Zendesk struct {
 }
 
 type SLA struct {
-	Low    string
-	Normal string
-	High   string
-	Urgent string
+	LevelOne   Level
+	LevelTwo   Level
+	LevelThree Level
+	LevelFour  Level
+}
+
+type Level struct {
+	Low    duration
+	Normal duration
+	High   duration
+	Urgent duration
+}
+
+type duration struct {
+	time.Duration
+}
+
+func (d *duration) UnmarshalText(text []byte) error {
+	var err error
+	d.Duration, err = time.ParseDuration(string(text))
+	return err
 }
 
 func LoadConfig() (config Config) {
