@@ -24,3 +24,8 @@ func GetTimer(ticket zendesk.ActiveTicket) (breach time.Duration) {
 	str := p.Interface().(config.Duration)
 	return time.Duration(str.Duration)
 }
+
+func GetBreach(ticket zendesk.ActiveTicket) {
+	p := ticket.SLA[0].(map[string]interface{})
+	log.Debug(p["breach_at"])
+}
