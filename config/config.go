@@ -17,7 +17,7 @@ type Config struct {
 	Zendesk    Zendesk
 	SlackAPI   string
 	SLA        SLA
-	UpdateFreq duration
+	UpdateFreq Duration
 }
 
 type Zendesk struct {
@@ -34,17 +34,17 @@ type SLA struct {
 }
 
 type Level struct {
-	Low    duration
-	Normal duration
-	High   duration
-	Urgent duration
+	Low    Duration
+	Normal Duration
+	High   Duration
+	Urgent Duration
 }
 
-type duration struct {
+type Duration struct {
 	time.Duration
 }
 
-func (d *duration) UnmarshalText(text []byte) error {
+func (d *Duration) UnmarshalText(text []byte) error {
 	var err error
 	d.Duration, err = time.ParseDuration(string(text))
 	return err

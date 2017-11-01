@@ -13,8 +13,12 @@ func RunTimer(interval time.Duration) {
 	for {
 		active := Zen.CheckSLA()
 		log.Debug(active)
-
-		sla.SetSLA()
+		sla.InitSLA()
+		for _, ticket := range active {
+			if ticket.Priority != nil {
+				sla.GetNextSLA(ticket)
+			}
+		}
 		<-t.C
 	}
 }

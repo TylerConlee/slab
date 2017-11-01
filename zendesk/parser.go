@@ -12,7 +12,7 @@ type ActiveTicket struct {
 	Subject  string
 	SLA      []interface{}
 	Tags     []string
-	Level    int
+	Level    string
 	Priority interface{}
 }
 
@@ -26,7 +26,7 @@ func CheckSLA() (sla []ActiveTicket) {
 
 		Log.Debug("ID:", ticket.ID, ", Title:", ticket.Subject, ", SLA:", ticket.Slas, ", Tags:", ticket.Tags, ", Priority:", priority)
 
-		if priority > 0 {
+		if priority != "" {
 			t := ActiveTicket{
 				ID:       ticket.ID,
 				Level:    priority,
@@ -43,16 +43,17 @@ func CheckSLA() (sla []ActiveTicket) {
 }
 
 // getPriorityLevel takes an individual ticket row from the Zendesk output and // returns a string of what priority level the ticket is tagged with
-func getPriorityLevel(tags []string) (priLvl int) {
+// TODO: make agnostic to our levels
+func getPriorityLevel(tags []string) (priLvl string) {
 	for _, v := range tags {
 		if v == "platinum" {
-			return 1
+			return "LevelOne"
 		}
 		if v == "gold" {
-			return 2
+			return "LevelTwo"
 		}
 		if v == "silver" {
-			return 3
+			return "LevelThree"
 		}
 	}
 	return
