@@ -2,6 +2,7 @@ package main
 
 import (
 	logging "github.com/op/go-logging"
+	"github.com/tylerconlee/slab/config"
 )
 
 var log = logging.MustGetLogger("slab")
@@ -16,6 +17,7 @@ func main() {
 	log.Notice("SLABot by Tyler Conlee")
 	log.Noticef("Version: %s", VERSION)
 
+	c := config.LoadConfig()
 	// Start timer process. Takes an int as the number of minutes to loop
-	RunTimer(15)
+	RunTimer(c.UpdateFreq.Duration)
 }
