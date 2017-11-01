@@ -16,7 +16,7 @@ var log = logging.MustGetLogger("sla")
 func InitSLA() {
 	c = config.LoadConfig()
 }
-func GetNextSLA(ticket zendesk.ActiveTicket) (breach time.Duration) {
+func GetTimer(ticket zendesk.ActiveTicket) (breach time.Duration) {
 	r := reflect.ValueOf(c.SLA)
 	f := reflect.Indirect(r).FieldByName(ticket.Level)
 	priority := strings.Title(ticket.Priority.(string))

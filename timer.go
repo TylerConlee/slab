@@ -16,7 +16,7 @@ func RunTimer(interval time.Duration) {
 		sla.InitSLA()
 		for _, ticket := range active {
 			if ticket.Priority != nil {
-				sla.GetNextSLA(ticket)
+				sla.GetTimer(ticket)
 			}
 		}
 		<-t.C
