@@ -9,15 +9,16 @@ import (
 )
 
 func RunTimer(interval time.Duration) {
-	t := time.NewTicker(interval * time.Minute)
+	log.Debug(interval)
+	t := time.NewTicker(interval)
 	for {
 		active := Zen.CheckSLA()
 		log.Debug(active)
-		sla.InitSLA()
 		for _, ticket := range active {
 			if ticket.Priority != nil {
-				//timer := sla.GetTimer(ticket)
-				sla.GetTimeRemaining(ticket)
+				remain := sla.GetTimeRemaining(ticket)
+				notify := sla.GetNotifyTime(remain)
+				log.Debug(notify)
 			}
 		}
 		<-t.C
