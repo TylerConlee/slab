@@ -8,6 +8,9 @@ import (
 	Zen "github.com/tylerconlee/slab/zendesk"
 )
 
+// RunTimer takes the interval from the config, and at each loop iteration,
+// grabs the latest tickets, checks for upcoming SLAs and send notifications if
+// appropriate
 func RunTimer(interval time.Duration) {
 	log.Debug(interval)
 	t := time.NewTicker(interval)

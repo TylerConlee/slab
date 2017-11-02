@@ -11,8 +11,11 @@ import (
 
 var log = logging.MustGetLogger("sla")
 
+// Sent is a collection of all NotifySent tickets that is checked before each // notification is sent.
 var Sent = []NotifySent{}
 
+// NotifySent is represetative of an individual ticket, what kind of
+// notification was last sent for that ticket, and when the SLA breach time is.
 type NotifySent struct {
 	ID     int
 	Type   int64
@@ -32,6 +35,8 @@ func GetTimeRemaining(ticket zendesk.ActiveTicket) (remain time.Time) {
 	return breach
 }
 
+// GetNotifyType - Based off of the time remaining on the ticket, return a
+// integer representing the closest time marker to a notification time.
 func GetNotifyType(remain time.Duration) (notifyType int64) {
 	p, _ := time.ParseDuration("3h")
 	q, _ := time.ParseDuration("2h")
@@ -61,12 +66,16 @@ func GetNotifyType(remain time.Duration) (notifyType int64) {
 	}
 }
 
+// UpdateCache checks the time remaining on a ticket, what the closest marker
+// for notifications is, and then checks to see if that ticket ID and
+// notification type have been sent already. If yes, it returns True,
+// indicating a notifcation needs to be sent.
 func UpdateCache(ticket zendesk.ActiveTicket) bool {
 	cleanCache()
 	expire := GetTimeRemaining(ticket)
 	notify := GetNotifyType(time.Until(expire))
 	t := expire.Add(15 * time.Minute)
-	if t.After(time.Now()) {
+	if t.After(time.Now()) && notify != 0 {
 		log.Debug(Sent, notify, ticket.ID)
 		rangeOnMe := reflect.ValueOf(Sent)
 		for i := 0; i < rangeOnMe.Len(); i++ {
@@ -88,13 +97,16 @@ func UpdateCache(ticket zendesk.ActiveTicket) bool {
 
 }
 
+// cleanCache checks the Sent slice and loops through the tickets listed. If
+// any have gone 15 minutes past the expiration time, they are removed from the
+// slice and the length of the slice is shortened.
 func cleanCache() {
 	for i := 0; i < len(Sent); i++ {
 		item := Sent[i]
 		t := item.Expire.Add(15 * time.Minute)
 		if t.Before(time.Now()) {
 			Sent = append(Sent[:i], Sent[i+1:]...)
-			i-- // Important: decrease index
+			i--
 		}
 	}
 

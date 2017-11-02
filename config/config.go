@@ -20,12 +20,14 @@ type Config struct {
 	UpdateFreq Duration
 }
 
+// Zendesk contains configuration values specific to the Zendesk interactions
 type Zendesk struct {
 	User   string
 	APIKey string
 	URL    string
 }
 
+// SLA supports up to 4 levels of SLA in the configuration
 type SLA struct {
 	LevelOne   Level
 	LevelTwo   Level
@@ -33,6 +35,7 @@ type SLA struct {
 	LevelFour  Level
 }
 
+// Level reflects the 4 priority levels Zendesk uses for SLA.
 type Level struct {
 	Low    Duration
 	Normal Duration
@@ -40,16 +43,21 @@ type Level struct {
 	Urgent Duration
 }
 
+// Duration allows for configurations to contain "3h", "8m", etc.
 type Duration struct {
 	time.Duration
 }
 
+// UnmarshalText takes the Duration and returns a time.Duration in place of the
+// string.
 func (d *Duration) UnmarshalText(text []byte) error {
 	var err error
 	d.Duration, err = time.ParseDuration(string(text))
 	return err
 }
 
+// LoadConfig grabs the command line argument for where the configuration file
+// is located and loads that into memory.
 func LoadConfig() (config Config) {
 	if len(os.Args) > 1 {
 		if _, err := toml.DecodeFile(os.Args[1], &config); err != nil {
