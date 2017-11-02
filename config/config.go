@@ -37,6 +37,7 @@ type SLA struct {
 
 // Level reflects the 4 priority levels Zendesk uses for SLA.
 type Level struct {
+	Tag    string
 	Low    Duration
 	Normal Duration
 	High   Duration
