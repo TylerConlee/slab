@@ -14,11 +14,11 @@ func RunTimer(interval time.Duration) {
 	for {
 		active := Zen.CheckSLA()
 		log.Debug(active)
+
 		for _, ticket := range active {
 			if ticket.Priority != nil {
-				remain := sla.GetTimeRemaining(ticket)
-				notify := sla.GetNotifyTime(remain)
-				log.Debug(notify)
+				send := sla.UpdateCache(ticket)
+				log.Debug(send)
 			}
 		}
 		<-t.C
