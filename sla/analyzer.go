@@ -46,22 +46,16 @@ func GetNotifyType(remain time.Duration) (notifyType int64) {
 
 	switch {
 	case remain < t:
-		log.Debug("Send 15 minute notification")
 		return 1
 	case remain < s:
-		log.Debug("Send 30 minute notification")
 		return 2
 	case remain < r:
-		log.Debug("Send 1 hour notification")
 		return 3
 	case remain < q:
-		log.Debug("Send 2 hour notification")
 		return 4
 	case remain < p:
-		log.Debug("Send 3 hour notification")
 		return 5
 	default:
-		log.Debug("SLA is longer than 3 hours away")
 		return 0
 	}
 }
@@ -70,30 +64,32 @@ func GetNotifyType(remain time.Duration) (notifyType int64) {
 // for notifications is, and then checks to see if that ticket ID and
 // notification type have been sent already. If yes, it returns True,
 // indicating a notifcation needs to be sent.
-func UpdateCache(ticket zendesk.ActiveTicket) bool {
+func UpdateCache(ticket zendesk.ActiveTicket) (bool, int64) {
 	cleanCache()
 	expire := GetTimeRemaining(ticket)
 	notify := GetNotifyType(time.Until(expire))
+
 	t := expire.Add(15 * time.Minute)
 	if t.After(time.Now()) && notify != 0 {
-		log.Debug(Sent, notify, ticket.ID)
 		rangeOnMe := reflect.ValueOf(Sent)
 		for i := 0; i < rangeOnMe.Len(); i++ {
 			s := rangeOnMe.Index(i)
 			f := s.FieldByName("ID")
 			if f.IsValid() {
 				if f.Interface() == ticket.ID && s.FieldByName("Type").Int() == notify {
-					return false
+					log.Debug("Ticket", ticket.ID, ": `", ticket.Subject, "` has already received a notification: ", notify, ". Expires at", expire)
+					return false, 0
 				}
 
 			}
 
 		}
 		Sent = append(Sent, NotifySent{ticket.ID, notify, expire})
-
-		return true
+		log.Debug("Ticket", ticket.ID, ": `", ticket.Subject, "` should receive a notification: ", notify, ". Expires at", expire)
+		return true, notify
 	}
-	return false
+
+	return false, 0
 
 }
 

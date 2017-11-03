@@ -26,8 +26,6 @@ func CheckSLA() (sla []ActiveTicket) {
 	for _, ticket := range zenResp.Tickets {
 		priority := getPriorityLevel(ticket.Tags)
 
-		Log.Debug("ID:", ticket.ID, ", Title:", ticket.Subject, ", SLA:", ticket.Slas, ", Tags:", ticket.Tags, ", Priority:", priority)
-
 		if priority != "" {
 			t := ActiveTicket{
 				ID:       ticket.ID,
@@ -37,7 +35,10 @@ func CheckSLA() (sla []ActiveTicket) {
 				Subject:  ticket.Subject,
 				Priority: ticket.Priority,
 			}
+			Log.Debug("Ticket", ticket.ID, "successfully parsed. SLA found:", ticket.Slas.PolicyMetrics)
 			sla = append(sla, t)
+		} else {
+			Log.Debug("Ticket", ticket.ID, "successfully parsed.")
 		}
 
 	}

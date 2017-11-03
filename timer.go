@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/tylerconlee/slab/sla"
+	"github.com/tylerconlee/slab/slack"
 
 	Zen "github.com/tylerconlee/slab/zendesk"
 )
@@ -12,18 +13,24 @@ import (
 // grabs the latest tickets, checks for upcoming SLAs and send notifications if
 // appropriate
 func RunTimer(interval time.Duration) {
-	log.Debug(interval)
+	log.Info("Starting timer with ", interval, " intervals")
 	t := time.NewTicker(interval)
 	for {
 		active := Zen.CheckSLA()
-		log.Debug(active)
-
+		log.Info("Successfully grabbed and parsed tickets from Zendesk")
+		log.Info("Checking ticket notifications...")
 		for _, ticket := range active {
+
 			if ticket.Priority != nil {
-				send := sla.UpdateCache(ticket)
-				log.Debug(send)
+				send, notify := sla.UpdateCache(ticket)
+				if send {
+					n := slack.PrepNotification(ticket, notify)
+					log.Debug(n)
+				}
 			}
+
 		}
+		log.Info("Ticket notifications sent. Returning to idle state.")
 		<-t.C
 	}
 }
