@@ -25,10 +25,9 @@ func RunTimer(interval time.Duration) {
 				send, notify := sla.UpdateCache(ticket)
 				if send {
 					n := slack.PrepNotification(ticket, notify)
-					log.Debug(n)
+					slack.Send(n, ticket)
 				}
 			}
-
 		}
 		log.Info("Ticket notifications sent. Returning to idle state.")
 		<-t.C

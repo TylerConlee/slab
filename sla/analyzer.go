@@ -26,13 +26,16 @@ type NotifySent struct {
 // breach.
 func GetTimeRemaining(ticket zendesk.ActiveTicket) (remain time.Time) {
 	p := ticket.SLA[0].(map[string]interface{})
-	breach, err := time.Parse(time.RFC3339, p["breach_at"].(string))
-	if nil != err {
-		log.Critical(err)
-		os.Exit(1)
-	}
+	if p["breach_at"] != nil {
+		breach, err := time.Parse(time.RFC3339, p["breach_at"].(string))
+		if nil != err {
+			log.Critical(err)
+			os.Exit(1)
+		}
 
-	return breach
+		return breach
+	}
+	return
 }
 
 // GetNotifyType - Based off of the time remaining on the ticket, return a

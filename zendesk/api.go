@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/op/go-logging"
@@ -87,8 +88,10 @@ func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 	Log.Debugf("Zendesk API User Found: %s", user)
 	Log.Debugf("Zendesk API Key Found: %s", key)
 
-	zenURL := url + "/api/v2/tickets.json?include=slas"
-
+	t := time.Now().AddDate(0, 0, -1).Unix()
+	Log.Debugf("Time: %d", t)
+	zenURL := url + "/api/v2/incremental/tickets.json?include=slas&start_time=" + strconv.FormatInt(t, 10)
+	Log.Debugf("URL: %s", zenURL)
 	resp := makeRequest(user, key, zenURL)
 	tickets = parseJSON(resp)
 	Log.Info("Request Complete. Parsing Ticket Data for", len(tickets.Tickets), "tickets")

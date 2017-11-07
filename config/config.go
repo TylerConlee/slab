@@ -15,9 +15,14 @@ var log = logging.MustGetLogger("config")
 // rest of the app
 type Config struct {
 	Zendesk    Zendesk
-	SlackAPI   string
+	Slack      Slack
 	SLA        SLA
 	UpdateFreq Duration
+}
+
+type Slack struct {
+	APIKey    string
+	ChannelID string
 }
 
 // Zendesk contains configuration values specific to the Zendesk interactions
