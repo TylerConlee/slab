@@ -24,6 +24,7 @@ type ZenOutput struct {
 
 // Tickets is a subset of ZenOutput that contains the details of the tickets
 // outputted from the request to Zendesk
+// TODO: use the OrgID to make a request for Org name using a different API call
 type Tickets []struct {
 	URL        string      `json:"url"`
 	ID         int         `json:"id"`
