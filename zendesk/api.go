@@ -24,6 +24,7 @@ type ZenOutput struct {
 
 // Tickets is a subset of ZenOutput that contains the details of the tickets
 // outputted from the request to Zendesk
+// TODO: use the OrgID to make a request for Org name using a different API call
 type Tickets []struct {
 	URL        string      `json:"url"`
 	ID         int         `json:"id"`
@@ -88,7 +89,7 @@ func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 	Log.Debugf("Zendesk API User Found: %s", user)
 	Log.Debugf("Zendesk API Key Found: %s", key)
 
-	t := time.Now().AddDate(0, 0, -1).Unix()
+	t := time.Now().AddDate(0, -1, 0).Unix()
 	Log.Debugf("Time: %d", t)
 	zenURL := url + "/api/v2/incremental/tickets.json?include=slas&start_time=" + strconv.FormatInt(t, 10)
 	Log.Debugf("URL: %s", zenURL)

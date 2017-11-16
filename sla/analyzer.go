@@ -25,15 +25,17 @@ type NotifySent struct {
 // GetTimeRemaining takes an instance of a ticket and returns the value of the next SLA
 // breach.
 func GetTimeRemaining(ticket zendesk.ActiveTicket) (remain time.Time) {
-	p := ticket.SLA[0].(map[string]interface{})
-	if p["breach_at"] != nil {
-		breach, err := time.Parse(time.RFC3339, p["breach_at"].(string))
-		if nil != err {
-			log.Critical(err)
-			os.Exit(1)
-		}
+	if len(ticket.SLA) >= 1 {
+		p := ticket.SLA[0].(map[string]interface{})
+		if p["breach_at"] != nil {
+			breach, err := time.Parse(time.RFC3339, p["breach_at"].(string))
+			if nil != err {
+				log.Critical(err)
+				os.Exit(1)
+			}
 
-		return breach
+			return breach
+		}
 	}
 	return
 }

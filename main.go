@@ -9,13 +9,15 @@ var log = logging.MustGetLogger("slab")
 
 // VERSION lists the version number. Attempts to follow SemVer
 // (http://semver.org/)
-const VERSION = "0.0.1"
+var (
+	Version = "undefined"
+)
 
 func main() {
 	// Start up the logging system
 	initLog()
 	log.Notice("SLABot by Tyler Conlee")
-	log.Noticef("Version: %s", VERSION)
+	log.Noticef("Version: %s", Version)
 
 	c := config.LoadConfig()
 	// Start timer process. Takes an int as the number of minutes to loop
