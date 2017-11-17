@@ -20,6 +20,7 @@ type Config struct {
 	UpdateFreq Duration
 }
 
+// Slack API key and Channel ID tell SLAB where to post notifications
 type Slack struct {
 	APIKey    string
 	ChannelID string
