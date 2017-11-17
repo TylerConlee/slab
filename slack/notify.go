@@ -40,7 +40,7 @@ func PrepNotification(ticket zendesk.ActiveTicket, notify int64) (notification s
 	case 1:
 		t = "15 minutes"
 		if r {
-			n = fmt.Sprintf("@sup SLA for %s ticket has less than %s until expiration.", p, t)
+			n = fmt.Sprintf("@here SLA for %s ticket has less than %s until expiration.", p, t)
 		} else {
 			n = fmt.Sprintf("SLA for %s ticket has less than %s until expiration.", p, t)
 		}
@@ -48,13 +48,13 @@ func PrepNotification(ticket zendesk.ActiveTicket, notify int64) (notification s
 	case 2:
 		t = "30 minutes"
 		if r {
-			n = fmt.Sprintf("@sup SLA for %s ticket has less than %s until expiration.", p, t)
+			n = fmt.Sprintf("@here SLA for %s ticket has less than %s until expiration.", p, t)
 		} else {
 			n = fmt.Sprintf("SLA for %s ticket has less than %s until expiration.", p, t)
 		}
 	case 3:
 		t = "1 hour"
-		n = fmt.Sprintf("@sup SLA for %s ticket has less than %s until expiration.", p, t)
+		n = fmt.Sprintf("@here SLA for %s ticket has less than %s until expiration.", p, t)
 	case 4:
 		t = "2 hours"
 		n = fmt.Sprintf("SLA for %s ticket has less than %s until expiration.", p, t)
