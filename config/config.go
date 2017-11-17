@@ -20,6 +20,7 @@ type Config struct {
 	UpdateFreq Duration
 }
 
+// Slack API key and Channel ID tell SLAB where to post notifications
 type Slack struct {
 	APIKey    string
 	ChannelID string
@@ -47,6 +48,7 @@ type Level struct {
 	Normal Duration
 	High   Duration
 	Urgent Duration
+	Notify bool
 }
 
 // Duration allows for configurations to contain "3h", "8m", etc.
@@ -72,9 +74,9 @@ func LoadConfig() (config Config) {
 		}
 		log.Info("Configuration file", os.Args[1], "loaded successfully.")
 		return config
-	} else {
-		log.Critical("Error. Configuration file must be specified when launching SLAB")
-		os.Exit(1)
-		return
 	}
+	log.Critical("Error. Configuration file must be specified when launching SLAB")
+	os.Exit(1)
+	return
+
 }
