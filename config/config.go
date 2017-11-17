@@ -47,6 +47,7 @@ type Level struct {
 	Normal Duration
 	High   Duration
 	Urgent Duration
+	Notify bool
 }
 
 // Duration allows for configurations to contain "3h", "8m", etc.
