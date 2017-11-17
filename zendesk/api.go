@@ -89,7 +89,7 @@ func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 	Log.Debugf("Zendesk API User Found: %s", user)
 	Log.Debugf("Zendesk API Key Found: %s", key)
 
-	t := time.Now().AddDate(0, -1, 0).Unix()
+	t := time.Now().AddDate(0, 0, -3).Unix()
 	Log.Debugf("Time: %d", t)
 	zenURL := url + "/api/v2/incremental/tickets.json?include=slas&start_time=" + strconv.FormatInt(t, 10)
 	Log.Debugf("URL: %s", zenURL)

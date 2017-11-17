@@ -64,6 +64,9 @@ func getPriorityLevel(tags []string) (priLvl string) {
 		if v == config.SLA.LevelThree.Tag {
 			return "LevelThree"
 		}
+		if v == config.SLA.LevelFour.Tag {
+			return "LevelFour"
+		}
 	}
 	return
 }
