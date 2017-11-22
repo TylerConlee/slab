@@ -30,6 +30,12 @@ func main() {
 }
 
 func flagCheck() {
+	var help bool
+
+	var helpText = "SLAB is a utility designed to integrate Zendesk SLAs with Slack notifications.\nUsage: ./slab [configuration-file-path]"
+
+	flag.BoolVar(&help, "help", false, helpText)
+
 	var version *bool
 	version = flag.Bool("version", false, Version)
 
@@ -37,6 +43,10 @@ func flagCheck() {
 
 	if *version {
 		fmt.Printf("Version %s\n", (flag.Lookup("version")).Usage)
+		os.Exit(0)
+	}
+	if help {
+		fmt.Printf("%s\n", flag.Lookup("help").Usage)
 		os.Exit(0)
 	}
 }
