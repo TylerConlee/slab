@@ -109,8 +109,14 @@ func makeRequest(user string, key string, url string) (responseData []byte) {
 		os.Exit(1)
 	}
 	req.SetBasicAuth(user, key)
+	var netClient = &http.Client{
+		Timeout: time.Second * 10,
+		Transport: &http.Transport{
+			DisableKeepAlives: true,
+		},
+	}
 
-	resp, err := http.DefaultClient.Do(req)
+	resp, err := netClient.Do(req)
 	if err != nil {
 		Log.Critical(err)
 		os.Exit(1)
