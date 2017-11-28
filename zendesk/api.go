@@ -110,7 +110,16 @@ func makeRequest(user string, key string, url string) (responseData []byte) {
 	}
 	req.SetBasicAuth(user, key)
 
-	resp, err := http.DefaultClient.Do(req)
+	// create custom http.Client to manually set timeout and disable keepalive
+	// in an attempt to avoid EOF errors
+	var netClient = &http.Client{
+		Timeout: time.Second * 10,
+		Transport: &http.Transport{
+			DisableKeepAlives: true,
+		},
+	}
+
+	resp, err := netClient.Do(req)
 	if err != nil {
 		Log.Critical(err)
 		os.Exit(1)
