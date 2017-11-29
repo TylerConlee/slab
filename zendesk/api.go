@@ -113,7 +113,7 @@ func makeRequest(user string, key string, url string) (responseData []byte) {
 	// create custom http.Client to manually set timeout and disable keepalive
 	// in an attempt to avoid EOF errors
 	var netClient = &http.Client{
-		Timeout: time.Second * 10,
+		Timeout: time.Second * 60,
 		Transport: &http.Transport{
 			DisableKeepAlives: true,
 		},
