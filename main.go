@@ -9,7 +9,7 @@ import (
 	"github.com/tylerconlee/slab/config"
 )
 
-var log = logging.MustGetLogger("slab")
+var log *logging.Logger
 
 // VERSION lists the version number. Attempts to follow SemVer
 // (http://semver.org/)
@@ -20,6 +20,7 @@ var (
 func main() {
 	flagCheck()
 	// Start up the logging system
+	log = logging.MustGetLogger("slab")
 	initLog()
 	log.Notice("SLABot by Tyler Conlee")
 	log.Noticef("Version: %s", Version)
