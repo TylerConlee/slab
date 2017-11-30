@@ -1,4 +1,4 @@
-package slack
+package server
 
 import (
 	"encoding/json"
@@ -8,11 +8,13 @@ import (
 
 	"github.com/gorilla/mux"
 	logging "github.com/op/go-logging"
+	sl "github.com/tylerconlee/slab/slack"
 	"github.com/tylerconlee/slack"
 )
 
 // log adds a logger for the `api` package
-var log = logging.MustGetLogger("slack")
+var log = logging.MustGetLogger("server")
+var OnCall string
 
 // NewRouter builds a new mux Router instance with the routes that
 // Slack uses to handle callbacks, and the index status page
@@ -41,9 +43,10 @@ func (s *Server) SetOncall(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	log.Debug("Parsing action for callback")
-	if verifyUser(payload.Actions[0].SelectedOptions[0].Value) {
-		OnCall = payload.Actions[0].SelectedOptions[0].Value
-		ChatUpdate(payload.Channel.ID, payload.MessageTs, payload.Actions[0].SelectedOptions[0].Value)
+	if sl.VerifyUser(payload.Actions[0].SelectedOptions[0].Value) {
+		sl.OnCall = payload.Actions[0].SelectedOptions[0].Value
+		OnCall = sl.OnCall
+		sl.ChatUpdate(payload.Channel.ID, payload.MessageTs, payload.Actions[0].SelectedOptions[0].Value)
 	}
 	return
 }

@@ -1,10 +1,11 @@
-package slack
+package server
 
 import (
 	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
+	sl "github.com/tylerconlee/slab/slack"
 )
 
 // Server is an overarching type that contains the router, the server
@@ -36,7 +37,7 @@ func (s *Server) StartServer() {
 	s.Router = s.NewRouter()
 
 	log.Info("HTTP server ready")
-	go StartSlack()
+	go sl.StartSlack()
 	http.ListenAndServe(":8080", s.Router)
 
 }

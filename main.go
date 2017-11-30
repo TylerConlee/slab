@@ -8,7 +8,7 @@ import (
 
 	logging "github.com/op/go-logging"
 	"github.com/tylerconlee/slab/config"
-	"github.com/tylerconlee/slab/slack"
+	"github.com/tylerconlee/slab/server"
 )
 
 var log *logging.Logger
@@ -44,22 +44,25 @@ func main() {
 
 }
 
-func startServer() *slack.Server {
-	s := &slack.Server{
-		Info: &slack.ServerInfo{
+func startServer() *server.Server {
+	s := &server.Server{
+		Info: &server.ServerInfo{
 			Server:  "CircleCI-Support",
 			Version: Version,
 		},
 		Uptime: time.Now(),
 	}
 	go func() {
-		s.StartServer()
 		RunTimer(c.UpdateFreq.Duration)
+	}()
+	go func() {
+		s.StartServer()
+
 	}()
 	return s
 }
 
-func shutdown(ticker *time.Ticker, s *slack.Server) {
+func shutdown(ticker *time.Ticker, s *server.Server) {
 
 	if ticker != nil {
 		ticker.Stop()

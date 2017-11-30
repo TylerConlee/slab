@@ -19,13 +19,9 @@ var OnCall string
 // API watcher.
 func StartSlack() {
 	log.Info("Starting connection to Slack")
-	// check to see if the Slack token and channel is part of the start up
-	if len(os.Args) < 3 {
-		log.Critical("Slack token missing. Ex: ./oncall-linux SLACK_TOKEN SLACK_CHANNEL")
-		os.Exit(1)
-	}
 	// start a connection to Slack using the Slack Bot token
-	api = slack.New(os.Args[1])
+
+	api = slack.New(c.Slack.APIKey)
 
 	// retrieve the team info for the newly connected Slack team
 	d, err := api.GetTeamInfo()
@@ -73,7 +69,7 @@ func SetMessage() {
 	params.Attachments = []slack.Attachment{attachment}
 
 	// Send a message to the given channel with pretext and the parameters
-	channelID, timestamp, err := api.PostMessage(os.Args[2], "...", params)
+	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, "...", params)
 	if err != nil {
 		fmt.Printf("%s\n", err)
 		return
@@ -99,7 +95,7 @@ func WhoIsMessage() {
 	}
 	params.Attachments = []slack.Attachment{attachment}
 	// Send a message to the given channel with pretext and the parameters
-	channelID, timestamp, err := api.PostMessage(os.Args[2], "...", params)
+	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, "...", params)
 	if err != nil {
 		fmt.Printf("%s\n", err)
 		return
@@ -112,6 +108,7 @@ func WhoIsMessage() {
 // The RTM tracks each and every event within Slack and allows the bot to act
 // accordingly.
 func startRTM() {
+	log.Debug(api)
 	rtm := api.NewRTM()
 	chk := 0
 	var user *slack.User
@@ -201,7 +198,7 @@ func parseCommand(text string) {
 
 // verifyUser takes a User ID string and runs the Slack GetUserInfo request. If
 // the user exists, the function returns true.
-func verifyUser(user string) bool {
+func VerifyUser(user string) bool {
 	_, err := api.GetUserInfo(user)
 	if err != nil {
 		log.Critical(err)

@@ -5,17 +5,20 @@ import (
 	"os"
 	"strings"
 
+	logging "github.com/op/go-logging"
 	"github.com/tylerconlee/slab/zendesk"
 
-	"github.com/nlopes/slack"
 	"github.com/tylerconlee/slab/config"
+	"github.com/tylerconlee/slack"
 )
 
-var c = config.LoadConfig()
+var (
+	c   = config.LoadConfig()
+	log = logging.MustGetLogger("slack")
+)
 
 // Send sends off the SLA notification to Slack using the configured API key
 func SendSLAMessage(n string, ticket zendesk.ActiveTicket) {
-	api := slack.New(c.Slack.APIKey)
 
 	color := "warning"
 
