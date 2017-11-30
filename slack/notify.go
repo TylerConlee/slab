@@ -3,12 +3,9 @@ package slack
 import (
 	"fmt"
 
-	logging "github.com/op/go-logging"
 	"github.com/tylerconlee/slab/config"
 	"github.com/tylerconlee/slab/zendesk"
 )
-
-var log = logging.MustGetLogger("slack")
 
 // PrepNotification takes a given ticket and what notification level and returns a string to be sent to Slack.
 func PrepNotification(ticket zendesk.ActiveTicket, notify int64) (notification string) {
