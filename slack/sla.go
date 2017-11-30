@@ -14,7 +14,7 @@ import (
 var c = config.LoadConfig()
 
 // Send sends off the SLA notification to Slack using the configured API key
-func Send(n string, ticket zendesk.ActiveTicket) {
+func SendSLAMessage(n string, ticket zendesk.ActiveTicket) {
 	api := slack.New(c.Slack.APIKey)
 
 	color := "warning"

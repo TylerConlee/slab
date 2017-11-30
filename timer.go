@@ -25,7 +25,7 @@ func RunTimer(interval time.Duration) {
 				send, notify := sla.UpdateCache(ticket)
 				if send {
 					n := slack.PrepNotification(ticket, notify)
-					slack.Send(n, ticket)
+					slack.SendSLAMessage(n, ticket)
 				}
 			}
 		}
