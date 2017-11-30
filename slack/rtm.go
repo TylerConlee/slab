@@ -136,7 +136,7 @@ func startRTM() {
 		// the first presence change for a bot that RTM will detect. Once
 		// detected, grab the ID for the bot user
 		case *slack.PresenceChangeEvent:
-			log.Debugf("Presence Change: %v\n", ev)
+
 			if chk == 0 {
 				user, err = api.GetUserInfo(ev.User)
 				if err != nil {
