@@ -7,7 +7,7 @@ import (
 )
 
 var format = logging.MustStringFormatter(
-	`%{color}%{time:15:04:05.000} %{module} ▶ %{level:.4s} %{color:reset} %{message}`,
+	`%{color}%{time:2006-01-02T15:04:05.000} %{module} ▶ %{level:.4s} %{color:reset} %{message}`,
 )
 var errorFormatStr = logging.MustStringFormatter(
 	`%{color} %{longpkg} %{shortfunc} ▶ %{shortfile}`,
