@@ -19,6 +19,11 @@ type Config struct {
 	SLA           SLA
 	UpdateFreq    Duration
 	TriageEnabled bool
+	Metadata      Metadata
+}
+
+type Metadata struct {
+	Server string
 }
 
 // Slack API key and Channel ID tell SLAB where to post notifications
