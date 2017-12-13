@@ -1,5 +1,8 @@
 # slab - Zendesk SLA Bot for Slack
 
+
+[![CircleCI](https://circleci.com/gh/TylerConlee/slab.svg?style=svg)](https://circleci.com/gh/TylerConlee/slab)
+
 This bot is a Go app that monitors a Zendesk instance and reports upcoming SLA breaches to a given Slack channel. 
 
 ## Installation
