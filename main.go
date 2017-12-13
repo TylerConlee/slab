@@ -47,7 +47,7 @@ func main() {
 func startServer() *server.Server {
 	s := &server.Server{
 		Info: &server.ServerInfo{
-			Server:  "CircleCI-Support",
+			Server:  c.Metadata.Server,
 			Version: Version,
 		},
 		Uptime: time.Now(),

@@ -127,7 +127,7 @@ func startRTM() {
 		// If a new message is sent, check to see if the bot user is mentioned.
 		case *slack.MessageEvent:
 			if chk == 1 {
-				if strings.Contains(ev.Msg.Text, user.ID) {
+				if strings.Contains(ev.Msg.Text, user.ID) && c.TriageEnabled {
 					parseCommand(ev.Msg.Text)
 				}
 			}

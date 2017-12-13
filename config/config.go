@@ -14,10 +14,16 @@ var log = logging.MustGetLogger("config")
 // Config maps the values of the configuration file to a struct usable by the
 // rest of the app
 type Config struct {
-	Zendesk    Zendesk
-	Slack      Slack
-	SLA        SLA
-	UpdateFreq Duration
+	Zendesk       Zendesk
+	Slack         Slack
+	SLA           SLA
+	UpdateFreq    Duration
+	TriageEnabled bool
+	Metadata      Metadata
+}
+
+type Metadata struct {
+	Server string
 }
 
 // Slack API key and Channel ID tell SLAB where to post notifications
