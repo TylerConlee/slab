@@ -5,7 +5,7 @@ OUTPUT = slab
 all: 
 	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags="-X main.Version=$(VERSION)" -o $(OUTPUT)
 deploy:
-	yes | scp slab ubuntu@35.160.9.184:slab
-	ssh ubuntu@35.160.9.184
+	scp -o StrictHostKeyChecking=no slab ubuntu@35.160.9.184:slab
+	ssh -o StrictHostKeyChecking=no ubuntu@35.160.9.184
 	supervisord restart
 	exit

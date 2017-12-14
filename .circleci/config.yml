@@ -34,7 +34,8 @@ jobs:
           GOPATH=/home/circleci/slab
     steps:
       - checkout
-      - run: go get -t -d -v ./...
+      - restore_cache:
+          key: src-{{ .Branch }}-{{ checksum "main.go" }}
       - run: make
       - run: make deploy
 workflows:
