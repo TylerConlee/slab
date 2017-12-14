@@ -27,6 +27,16 @@ jobs:
       - restore_cache:
           key: src-{{ .Branch }}-{{ checksum "main.go" }}
       - run: go test -v
+  deploy:
+    working_directory: ~/slab
+      docker:
+        - image: circleci/golang:1.8.1
+          environment:
+            GOPATH=/home/circleci/slab
+      steps:
+        - checkout
+        - run: make
+        - run: make deploy
 workflows:
   version: 2
   build_and_test:
@@ -35,3 +45,10 @@ workflows:
       - test:
           requires:
             - build
+      - deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only: master
+      
