@@ -34,6 +34,7 @@ jobs:
           GOPATH=/home/circleci/slab
     steps:
       - checkout
+      - run: go get -t -d -v ./...
       - run: make
       - run: make deploy
 workflows:
