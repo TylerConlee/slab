@@ -1,2 +1,6 @@
+VERSION = $(git describe --always --long --dirty)
+GOOS = linux
+GOARCH = amd64
+OUTPUT = slab
 all: 
-	GOOS=linux GOARCH=amd64 go build -ldflags="-X main.Version=$(git describe --always --long --dirty)" -o slab
+	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags="-X main.Version=$(VERSION)" -o $(OUTPUT)
