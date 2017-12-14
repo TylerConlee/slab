@@ -23,8 +23,9 @@ var (
 func main() {
 	flagCheck()
 	// Start up the logging system
-	log = logging.MustGetLogger("slab")
 	initLog()
+	log = logging.MustGetLogger("slab")
+
 	log.Notice("SLABot by Tyler Conlee")
 	log.Noticef("Version: %s", Version)
 

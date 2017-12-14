@@ -17,10 +17,23 @@ var (
 	log = logging.MustGetLogger("slack")
 )
 
+func SendMessage(attachment slack.Attachment, message string) {
+	params := slack.PostMessageParameters{}
+	params.Attachments = []slack.Attachment{attachment}
+	params.LinkNames = 1
+	// Send a message to the given channel with pretext and the parameters
+	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, message, params)
+	if err != nil {
+		fmt.Printf("%s\n", err)
+		return
+	}
+	// Log message if succesfully sent.
+	log.Infof("Message successfully sent to channel %s at %s", channelID, timestamp)
+}
+
 // SetMessage creates and sends a message to Slack with a menu attachment,
 // allowing users to set the OnCall staff member.
 func SetMessage() {
-	params := slack.PostMessageParameters{}
 	attachment := slack.Attachment{
 		Fallback:   "You would be able to select the oncall person here.",
 		CallbackID: "oncall_dropdown",
@@ -42,24 +55,12 @@ func SetMessage() {
 			},
 		},
 	}
-
-	// Add the attachment to the parameters of a new message
-	params.Attachments = []slack.Attachment{attachment}
-
-	// Send a message to the given channel with pretext and the parameters
-	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, "...", params)
-	if err != nil {
-		fmt.Printf("%s\n", err)
-		return
-	}
-	// Log message if succesfully sent.
-	log.Infof("Set message successfully sent to channel %s at %s", channelID, timestamp)
+	SendMessage(attachment, "...")
 }
 
 // WhoIsMessage creates and sends a Slack message that sends out the value of
 // OnCall.
 func WhoIsMessage() {
-	params := slack.PostMessageParameters{}
 	attachment := slack.Attachment{
 		Fallback:   "You would be able to select the oncall person here.",
 		CallbackID: "oncall_dropdown",
@@ -71,33 +72,17 @@ func WhoIsMessage() {
 			},
 		},
 	}
-	params.Attachments = []slack.Attachment{attachment}
-	// Send a message to the given channel with pretext and the parameters
-	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, "...", params)
-	if err != nil {
-		fmt.Printf("%s\n", err)
-		return
-	}
-	// Send a message to the given channel with pretext and the parameters
-	log.Infof("WhoIs message successfully sent to channel %s at %s", channelID, timestamp)
+	SendMessage(attachment, "...")
 }
 
 // Send sends off the SLA notification to Slack using the configured API key
-func SendSLAMessage(n string, ticket zendesk.ActiveTicket) {
-
-	color := "warning"
-
-	if strings.Contains(n, "@sup") {
-		color = "danger"
-	}
+func SLAMessage(n string, ticket zendesk.ActiveTicket) {
 	description := ticket.Description
 	if len(ticket.Description) > 100 {
 		description = description[0:100] + "..."
 	}
-	params := slack.PostMessageParameters{}
 	url := fmt.Sprintf("%s/agent/tickets/%d", c.Zendesk.URL, ticket.ID)
 	attachment := slack.Attachment{
-		Color: color,
 		// Uncomment the following part to send a field too
 		Title:     ticket.Subject,
 		TitleLink: url,
@@ -118,14 +103,7 @@ func SendSLAMessage(n string, ticket zendesk.ActiveTicket) {
 			},
 		},
 	}
-	params.LinkNames = 1
-	params.Attachments = []slack.Attachment{attachment}
-	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, n, params)
-	if err != nil {
-		log.Criticalf("%s\n", err)
-		os.Exit(1)
-	}
-	log.Debugf("Message successfully sent to channel %s at %s", channelID, timestamp)
+	SendMessage(attachment, n)
 }
 
 // ChatUpdate takes a channel ID, a timestamp and message text
