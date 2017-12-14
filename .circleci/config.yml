@@ -28,14 +28,14 @@ jobs:
       - run: go test -v
   deploy:
     working_directory: ~/slab
-      docker:
-        - image: circleci/golang:1.8.1
-          environment:
-            GOPATH=/home/circleci/slab
-      steps:
-        - checkout
-        - run: make
-        - run: make deploy
+    docker:
+      - image: circleci/golang:1.8.1
+        environment:
+          GOPATH=/home/circleci/slab
+    steps:
+      - checkout
+      - run: make
+      - run: make deploy
 workflows:
   version: 2
   build_and_test:
