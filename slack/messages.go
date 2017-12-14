@@ -102,6 +102,19 @@ func SLAMessage(n string, ticket zendesk.ActiveTicket) {
 				Short: true,
 			},
 		},
+		Actions: []slack.AttachmentAction{
+			slack.AttachmentAction{
+				Name:  "ack_sla",
+				Text:  "Acknowledge",
+				Type:  "button",
+				Style: "primary",
+				Confirm: &slack.ConfirmationField{
+					Text:        "Are you sure?",
+					OkText:      "Take it",
+					DismissText: "Leave it",
+				},
+			},
+		},
 	}
 	SendMessage(attachment, n)
 }
