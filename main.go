@@ -9,6 +9,7 @@ import (
 	logging "github.com/op/go-logging"
 	"github.com/tylerconlee/slab/config"
 	"github.com/tylerconlee/slab/server"
+	"github.com/tylerconlee/slab/sla"
 )
 
 var log *logging.Logger
@@ -53,7 +54,7 @@ func startServer() *server.Server {
 		Uptime: time.Now(),
 	}
 	go func() {
-		RunTimer(c.UpdateFreq.Duration)
+		sla.RunTimer(c.UpdateFreq.Duration)
 	}()
 	go func() {
 		s.StartServer()
