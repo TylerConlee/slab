@@ -21,7 +21,7 @@ var OnCall string
 func (s *Server) NewRouter() *mux.Router {
 	log.Debug("Building Router")
 	r := mux.NewRouter()
-	r.HandleFunc("/slack", s.SetOncall).Methods("POST")
+	r.HandleFunc("/slack", s.Callback).Methods("POST")
 	r.HandleFunc("/", s.Index).Methods("GET")
 	return r
 }
@@ -29,26 +29,10 @@ func (s *Server) NewRouter() *mux.Router {
 // SetOncall is a handler that handles the callback from a Slack action.
 // TODO: Expand this to route to multiple callbacks, allowing for more
 // functionality
-func (s *Server) SetOncall(w http.ResponseWriter, r *http.Request) {
+func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 	payload := &slack.AttachmentActionCallback{}
-
-	err := json.Unmarshal([]byte(r.PostFormValue("payload")), payload)
-	if err != nil {
-		log.Critical("Unable to parse JSON for callback payload")
-		os.Exit(1)
-	}
-
-	if len(payload.Actions) == 0 {
-		log.Debug(w, "missing action")
-		return
-	}
-	log.Debug("Parsing action for callback")
-	if sl.VerifyUser(payload.Actions[0].SelectedOptions[0].Value) {
-		sl.OnCall = payload.Actions[0].SelectedOptions[0].Value
-		OnCall = sl.OnCall
-		sl.ChatUpdate(payload.Channel.ID, payload.MessageTs, payload.Actions[0].SelectedOptions[0].Value)
-	}
-	return
+	log.Debug(payload)
+	SetTriager(payload, r)
 }
 
 // Index is a handler that outputs the server metadata and uptime in JSON form.
@@ -80,5 +64,23 @@ func WriteJSON(w http.ResponseWriter, info interface{}, status int) {
 		log.Debug("Failed to write JSON")
 	} else {
 		log.Debug(json.Marshal(info))
+	}
+}
+
+func SetTriager(payload *slack.AttachmentActionCallback, r *http.Request) {
+	err := json.Unmarshal([]byte(r.PostFormValue("payload")), payload)
+	if err != nil {
+		log.Critical("Unable to parse JSON for callback payload")
+		os.Exit(1)
+	}
+
+	if len(payload.Actions) == 0 {
+		return
+	}
+	log.Debug("Parsing action for callback")
+	if sl.VerifyUser(payload.Actions[0].SelectedOptions[0].Value) {
+		sl.OnCall = payload.Actions[0].SelectedOptions[0].Value
+		OnCall = sl.OnCall
+		sl.ChatUpdate(payload.Channel.ID, payload.MessageTs, payload.Actions[0].SelectedOptions[0].Value)
 	}
 }
