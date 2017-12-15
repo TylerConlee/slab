@@ -84,8 +84,9 @@ func SLAMessage(n string, ticket zendesk.ActiveTicket) {
 	url := fmt.Sprintf("%s/agent/tickets/%d", c.Zendesk.URL, ticket.ID)
 	attachment := slack.Attachment{
 		// Uncomment the following part to send a field too
-		Title:     ticket.Subject,
-		TitleLink: url,
+		Title:      ticket.Subject,
+		TitleLink:  url,
+		CallbackID: "sla",
 		Fields: []slack.AttachmentField{
 			slack.AttachmentField{
 				Title: "Description",
