@@ -32,12 +32,12 @@ func SendMessage(attachment slack.Attachment, message string) {
 }
 
 // SetMessage creates and sends a message to Slack with a menu attachment,
-// allowing users to set the OnCall staff member.
+// allowing users to set the triager staff member.
 func SetMessage() {
 	attachment := slack.Attachment{
-		Fallback:   "You would be able to select the oncall person here.",
+		Fallback:   "You would be able to select the triager here.",
 		CallbackID: "triage_set",
-		// Show the current OnCall member
+		// Show the current triager
 		Fields: []slack.AttachmentField{
 			slack.AttachmentField{
 				Title: "Currently OnCall",
@@ -59,15 +59,15 @@ func SetMessage() {
 }
 
 // WhoIsMessage creates and sends a Slack message that sends out the value of
-// OnCall.
+// Triager.
 func WhoIsMessage() {
 	attachment := slack.Attachment{
-		Fallback:   "You would be able to select the oncall person here.",
+		Fallback:   "You would be able to select the triager here.",
 		CallbackID: "triage_whois",
 		// Show the current OnCall member
 		Fields: []slack.AttachmentField{
 			slack.AttachmentField{
-				Title: "Currently OnCall",
+				Title: "Current Triager",
 				Value: fmt.Sprintf("<@%s>", OnCall),
 			},
 		},
@@ -75,7 +75,7 @@ func WhoIsMessage() {
 	SendMessage(attachment, "...")
 }
 
-// Send sends off the SLA notification to Slack using the configured API key
+// SLAMessage sends off the SLA notification to Slack using the configured API key
 func SLAMessage(n string, ticket zendesk.ActiveTicket) {
 	description := ticket.Description
 	if len(ticket.Description) > 100 {
@@ -155,7 +155,7 @@ func parseCommand(text string) {
 
 }
 
-// verifyUser takes a User ID string and runs the Slack GetUserInfo request. If
+// VerifyUser takes a User ID string and runs the Slack GetUserInfo request. If
 // the user exists, the function returns true.
 func VerifyUser(user string) bool {
 	_, err := api.GetUserInfo(user)
