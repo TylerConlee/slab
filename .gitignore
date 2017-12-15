@@ -18,3 +18,4 @@ slab
 config.toml
 oncall-slab
 dev-slab
+.circleci/config.yml
