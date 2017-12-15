@@ -1,0 +1,41 @@
+package slack
+
+import (
+	"fmt"
+
+	"github.com/tylerconlee/slack"
+)
+
+// SetTriager generates a new Slack attachment to update the
+// original message and set the Triager role
+func SetTriager(payload *slack.AttachmentActionCallback) {
+	if len(payload.Actions) == 0 {
+		return
+	}
+	log.Debug("Triager set")
+	if VerifyUser(payload.Actions[0].SelectedOptions[0].Value) {
+		Triager = payload.Actions[0].SelectedOptions[0].Value
+		t := fmt.Sprintf("<@%s> is now set as Triager", Triager)
+		attachment := slack.Attachment{
+			Fallback:   "You would be able to select the triager here.",
+			CallbackID: "triager_dropdown",
+			Footer:     t,
+			FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
+		}
+		ChatUpdate(payload, attachment)
+	}
+}
+
+// AcknowledgeSLA generates a new Slack attachment to state that a user has
+// acknowledged a ticket.
+func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
+	log.Debug("Ticket acknowledged")
+	t := fmt.Sprintf("<@%s> acknowledged this ticket", payload.User.Name)
+	attachment := slack.Attachment{
+		Fallback:   "User acknowledged a ticket.",
+		CallbackID: "sla",
+		Footer:     t,
+		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
+	}
+	ChatUpdate(payload, attachment)
+}

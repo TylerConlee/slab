@@ -9,6 +9,7 @@ import (
 	logging "github.com/op/go-logging"
 	"github.com/tylerconlee/slab/config"
 	"github.com/tylerconlee/slab/server"
+	"github.com/tylerconlee/slab/sla"
 )
 
 var log *logging.Logger
@@ -22,8 +23,9 @@ var (
 func main() {
 	flagCheck()
 	// Start up the logging system
-	log = logging.MustGetLogger("slab")
 	initLog()
+	log = logging.MustGetLogger("slab")
+
 	log.Notice("SLABot by Tyler Conlee")
 	log.Noticef("Version: %s", Version)
 
@@ -53,7 +55,7 @@ func startServer() *server.Server {
 		Uptime: time.Now(),
 	}
 	go func() {
-		RunTimer(c.UpdateFreq.Duration)
+		sla.RunTimer(c.UpdateFreq.Duration)
 	}()
 	go func() {
 		s.StartServer()

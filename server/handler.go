@@ -14,39 +14,32 @@ import (
 
 // log adds a logger for the `api` package
 var log = logging.MustGetLogger("server")
-var OnCall string
 
 // NewRouter builds a new mux Router instance with the routes that
 // Slack uses to handle callbacks, and the index status page
 func (s *Server) NewRouter() *mux.Router {
 	log.Debug("Building Router")
 	r := mux.NewRouter()
-	r.HandleFunc("/slack", s.SetOncall).Methods("POST")
+	r.HandleFunc("/slack", s.Callback).Methods("POST")
 	r.HandleFunc("/", s.Index).Methods("GET")
 	return r
 }
 
-// SetOncall is a handler that handles the callback from a Slack action.
-// TODO: Expand this to route to multiple callbacks, allowing for more
-// functionality
-func (s *Server) SetOncall(w http.ResponseWriter, r *http.Request) {
+// Callback is a handler that handles the callback from a Slack action.
+func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 	payload := &slack.AttachmentActionCallback{}
-
 	err := json.Unmarshal([]byte(r.PostFormValue("payload")), payload)
 	if err != nil {
 		log.Critical("Unable to parse JSON for callback payload")
 		os.Exit(1)
 	}
+	log.Debug(payload.CallbackID)
+	switch payload.CallbackID {
+	case "sla":
+		sl.AcknowledgeSLA(payload)
 
-	if len(payload.Actions) == 0 {
-		log.Debug(w, "missing action")
-		return
-	}
-	log.Debug("Parsing action for callback")
-	if sl.VerifyUser(payload.Actions[0].SelectedOptions[0].Value) {
-		sl.OnCall = payload.Actions[0].SelectedOptions[0].Value
-		OnCall = sl.OnCall
-		sl.ChatUpdate(payload.Channel.ID, payload.MessageTs, payload.Actions[0].SelectedOptions[0].Value)
+	case "triage_set":
+		sl.SetTriager(payload)
 	}
 	return
 }
