@@ -1,3 +1,5 @@
+// Package zendesk provides functions to grab and manipulate ticket data from a
+// Zendesk instance
 package zendesk
 
 import (
@@ -6,6 +8,7 @@ import (
 	c "github.com/tylerconlee/slab/config"
 )
 
+// config loads the configuration
 var config = c.LoadConfig()
 
 // ActiveTicket is the individual ticket details for a ticket

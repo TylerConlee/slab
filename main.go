@@ -1,3 +1,6 @@
+// SLAB is a full support bot for integrating a Zendesk workflow and Slack.
+// A Slack app must be set up for this to run properly.
+// (https://api.slack.com/apps)
 package main
 
 import (
@@ -46,6 +49,9 @@ func main() {
 
 }
 
+// startServer initializes the metadata for the status page, starts the timer
+// for the SLA breach monitor loop, and starts an HTTP server for running Slacks
+// real time messaging monitoring API.
 func startServer() *server.Server {
 	s := &server.Server{
 		Info: &server.ServerInfo{
@@ -65,6 +71,7 @@ func startServer() *server.Server {
 	return s
 }
 
+// shutdown stops the ticker and gracefully shuts down the server.
 func shutdown(ticker *time.Ticker, s *server.Server) {
 
 	if ticker != nil {
@@ -75,6 +82,8 @@ func shutdown(ticker *time.Ticker, s *server.Server) {
 	os.Exit(0)
 }
 
+// flagCheck parses any flags that are passed when calling SLAB on the
+// command line.
 func flagCheck() {
 	var help bool
 
