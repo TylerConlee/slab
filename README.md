@@ -5,7 +5,7 @@
 
 > This bot is a Go app that monitors a Zendesk instance and reports upcoming SLA breaches to a given Slack channel. 
 
-![Slab in action](https://ibb.co/k9hHQR)
+![Slab in action](https://user-images.githubusercontent.com/3723686/34063510-670880a2-e1a7-11e7-8f18-7b83afaab60f.gif)
 
 ## Installation
 Clone the repo and run `go get -t -d -v ./...` to ensure any and all dependencies are local, followed by `go build .`. This creates a binary called `slab` in your local folder. 
