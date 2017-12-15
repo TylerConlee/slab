@@ -6,6 +6,8 @@ import (
 	"github.com/tylerconlee/slack"
 )
 
+// SetTriager generates a new Slack attachment to update the
+// original message and set the Triager role
 func SetTriager(payload *slack.AttachmentActionCallback) {
 	if len(payload.Actions) == 0 {
 		return
@@ -24,6 +26,8 @@ func SetTriager(payload *slack.AttachmentActionCallback) {
 	}
 }
 
+// AcknowledgeSLA generates a new Slack attachment to state that a user has
+// acknowledged a ticket.
 func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
 	log.Debug("Ticket acknowledged")
 	t := fmt.Sprintf("<@%s> acknowledged this ticket", payload.User.Name)
