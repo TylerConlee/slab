@@ -36,7 +36,7 @@ func SendMessage(attachment slack.Attachment, message string) {
 func SetMessage() {
 	attachment := slack.Attachment{
 		Fallback:   "You would be able to select the oncall person here.",
-		CallbackID: "oncall_dropdown",
+		CallbackID: "triage_set",
 		// Show the current OnCall member
 		Fields: []slack.AttachmentField{
 			slack.AttachmentField{
@@ -47,7 +47,7 @@ func SetMessage() {
 		// Show a dropdown of all users to select new OnCall target
 		Actions: []slack.AttachmentAction{
 			slack.AttachmentAction{
-				Name:       "oncall_select",
+				Name:       "triage_select",
 				Text:       "Select Team Member",
 				Type:       "select",
 				Style:      "primary",
@@ -63,7 +63,7 @@ func SetMessage() {
 func WhoIsMessage() {
 	attachment := slack.Attachment{
 		Fallback:   "You would be able to select the oncall person here.",
-		CallbackID: "oncall_dropdown",
+		CallbackID: "triage_whois",
 		// Show the current OnCall member
 		Fields: []slack.AttachmentField{
 			slack.AttachmentField{
@@ -124,17 +124,12 @@ func SLAMessage(n string, ticket zendesk.ActiveTicket) {
 // and updated the message in the given Slack channel at the given
 // timestamp with the given message text. Currently, it also updates the
 // attachment specifically for the Set message output.
-func ChatUpdate(channel string, ts string, text string) {
-	t := fmt.Sprintf("Updated OnCall person to <@%s>", text)
+func ChatUpdate(channel string, ts string, attachment slack.Attachment) {
+
 	params := slack.PostMessageParameters{}
-	attachment := slack.Attachment{
-		Fallback:   "You would be able to select the oncall person here.",
-		CallbackID: "oncall_dropdown",
-		Footer:     t,
-		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
-	}
+
 	params.Attachments = []slack.Attachment{attachment}
-	text = "..."
+	text := "..."
 	// Send an update to the given channel with pretext and the parameters
 	channelID, timestamp, t, err := api.UpdateMessageWithParams(channel, ts, text, params)
 	log.Debug(channelID, timestamp, t, err)

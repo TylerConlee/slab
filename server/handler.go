@@ -2,6 +2,7 @@ package server
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -31,8 +32,19 @@ func (s *Server) NewRouter() *mux.Router {
 // functionality
 func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 	payload := &slack.AttachmentActionCallback{}
-	log.Debug(payload)
-	SetTriager(payload, r)
+	err := json.Unmarshal([]byte(r.PostFormValue("payload")), payload)
+	if err != nil {
+		log.Critical("Unable to parse JSON for callback payload")
+		os.Exit(1)
+	}
+	switch payload.CallbackID {
+	case "ack_sla":
+		AcknowledgeSLA(payload)
+
+	case "triage_set":
+		SetTriager(payload)
+	}
+	return
 }
 
 // Index is a handler that outputs the server metadata and uptime in JSON form.
@@ -67,13 +79,7 @@ func WriteJSON(w http.ResponseWriter, info interface{}, status int) {
 	}
 }
 
-func SetTriager(payload *slack.AttachmentActionCallback, r *http.Request) {
-	err := json.Unmarshal([]byte(r.PostFormValue("payload")), payload)
-	if err != nil {
-		log.Critical("Unable to parse JSON for callback payload")
-		os.Exit(1)
-	}
-
+func SetTriager(payload *slack.AttachmentActionCallback) {
 	if len(payload.Actions) == 0 {
 		return
 	}
@@ -81,6 +87,24 @@ func SetTriager(payload *slack.AttachmentActionCallback, r *http.Request) {
 	if sl.VerifyUser(payload.Actions[0].SelectedOptions[0].Value) {
 		sl.OnCall = payload.Actions[0].SelectedOptions[0].Value
 		OnCall = sl.OnCall
-		sl.ChatUpdate(payload.Channel.ID, payload.MessageTs, payload.Actions[0].SelectedOptions[0].Value)
+		t := fmt.Sprintf("<@%s> is now set as Triager", OnCall)
+		attachment := slack.Attachment{
+			Fallback:   "You would be able to select the triager here.",
+			CallbackID: "triager_dropdown",
+			Footer:     t,
+			FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
+		}
+		sl.ChatUpdate(payload.Channel.ID, payload.MessageTs, attachment)
 	}
+}
+
+func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
+	t := fmt.Sprintf("@%s> acknowledged this ticket", payload.User.Name)
+	attachment := slack.Attachment{
+		Fallback:   "User acknowledged a ticket.",
+		CallbackID: "ack_sla",
+		Footer:     t,
+		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
+	}
+	sl.ChatUpdate(payload.Channel.ID, payload.MessageTs, attachment)
 }
