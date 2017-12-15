@@ -1,3 +1,6 @@
+// SLAB is a full support bot for integrating a Zendesk workflow and Slack.
+// A Slack app must be set up for this to run properly.
+// (https://api.slack.com/apps)
 package main
 
 import (
@@ -6,9 +9,12 @@ import (
 	"github.com/op/go-logging"
 )
 
+// format is the log format used for most log messages.
 var format = logging.MustStringFormatter(
 	`%{color}%{time:2006-01-02T15:04:05.000} %{module} ▶ %{level:.4s} %{color:reset} %{message}`,
 )
+
+// errorFormatStr is a special log format reserved for logging any major errors.
 var errorFormatStr = logging.MustStringFormatter(
 	`%{color} %{longpkg} %{shortfunc} ▶ %{shortfile}`,
 )
