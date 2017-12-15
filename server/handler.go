@@ -14,7 +14,6 @@ import (
 
 // log adds a logger for the `api` package
 var log = logging.MustGetLogger("server")
-var OnCall string
 
 // NewRouter builds a new mux Router instance with the routes that
 // Slack uses to handle callbacks, and the index status page

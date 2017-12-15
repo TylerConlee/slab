@@ -17,6 +17,8 @@ var (
 	log = logging.MustGetLogger("slack")
 )
 
+// SendMessage takes an attachment and message and composes a message to be
+// sent to the configured Slack channel ID
 func SendMessage(attachment slack.Attachment, message string) {
 	params := slack.PostMessageParameters{}
 	params.Attachments = []slack.Attachment{attachment}
@@ -40,11 +42,11 @@ func SetMessage() {
 		// Show the current triager
 		Fields: []slack.AttachmentField{
 			slack.AttachmentField{
-				Title: "Currently OnCall",
-				Value: fmt.Sprintf("<@%s>", OnCall),
+				Title: "Current Triager",
+				Value: fmt.Sprintf("<@%s>", Triager),
 			},
 		},
-		// Show a dropdown of all users to select new OnCall target
+		// Show a dropdown of all users to select new Triager target
 		Actions: []slack.AttachmentAction{
 			slack.AttachmentAction{
 				Name:       "triage_select",
@@ -64,11 +66,11 @@ func WhoIsMessage() {
 	attachment := slack.Attachment{
 		Fallback:   "You would be able to select the triager here.",
 		CallbackID: "triage_whois",
-		// Show the current OnCall member
+		// Show the current Triager member
 		Fields: []slack.AttachmentField{
 			slack.AttachmentField{
 				Title: "Current Triager",
-				Value: fmt.Sprintf("<@%s>", OnCall),
+				Value: fmt.Sprintf("<@%s>", Triager),
 			},
 		},
 	}

@@ -10,8 +10,8 @@ import (
 // api is an instance of the tylerconlee/slack Client
 var api *slack.Client
 
-// OnCall holds the User ID of the current person set as "OnCall"
-var OnCall string
+// Triager holds the User ID of the current person set as "Triager"
+var Triager string
 
 // StartSlack initializes a connection with the given slack instance, gets
 // team information, and starts a Go channel with the Real Time Messaging
@@ -30,8 +30,8 @@ func StartSlack() {
 	}
 	log.Info("Connected to Slack:", d.Domain)
 
-	// Set the initial value of OnCall
-	OnCall = "None"
+	// Set the initial value of Triager
+	Triager = "None"
 
 	// Start monitoring Slack
 	startRTM()

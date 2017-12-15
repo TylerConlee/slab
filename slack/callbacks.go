@@ -14,8 +14,8 @@ func SetTriager(payload *slack.AttachmentActionCallback) {
 	}
 	log.Debug("Triager set")
 	if VerifyUser(payload.Actions[0].SelectedOptions[0].Value) {
-		OnCall = payload.Actions[0].SelectedOptions[0].Value
-		t := fmt.Sprintf("<@%s> is now set as Triager", OnCall)
+		Triager = payload.Actions[0].SelectedOptions[0].Value
+		t := fmt.Sprintf("<@%s> is now set as Triager", Triager)
 		attachment := slack.Attachment{
 			Fallback:   "You would be able to select the triager here.",
 			CallbackID: "triager_dropdown",
