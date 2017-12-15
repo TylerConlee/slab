@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
 	"time"
@@ -39,10 +38,10 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 	}
 	switch payload.CallbackID {
 	case "ack_sla":
-		AcknowledgeSLA(payload)
+		sl.AcknowledgeSLA(payload)
 
 	case "triage_set":
-		SetTriager(payload)
+		sl.SetTriager(payload)
 	}
 	return
 }
@@ -77,34 +76,4 @@ func WriteJSON(w http.ResponseWriter, info interface{}, status int) {
 	} else {
 		log.Debug(json.Marshal(info))
 	}
-}
-
-func SetTriager(payload *slack.AttachmentActionCallback) {
-	if len(payload.Actions) == 0 {
-		return
-	}
-	log.Debug("Parsing action for callback")
-	if sl.VerifyUser(payload.Actions[0].SelectedOptions[0].Value) {
-		sl.OnCall = payload.Actions[0].SelectedOptions[0].Value
-		OnCall = sl.OnCall
-		t := fmt.Sprintf("<@%s> is now set as Triager", OnCall)
-		attachment := slack.Attachment{
-			Fallback:   "You would be able to select the triager here.",
-			CallbackID: "triager_dropdown",
-			Footer:     t,
-			FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
-		}
-		sl.ChatUpdate(payload.Channel.ID, payload.MessageTs, attachment)
-	}
-}
-
-func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
-	t := fmt.Sprintf("@%s> acknowledged this ticket", payload.User.Name)
-	attachment := slack.Attachment{
-		Fallback:   "User acknowledged a ticket.",
-		CallbackID: "ack_sla",
-		Footer:     t,
-		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
-	}
-	sl.ChatUpdate(payload.Channel.ID, payload.MessageTs, attachment)
 }
