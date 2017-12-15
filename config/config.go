@@ -20,6 +20,7 @@ type Config struct {
 	UpdateFreq    Duration
 	TriageEnabled bool
 	Metadata      Metadata
+	Port          int
 }
 
 type Metadata struct {

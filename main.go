@@ -51,6 +51,7 @@ func startServer() *server.Server {
 		Info: &server.ServerInfo{
 			Server:  c.Metadata.Server,
 			Version: Version,
+			Port:    c.Port,
 		},
 		Uptime: time.Now(),
 	}

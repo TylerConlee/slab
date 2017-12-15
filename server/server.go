@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"time"
 
@@ -22,6 +23,7 @@ type Server struct {
 type ServerInfo struct {
 	Server  string `json:"server"`
 	Version string `json:"version"`
+	Port    int    `json:"port"`
 }
 
 // ServerStatus contains the metadata from ServerInfo as well as the uptime for
@@ -38,6 +40,7 @@ func (s *Server) StartServer() {
 
 	log.Info("HTTP server ready")
 	go sl.StartSlack()
-	http.ListenAndServe(":8080", s.Router)
+	port := fmt.Sprintf(":%d", s.Info.Port)
+	http.ListenAndServe(port, s.Router)
 
 }
