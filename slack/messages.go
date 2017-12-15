@@ -124,14 +124,21 @@ func SLAMessage(n string, ticket zendesk.ActiveTicket) {
 // and updated the message in the given Slack channel at the given
 // timestamp with the given message text. Currently, it also updates the
 // attachment specifically for the Set message output.
-func ChatUpdate(channel string, ts string, attachment slack.Attachment) {
+func ChatUpdate(
+	payload *slack.AttachmentActionCallback,
+	attachment slack.Attachment,
+) {
 
 	params := slack.PostMessageParameters{}
 
 	params.Attachments = []slack.Attachment{attachment}
-	text := "..."
 	// Send an update to the given channel with pretext and the parameters
-	channelID, timestamp, t, err := api.UpdateMessageWithParams(channel, ts, text, params)
+	channelID, timestamp, t, err := api.UpdateMessageWithParams(
+		payload.Channel.ID,
+		payload.OriginalMessage.Timestamp,
+		payload.OriginalMessage.Text,
+		params,
+	)
 	log.Debug(channelID, timestamp, t, err)
 }
 

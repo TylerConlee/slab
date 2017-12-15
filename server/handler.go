@@ -26,9 +26,7 @@ func (s *Server) NewRouter() *mux.Router {
 	return r
 }
 
-// SetOncall is a handler that handles the callback from a Slack action.
-// TODO: Expand this to route to multiple callbacks, allowing for more
-// functionality
+// Callback is a handler that handles the callback from a Slack action.
 func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 	payload := &slack.AttachmentActionCallback{}
 	err := json.Unmarshal([]byte(r.PostFormValue("payload")), payload)
@@ -36,8 +34,9 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 		log.Critical("Unable to parse JSON for callback payload")
 		os.Exit(1)
 	}
+	log.Debug(payload.CallbackID)
 	switch payload.CallbackID {
-	case "ack_sla":
+	case "sla":
 		sl.AcknowledgeSLA(payload)
 
 	case "triage_set":
