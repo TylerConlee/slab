@@ -4,8 +4,6 @@ jobs:
     working_directory: ~/slab
     docker:
       - image: circleci/golang:1.8
-        environment:
-          GOPATH=/home/circleci/slab
       
     steps:
       - checkout
