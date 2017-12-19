@@ -9,6 +9,7 @@ jobs:
       
     steps:
       - checkout
+      - run: mkdir bin
       - run: curl https://glide.sh/get | sh
       - run: glide install
       - run: go build -v
