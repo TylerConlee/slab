@@ -33,9 +33,7 @@ jobs:
       - checkout
       - restore_cache:
           key: glide-cache-{{ .Branch }}-{{ checksum "glide.lock" }}
-      - run: go test -v $(go list ./... | grep -v /vendor/) -coverprofile=~/artifacts/cover.out
-      - store_test_artifacts: 
-          path: ~/artifacts
+      - run: go test -v $(go list ./... | grep -v /vendor/) 
 workflows:
   version: 2
   build_and_test:
