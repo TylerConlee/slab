@@ -33,7 +33,7 @@ jobs:
       - checkout
       - restore_cache:
           key: glide-cache-{{ .Branch }}-{{ checksum "glide.lock" }}
-      - run: go test $(go list ./... | grep -v /vendor/)
+      - run: go test -v $(go list ./... | grep -v /vendor/)
 workflows:
   version: 2
   build_and_test:
