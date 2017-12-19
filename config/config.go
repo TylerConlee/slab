@@ -82,8 +82,47 @@ func LoadConfig() (config Config) {
 		log.Info("Configuration file", os.Args[1], "loaded successfully.")
 		return config
 	}
-	log.Critical("Error. Configuration file must be specified when launching SLAB")
-	os.Exit(1)
+	config = defaultConfig()
 	return
 
+}
+
+func defaultConfig() (config Config) {
+	freq, err := time.ParseDuration("10m")
+
+	if err != nil {
+		log.Critical(err)
+	}
+	config = Config{
+		Zendesk: Zendesk{
+			APIKey: "",
+			User:   "",
+			URL:    "",
+		},
+		Slack: Slack{
+			APIKey:    "",
+			ChannelID: "",
+		},
+		UpdateFreq: Duration{
+			freq,
+		},
+		SLA: SLA{
+			LevelOne: Level{
+				Tag: "platinum",
+			},
+			LevelTwo: Level{
+				Tag: "gold",
+			},
+			LevelThree: Level{
+				Tag: "silver",
+			},
+			LevelFour: Level{
+				Tag: "bronze",
+			},
+		},
+		Metadata:      Metadata{},
+		TriageEnabled: true,
+		Port:          8080,
+	}
+	return
 }
