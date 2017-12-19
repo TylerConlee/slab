@@ -1,6 +1,8 @@
 package zendesk
 
-import "testing"
+import (
+	"testing"
+)
 
 func Test_getPriorityLevel(t *testing.T) {
 	tests := []struct {
@@ -8,11 +10,25 @@ func Test_getPriorityLevel(t *testing.T) {
 		args       []string
 		wantPriLvl string
 	}{
-		// TODO: Add test cases.
 		{
 			name:       "LevelOne",
 			args:       []string{"platinum"},
 			wantPriLvl: "LevelOne",
+		},
+		{
+			name:       "LevelTwo",
+			args:       []string{"gold"},
+			wantPriLvl: "LevelTwo",
+		},
+		{
+			name:       "LevelThree",
+			args:       []string{"silver"},
+			wantPriLvl: "LevelThree",
+		},
+		{
+			name:       "LevelFour",
+			args:       []string{"bronze"},
+			wantPriLvl: "LevelFour",
 		},
 	}
 	for _, tt := range tests {

@@ -77,6 +77,7 @@ func LoadConfig() (config Config) {
 	if len(os.Args) > 1 {
 		if _, err := toml.DecodeFile(os.Args[1], &config); err != nil {
 			log.Critical(err)
+			config = defaultConfig()
 			return
 		}
 		log.Info("Configuration file", os.Args[1], "loaded successfully.")
