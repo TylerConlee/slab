@@ -1,7 +1,7 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/slab
+    working_directory: /go/src/github.com/tylerconlee/slab
     docker:
       - image: circleci/golang:1.8.1
       
@@ -25,11 +25,9 @@ jobs:
           paths:
               - vendor
   test:
-    working_directory: ~/slab
+    working_directory: /go/src/github.com/tylerconlee/slab
     docker:
       - image: circleci/golang:1.8.1
-      environment:
-          GOPATH=$GOPATH:/home/circleci/slab
     parallelism: 2
     steps:
       - checkout
