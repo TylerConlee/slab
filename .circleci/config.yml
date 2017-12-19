@@ -9,7 +9,7 @@ jobs:
       
     steps:
       - checkout
-      - run: go get -t -d -v ./...
+      - run: glide install
       - run: go build -v
       - save_cache:
           key: src-{{ .Branch }}-{{ .Revision }}
