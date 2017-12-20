@@ -1,0 +1,33 @@
+UpdateFreq = "10m"
+LogLevel = "Debug"
+[Slack]
+    APIKey="SLACK-API-KEY"
+    ChannelID="CHANNEL-ID"
+[Zendesk]
+    APIKey = "ZENDESK-API-KEY"
+    User = "ZENDESK-API-USER"
+    URL = "ZENDESK-URL"
+[SLA]
+    [SLA.LevelOne]
+        Tag = "platinum"
+        Low = "8h"
+        Normal = "4h"
+        High = "1h"
+        Urgent = "59m"
+    [SLA.LevelTwo]
+        Tag = "gold"
+        Low = "7h"
+        Normal = "7h"
+        High = "7h"
+        Urgent = "7m"
+    [SLA.LevelThree]
+        Tag = "silver"
+        Low = "9h"
+        Normal = "9h"
+        High = "9h"
+        Urgent = "9m"
+    [SLA.LevelFour]
+        Low = "3h"
+        Normal = "3h"
+        High = "3h"
+        Urgent = "3m"
