@@ -32,6 +32,8 @@ func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
 	log.Debug("Ticket acknowledged")
 	t := fmt.Sprintf("<@%s> acknowledged this ticket", payload.User.Name)
 	attachment := slack.Attachment{
+		Title:      payload.OriginalMessage.Attachments[0].Title,
+		TitleLink:  payload.OriginalMessage.Attachments[0].TitleLink,
 		Fallback:   "User acknowledged a ticket.",
 		CallbackID: "sla",
 		Footer:     t,
