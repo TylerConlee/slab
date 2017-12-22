@@ -28,23 +28,19 @@ jobs:
     working_directory: /go/src/github.com/tylerconlee/slab
     docker:
       - image: circleci/golang:1.8.1
-        environment:
-          GOPATH=/home/circleci/slab
     steps:
       - checkout
       - restore_cache:
           key: glide-cache-{{ .Branch }}-{{ checksum "glide.lock" }}
       - run: go test -v $(go list ./... | grep -v /vendor/) 
   deploy:
-    working_directory: ~/slab
+    working_directory: /go/src/github.com/tylerconlee/slab
     docker:
       - image: circleci/golang:1.8.1
-        environment:
-          GOPATH=/home/circleci/slab
     steps:
       - checkout
       - restore_cache:
-          key: src-{{ .Branch }}-{{ checksum "main.go" }}
+          key: glide-cache-{{ .Branch }}-{{ checksum "glide.lock" }}
       - run: make
       - run: make deploy
 
