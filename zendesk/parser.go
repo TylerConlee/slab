@@ -58,16 +58,14 @@ func CheckSLA() (sla []ActiveTicket) {
 // returns a string of what priority level the ticket is tagged with
 func getPriorityLevel(tags []string) (priLvl string) {
 	for _, v := range tags {
-		if v == config.SLA.LevelOne.Tag {
+		switch v {
+		case config.SLA.LevelOne.Tag:
 			return "LevelOne"
-		}
-		if v == config.SLA.LevelTwo.Tag {
+		case config.SLA.LevelTwo.Tag:
 			return "LevelTwo"
-		}
-		if v == config.SLA.LevelThree.Tag {
+		case config.SLA.LevelThree.Tag:
 			return "LevelThree"
-		}
-		if v == config.SLA.LevelFour.Tag {
+		case config.SLA.LevelFour.Tag:
 			return "LevelFour"
 		}
 	}

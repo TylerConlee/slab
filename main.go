@@ -35,24 +35,14 @@ func main() {
 	c = config.LoadConfig()
 	// Start timer process. Takes an int as the number of minutes to loop
 
-	termChan := make(chan os.Signal, 1)
-	s := startServer()
-	ticker := time.NewTicker(time.Minute)
-	for {
-		select {
-		case <-ticker.C:
-
-		case <-termChan:
-			shutdown(ticker, s)
-		}
-	}
+	startServer()
 
 }
 
 // startServer initializes the metadata for the status page, starts the timer
 // for the SLA breach monitor loop, and starts an HTTP server for running Slacks
 // real time messaging monitoring API.
-func startServer() *server.Server {
+func startServer() {
 	s := &server.Server{
 		Info: &server.ServerInfo{
 			Server:  c.Metadata.Server,
@@ -66,20 +56,7 @@ func startServer() *server.Server {
 	}()
 	go func() {
 		s.StartServer()
-
 	}()
-	return s
-}
-
-// shutdown stops the ticker and gracefully shuts down the server.
-func shutdown(ticker *time.Ticker, s *server.Server) {
-
-	if ticker != nil {
-		ticker.Stop()
-	}
-
-	log.Info("Shutdown complete.")
-	os.Exit(0)
 }
 
 // flagCheck parses any flags that are passed when calling SLAB on the
