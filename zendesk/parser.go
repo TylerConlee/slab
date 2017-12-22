@@ -1,3 +1,5 @@
+// Package zendesk provides functions to grab and manipulate ticket data from a
+// Zendesk instance
 package zendesk
 
 import (
@@ -6,6 +8,7 @@ import (
 	c "github.com/tylerconlee/slab/config"
 )
 
+// config loads the configuration
 var config = c.LoadConfig()
 
 // ActiveTicket is the individual ticket details for a ticket
@@ -55,16 +58,14 @@ func CheckSLA() (sla []ActiveTicket) {
 // returns a string of what priority level the ticket is tagged with
 func getPriorityLevel(tags []string) (priLvl string) {
 	for _, v := range tags {
-		if v == config.SLA.LevelOne.Tag {
+		switch v {
+		case config.SLA.LevelOne.Tag:
 			return "LevelOne"
-		}
-		if v == config.SLA.LevelTwo.Tag {
+		case config.SLA.LevelTwo.Tag:
 			return "LevelTwo"
-		}
-		if v == config.SLA.LevelThree.Tag {
+		case config.SLA.LevelThree.Tag:
 			return "LevelThree"
-		}
-		if v == config.SLA.LevelFour.Tag {
+		case config.SLA.LevelFour.Tag:
 			return "LevelFour"
 		}
 	}

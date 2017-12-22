@@ -1,0 +1,6 @@
+package: github.com/tylerconlee/slab
+import:
+- package: github.com/BurntSushi/toml
+- package: github.com/gorilla/mux
+- package: github.com/op/go-logging
+- package: github.com/tylerconlee/slack
