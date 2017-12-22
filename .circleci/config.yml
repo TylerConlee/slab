@@ -30,7 +30,6 @@ jobs:
       - image: circleci/golang:1.8.1
         environment:
           GOPATH=/home/circleci/slab
-    parallelism: 2
     steps:
       - checkout
       - restore_cache:
