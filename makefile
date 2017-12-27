@@ -1,4 +1,4 @@
-VERSION = $(git describe --always --long --dirty)
+VERSION = $(git rev-parse --short HEAD)
 GOOS = linux
 GOARCH = amd64
 OUTPUT = slab
