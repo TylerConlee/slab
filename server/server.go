@@ -39,7 +39,7 @@ func (s *Server) StartServer() {
 	s.Router = s.NewRouter()
 
 	log.Info("HTTP server ready")
-	go sl.StartSlack()
+	go sl.StartSlack(s.Info.Version)
 	port := fmt.Sprintf(":%d", s.Info.Port)
 	http.ListenAndServe(port, s.Router)
 

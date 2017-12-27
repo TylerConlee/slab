@@ -3,6 +3,7 @@ package slack
 import (
 	"os"
 	"strings"
+	"time"
 
 	"github.com/tylerconlee/slack"
 )
@@ -16,8 +17,10 @@ var Triager string
 // StartSlack initializes a connection with the given slack instance, gets
 // team information, and starts a Go channel with the Real Time Messaging
 // API watcher.
-func StartSlack() {
+func StartSlack(v string) {
 	log.Info("Starting connection to Slack")
+	version = v
+	uptime = time.Now()
 	// start a connection to Slack using the Slack Bot token
 
 	api = slack.New(c.Slack.APIKey)
