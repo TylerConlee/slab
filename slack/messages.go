@@ -175,6 +175,8 @@ func parseCommand(text string) {
 		SetMessage()
 	case "whois":
 		WhoIsMessage()
+	case "status":
+		UpdateMessage()
 	}
 
 }
