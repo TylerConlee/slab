@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	logging "github.com/op/go-logging"
 	"github.com/tylerconlee/slab/zendesk"
@@ -13,8 +14,10 @@ import (
 )
 
 var (
-	c   = config.LoadConfig()
-	log = logging.MustGetLogger("slack")
+	c       = config.LoadConfig()
+	log     = logging.MustGetLogger("slack")
+	uptime  time.Time
+	version string
 )
 
 // SendMessage takes an attachment and message and composes a message to be
@@ -122,6 +125,25 @@ func SLAMessage(n string, ticket zendesk.ActiveTicket) {
 	SendMessage(attachment, n)
 }
 
+func UpdateMessage() {
+	attachment := slack.Attachment{
+		Title: "Slab Status",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Version",
+				Value: version,
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Uptime",
+				Value: time.Now().Sub(uptime).String(),
+				Short: true,
+			},
+		},
+	}
+	SendMessage(attachment, "...")
+}
+
 // ChatUpdate takes a channel ID, a timestamp and message text
 // and updated the message in the given Slack channel at the given
 // timestamp with the given message text. Currently, it also updates the
@@ -153,6 +175,8 @@ func parseCommand(text string) {
 		SetMessage()
 	case "whois":
 		WhoIsMessage()
+	case "status":
+		UpdateMessage()
 	}
 
 }
