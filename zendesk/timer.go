@@ -1,13 +1,10 @@
-package sla
+package zendesk
 
 import (
 	"fmt"
 	"time"
 
-	"github.com/tylerconlee/slab/config"
 	"github.com/tylerconlee/slab/slack"
-
-	Zen "github.com/tylerconlee/slab/zendesk"
 )
 
 // RunTimer takes the interval from the config, and at each loop iteration,
@@ -17,7 +14,7 @@ func RunTimer(interval time.Duration) {
 	log.Info("Starting timer with ", interval, " intervals")
 	t := time.NewTicker(interval)
 	for {
-		active := Zen.CheckSLA()
+		active := CheckSLA()
 		log.Info("Successfully grabbed and parsed tickets from Zendesk")
 		log.Info("Checking ticket notifications...")
 		for _, ticket := range active {
@@ -26,7 +23,8 @@ func RunTimer(interval time.Duration) {
 				send, notify := UpdateCache(ticket)
 				if send {
 					n := PrepNotification(ticket, notify)
-					slack.SLAMessage(n, ticket)
+					m := slack.Ticket(ticket)
+					slack.SLAMessage(n, m)
 				}
 			}
 		}
@@ -36,9 +34,8 @@ func RunTimer(interval time.Duration) {
 }
 
 // PrepNotification takes a given ticket and what notification level and returns a string to be sent to Slack.
-func PrepNotification(ticket Zen.ActiveTicket, notify int64) (notification string) {
+func PrepNotification(ticket ActiveTicket, notify int64) (notification string) {
 	log.Debug("Preparing notification for", ticket.ID)
-	c := config.LoadConfig()
 	var t, p string
 	var r bool
 

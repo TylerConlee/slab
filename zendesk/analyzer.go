@@ -1,4 +1,4 @@
-package sla
+package zendesk
 
 import (
 	"os"
@@ -6,7 +6,6 @@ import (
 	"time"
 
 	logging "github.com/op/go-logging"
-	"github.com/tylerconlee/slab/zendesk"
 )
 
 var log = logging.MustGetLogger("sla")
@@ -24,7 +23,7 @@ type NotifySent struct {
 
 // GetTimeRemaining takes an instance of a ticket and returns the value of the next SLA
 // breach.
-func GetTimeRemaining(ticket zendesk.ActiveTicket) (remain time.Time) {
+func GetTimeRemaining(ticket ActiveTicket) (remain time.Time) {
 	if len(ticket.SLA) >= 1 {
 		p := ticket.SLA[0].(map[string]interface{})
 		if p["breach_at"] != nil {
@@ -69,7 +68,7 @@ func GetNotifyType(remain time.Duration) (notifyType int64) {
 // for notifications is, and then checks to see if that ticket ID and
 // notification type have been sent already. If yes, it returns True,
 // indicating a notifcation needs to be sent.
-func UpdateCache(ticket zendesk.ActiveTicket) (bool, int64) {
+func UpdateCache(ticket ActiveTicket) (bool, int64) {
 	cleanCache()
 	expire := GetTimeRemaining(ticket)
 	notify := GetNotifyType(time.Until(expire))

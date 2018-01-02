@@ -5,11 +5,11 @@ package zendesk
 import (
 	"time"
 
-	c "github.com/tylerconlee/slab/config"
+	"github.com/tylerconlee/slab/config"
 )
 
 // config loads the configuration
-var config = c.LoadConfig()
+var c = config.LoadConfig()
 
 // ActiveTicket is the individual ticket details for a ticket
 // that's nearing SLA breach. This is passed to the main function so the
@@ -28,7 +28,7 @@ type ActiveTicket struct {
 // CheckSLA will grab the tickets from GetAllTickets, parse the SLA fields and // compare them to the current time
 func CheckSLA() (sla []ActiveTicket) {
 
-	zenResp := GetAllTickets(config.Zendesk.User, config.Zendesk.APIKey, config.Zendesk.URL)
+	zenResp := GetAllTickets(c.Zendesk.User, c.Zendesk.APIKey, c.Zendesk.URL)
 
 	for _, ticket := range zenResp.Tickets {
 		priority := getPriorityLevel(ticket.Tags)
@@ -59,13 +59,13 @@ func CheckSLA() (sla []ActiveTicket) {
 func getPriorityLevel(tags []string) (priLvl string) {
 	for _, v := range tags {
 		switch v {
-		case config.SLA.LevelOne.Tag:
+		case c.SLA.LevelOne.Tag:
 			return "LevelOne"
-		case config.SLA.LevelTwo.Tag:
+		case c.SLA.LevelTwo.Tag:
 			return "LevelTwo"
-		case config.SLA.LevelThree.Tag:
+		case c.SLA.LevelThree.Tag:
 			return "LevelThree"
-		case config.SLA.LevelFour.Tag:
+		case c.SLA.LevelFour.Tag:
 			return "LevelFour"
 		}
 	}
