@@ -1,15 +1,10 @@
-package sla
+package zendesk
 
 import (
 	"os"
 	"reflect"
 	"time"
-
-	logging "github.com/op/go-logging"
-	"github.com/tylerconlee/slab/zendesk"
 )
-
-var log = logging.MustGetLogger("sla")
 
 // Sent is a collection of all NotifySent tickets that is checked before each // notification is sent.
 var Sent = []NotifySent{}
@@ -24,13 +19,13 @@ type NotifySent struct {
 
 // GetTimeRemaining takes an instance of a ticket and returns the value of the next SLA
 // breach.
-func GetTimeRemaining(ticket zendesk.ActiveTicket) (remain time.Time) {
+func GetTimeRemaining(ticket ActiveTicket) (remain time.Time) {
 	if len(ticket.SLA) >= 1 {
 		p := ticket.SLA[0].(map[string]interface{})
 		if p["breach_at"] != nil {
 			breach, err := time.Parse(time.RFC3339, p["breach_at"].(string))
 			if nil != err {
-				log.Critical(err)
+				Log.Critical(err)
 				os.Exit(1)
 			}
 
@@ -69,7 +64,7 @@ func GetNotifyType(remain time.Duration) (notifyType int64) {
 // for notifications is, and then checks to see if that ticket ID and
 // notification type have been sent already. If yes, it returns True,
 // indicating a notifcation needs to be sent.
-func UpdateCache(ticket zendesk.ActiveTicket) (bool, int64) {
+func UpdateCache(ticket ActiveTicket) (bool, int64) {
 	cleanCache()
 	expire := GetTimeRemaining(ticket)
 	notify := GetNotifyType(time.Until(expire))
@@ -82,7 +77,7 @@ func UpdateCache(ticket zendesk.ActiveTicket) (bool, int64) {
 			f := s.FieldByName("ID")
 			if f.IsValid() {
 				if f.Interface() == ticket.ID && s.FieldByName("Type").Int() == notify {
-					log.Debug("Ticket", ticket.ID, ": `", ticket.Subject, "` has already received a notification: ", notify, ". Expires at", expire)
+					Log.Debug("Ticket", ticket.ID, ": `", ticket.Subject, "` has already received a notification: ", notify, ". Expires at", expire)
 					return false, 0
 				}
 
@@ -90,7 +85,7 @@ func UpdateCache(ticket zendesk.ActiveTicket) (bool, int64) {
 
 		}
 		Sent = append(Sent, NotifySent{ticket.ID, notify, expire})
-		log.Debug("Ticket", ticket.ID, ": `", ticket.Subject, "` should receive a notification: ", notify, ". Expires at", expire)
+		Log.Debug("Ticket", ticket.ID, ": `", ticket.Subject, "` should receive a notification: ", notify, ". Expires at", expire)
 		return true, notify
 	}
 

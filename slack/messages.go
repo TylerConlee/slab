@@ -7,7 +7,6 @@ import (
 	"time"
 
 	logging "github.com/op/go-logging"
-	"github.com/tylerconlee/slab/zendesk"
 
 	"github.com/tylerconlee/slab/config"
 	"github.com/tylerconlee/slack"
@@ -80,8 +79,19 @@ func WhoIsMessage() {
 	SendMessage(attachment, "...")
 }
 
+type Ticket struct {
+	ID          int
+	Subject     string
+	SLA         []interface{}
+	Tags        []string
+	Level       string
+	Priority    interface{}
+	CreatedAt   time.Time
+	Description string
+}
+
 // SLAMessage sends off the SLA notification to Slack using the configured API key
-func SLAMessage(n string, ticket zendesk.ActiveTicket) {
+func SLAMessage(n string, ticket Ticket) {
 	description := ticket.Description
 	if len(ticket.Description) > 100 {
 		description = description[0:100] + "..."
