@@ -12,7 +12,7 @@ import (
 	logging "github.com/op/go-logging"
 	"github.com/tylerconlee/slab/config"
 	"github.com/tylerconlee/slab/server"
-	"github.com/tylerconlee/slab/sla"
+	"github.com/tylerconlee/slab/zendesk"
 )
 
 var log *logging.Logger
@@ -62,7 +62,7 @@ func startServer() *server.Server {
 		Uptime: time.Now(),
 	}
 	go func() {
-		sla.RunTimer(c.UpdateFreq.Duration)
+		zendesk.RunTimer(c.UpdateFreq.Duration)
 	}()
 	go func() {
 		s.StartServer()
