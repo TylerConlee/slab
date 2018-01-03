@@ -42,6 +42,14 @@ func RunTimer(interval time.Duration) {
 			}
 		}
 
+		for _, ticket := range new {
+			previousLoop := time.Now().Add(-interval)
+			nowLoop := time.Now()
+			if ticket.CreatedAt.After(previousLoop) && ticket.CreatedAt.Before(nowLoop) {
+
+			}
+		}
+
 		log.Info("Ticket notifications sent. Returning to idle state.")
 		<-t.C
 	}
