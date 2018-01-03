@@ -7,7 +7,6 @@ import (
 	"time"
 
 	logging "github.com/op/go-logging"
-	"github.com/tylerconlee/slab/zendesk"
 
 	"github.com/tylerconlee/slab/config"
 	"github.com/tylerconlee/slack"
@@ -22,7 +21,7 @@ var (
 
 // SendMessage takes an attachment and message and composes a message to be
 // sent to the configured Slack channel ID
-func SendMessage(attachment slack.Attachment, message string) {
+func SendMessage(message string, attachment slack.Attachment) {
 	params := slack.PostMessageParameters{}
 	params.Attachments = []slack.Attachment{attachment}
 	params.LinkNames = 1
@@ -60,7 +59,7 @@ func SetMessage() {
 			},
 		},
 	}
-	SendMessage(attachment, "...")
+	SendMessage("...", attachment)
 }
 
 // WhoIsMessage creates and sends a Slack message that sends out the value of
@@ -77,11 +76,24 @@ func WhoIsMessage() {
 			},
 		},
 	}
-	SendMessage(attachment, "...")
+	SendMessage("...", attachment)
+}
+
+// Ticket represents an individual ticket to be used in SLAMessage and
+// NewTicketMessage
+type Ticket struct {
+	ID          int
+	Subject     string
+	SLA         []interface{}
+	Tags        []string
+	Level       string
+	Priority    interface{}
+	CreatedAt   time.Time
+	Description string
 }
 
 // SLAMessage sends off the SLA notification to Slack using the configured API key
-func SLAMessage(n string, ticket zendesk.ActiveTicket) {
+func SLAMessage(n string, ticket Ticket) {
 	description := ticket.Description
 	if len(ticket.Description) > 100 {
 		description = description[0:100] + "..."
@@ -122,10 +134,41 @@ func SLAMessage(n string, ticket zendesk.ActiveTicket) {
 			},
 		},
 	}
-	SendMessage(attachment, n)
+	SendMessage(n, attachment)
 }
 
-func UpdateMessage() {
+// NewTicketMessage takes a slice of tickets that have been created in the last
+// loop interval and sends the IDs and links to the tickets to the user
+// currently set as triager.
+func NewTicketMessage(tickets []Ticket) {
+	var idlist []byte
+	var bl = 0
+
+	for _, ticket := range tickets {
+		bl += copy(
+			idlist[bl:],
+			fmt.Sprintf(
+				"%s/agent/tickets/%d",
+				c.Zendesk.URL,
+				ticket.ID,
+			),
+		)
+	}
+
+	message := fmt.Sprintf("The following tickets were received since the last loop: %x", idlist)
+
+	_, _, channelID, err := api.OpenIMChannel(Triager)
+
+	if err != nil {
+		fmt.Printf("%s\n", err)
+	}
+
+	api.PostMessage(channelID, message, slack.PostMessageParameters{})
+}
+
+// StatusMessage responds to @slab status with the version hash and current
+// uptime for the Slab process
+func StatusMessage() {
 	attachment := slack.Attachment{
 		Title: "Slab Status",
 		Fields: []slack.AttachmentField{
@@ -141,7 +184,7 @@ func UpdateMessage() {
 			},
 		},
 	}
-	SendMessage(attachment, "...")
+	SendMessage("...", attachment)
 }
 
 // ChatUpdate takes a channel ID, a timestamp and message text
@@ -176,7 +219,7 @@ func parseCommand(text string) {
 	case "whois":
 		WhoIsMessage()
 	case "status":
-		UpdateMessage()
+		StatusMessage()
 	}
 
 }
