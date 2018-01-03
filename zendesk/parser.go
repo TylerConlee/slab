@@ -42,10 +42,10 @@ func CheckSLA(tick ZenOutput) (sla []ActiveTicket) {
 				CreatedAt:   ticket.CreatedAt,
 				Description: ticket.Description,
 			}
-			Log.Debug("Ticket", ticket.ID, "successfully parsed. SLA found:", ticket.Slas.PolicyMetrics)
+			log.Debug("Ticket", ticket.ID, "successfully parsed. SLA found:", ticket.Slas.PolicyMetrics)
 			sla = append(sla, t)
 		} else {
-			Log.Debug("Ticket", ticket.ID, "successfully parsed.")
+			log.Debug("Ticket", ticket.ID, "successfully parsed.")
 		}
 
 	}
@@ -56,6 +56,7 @@ func CheckSLA(tick ZenOutput) (sla []ActiveTicket) {
 // determines if there are tickets that have been created since the last loop
 func CheckNewTicket(tick ZenOutput, interval time.Duration) (ticket []ActiveTicket) {
 
+	return ticket
 }
 
 // getPriorityLevel takes an individual ticket row from the Zendesk output and
