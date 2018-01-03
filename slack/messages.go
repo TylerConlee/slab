@@ -156,14 +156,15 @@ func NewTicketMessage(tickets []Ticket) {
 	}
 
 	message := fmt.Sprintf("The following tickets were received since the last loop: %x", idlist)
+	if len(idlist) > 0 {
+		_, _, channelID, err := api.OpenIMChannel(Triager)
 
-	_, _, channelID, err := api.OpenIMChannel(Triager)
+		if err != nil {
+			fmt.Printf("%s\n", err)
+		}
 
-	if err != nil {
-		fmt.Printf("%s\n", err)
+		api.PostMessage(channelID, message, slack.PostMessageParameters{})
 	}
-
-	api.PostMessage(channelID, message, slack.PostMessageParameters{})
 }
 
 // StatusMessage responds to @slab status with the version hash and current
