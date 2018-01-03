@@ -14,27 +14,41 @@ func RunTimer(interval time.Duration) {
 	Log.Info("Starting timer with ", interval, " intervals")
 	t := time.NewTicker(interval)
 	for {
-		active := CheckSLA()
+		tick := GetAllTickets(
+			c.Zendesk.User,
+			c.Zendesk.APIKey,
+			c.Zendesk.URL,
+		)
+
 		Log.Info("Successfully grabbed and parsed tickets from Zendesk")
 		Log.Info("Checking ticket notifications...")
+
+		// Returns a list of all upcoming SLA breaches
+		active := CheckSLA(tick)
+		// Returns a list of all new tickets within the last loop
+		new := CheckNewTicket(tick, interval)
+
+		// Loop through all "active" SLA tickets and prepare SLA notification
+		// for each.
 		for _, ticket := range active {
 
 			if ticket.Priority != nil {
 				send, notify := UpdateCache(ticket)
 				if send {
-					n := PrepNotification(ticket, notify)
+					n := PrepSLANotification(ticket, notify)
 					m := slack.Ticket(ticket)
 					slack.SLAMessage(n, m)
 				}
 			}
 		}
+
 		Log.Info("Ticket notifications sent. Returning to idle state.")
 		<-t.C
 	}
 }
 
-// PrepNotification takes a given ticket and what notification level and returns a string to be sent to Slack.
-func PrepNotification(ticket ActiveTicket, notify int64) (notification string) {
+// PrepSLANotification takes a given ticket and what notification level and returns a string to be sent to Slack.
+func PrepSLANotification(ticket ActiveTicket, notify int64) (notification string) {
 	Log.Debug("Preparing notification for", ticket.ID)
 	var t, p string
 	var r bool
