@@ -25,8 +25,6 @@ func RunTimer(interval time.Duration) {
 
 		// Returns a list of all upcoming SLA breaches
 		active := CheckSLA(tick)
-		// Returns a list of all new tickets within the last loop
-		new := CheckNewTicket(tick, interval)
 
 		// Loop through all active SLA tickets and prepare SLA notification
 		// for each.
@@ -42,10 +40,16 @@ func RunTimer(interval time.Duration) {
 			}
 		}
 
+		// Returns a list of all new tickets within the last loop
+		new := CheckNewTicket(tick, interval)
+		var newTickets []slack.Ticket
 		// Loop through all tickets and check
 		for _, ticket := range new {
+			m := slack.Ticket(ticket)
 
+			newTickets = append(newTickets, m)
 		}
+		slack.NewTicketMessage(newTickets)
 
 		log.Info("Ticket notifications sent. Returning to idle state.")
 		<-t.C
