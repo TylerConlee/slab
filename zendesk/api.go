@@ -11,7 +11,7 @@ import (
 	"github.com/op/go-logging"
 )
 
-var Log = logging.MustGetLogger("zendesk")
+var log = logging.MustGetLogger("zendesk")
 
 // ZenOutput is the top level JSON-based struct that whatever is
 // returned by Zendesk goes into
@@ -84,18 +84,18 @@ type Tickets []struct {
 
 // GetAllTickets grabs the latest tickets from Zendesk and returns the JSON
 func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
-	Log.Info("Starting request to Zendesk for tickets")
+	log.Info("Starting request to Zendesk for tickets")
 
-	Log.Debugf("Zendesk API User Found: %s", user)
-	Log.Debugf("Zendesk API Key Found: %s", key)
+	log.Debugf("Zendesk API User Found: %s", user)
+	log.Debugf("Zendesk API Key Found: %s", key)
 
 	t := time.Now().AddDate(0, 0, -3).Unix()
-	Log.Debugf("Time: %d", t)
+	log.Debugf("Time: %d", t)
 	zenURL := url + "/api/v2/incremental/tickets.json?include=slas&start_time=" + strconv.FormatInt(t, 10)
-	Log.Debugf("URL: %s", zenURL)
+	log.Debugf("URL: %s", zenURL)
 	resp := makeRequest(user, key, zenURL)
 	tickets = parseJSON(resp)
-	Log.Info("Request Complete. Parsing Ticket Data for", len(tickets.Tickets), "tickets")
+	log.Info("Request Complete. Parsing Ticket Data for", len(tickets.Tickets), "tickets")
 
 	return tickets
 }
@@ -105,7 +105,7 @@ func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 func makeRequest(user string, key string, url string) (responseData []byte) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		Log.Critical(err)
+		log.Critical(err)
 		os.Exit(1)
 	}
 	req.SetBasicAuth(user, key)
@@ -121,13 +121,13 @@ func makeRequest(user string, key string, url string) (responseData []byte) {
 
 	resp, err := netClient.Do(req)
 	if err != nil {
-		Log.Critical(err)
+		log.Critical(err)
 		os.Exit(1)
 	}
 	defer resp.Body.Close()
 	responseData, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		Log.Critical(err)
+		log.Critical(err)
 		os.Exit(1)
 	}
 	return responseData
@@ -140,7 +140,7 @@ func parseJSON(data []byte) (output ZenOutput) {
 	bytes := json.RawMessage(data)
 	err := json.Unmarshal(bytes, &output)
 	if err != nil {
-		Log.Error("error:", err)
+		log.Error("error:", err)
 		os.Exit(1)
 	}
 	return output

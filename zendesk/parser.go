@@ -26,11 +26,9 @@ type ActiveTicket struct {
 }
 
 // CheckSLA will grab the tickets from GetAllTickets, parse the SLA fields and // compare them to the current time
-func CheckSLA() (sla []ActiveTicket) {
+func CheckSLA(tick ZenOutput) (sla []ActiveTicket) {
 
-	zenResp := GetAllTickets(c.Zendesk.User, c.Zendesk.APIKey, c.Zendesk.URL)
-
-	for _, ticket := range zenResp.Tickets {
+	for _, ticket := range tick.Tickets {
 		priority := getPriorityLevel(ticket.Tags)
 
 		if priority != "" {
@@ -44,14 +42,36 @@ func CheckSLA() (sla []ActiveTicket) {
 				CreatedAt:   ticket.CreatedAt,
 				Description: ticket.Description,
 			}
-			Log.Debug("Ticket", ticket.ID, "successfully parsed. SLA found:", ticket.Slas.PolicyMetrics)
+			log.Debug("Ticket", ticket.ID, "successfully parsed. SLA found:", ticket.Slas.PolicyMetrics)
 			sla = append(sla, t)
 		} else {
-			Log.Debug("Ticket", ticket.ID, "successfully parsed.")
+			log.Debug("Ticket", ticket.ID, "successfully parsed.")
 		}
 
 	}
 	return sla
+}
+
+// CheckNewTicket loops over the Zendesk output from GetAllTickets and
+// determines if there are tickets that have been created since the last loop
+func CheckNewTicket(tick ZenOutput, interval time.Duration) (new []ActiveTicket) {
+	previousLoop := time.Now().Add(-interval)
+	nowLoop := time.Now()
+	for _, ticket := range tick.Tickets {
+		if ticket.CreatedAt.After(previousLoop) && ticket.CreatedAt.Before(nowLoop) {
+			t := ActiveTicket{
+				ID:          ticket.ID,
+				SLA:         ticket.Slas.PolicyMetrics,
+				Tags:        ticket.Tags,
+				Subject:     ticket.Subject,
+				Priority:    ticket.Priority,
+				CreatedAt:   ticket.CreatedAt,
+				Description: ticket.Description,
+			}
+			new = append(new, t)
+		}
+	}
+	return new
 }
 
 // getPriorityLevel takes an individual ticket row from the Zendesk output and
