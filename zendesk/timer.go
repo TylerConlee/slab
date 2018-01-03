@@ -28,7 +28,7 @@ func RunTimer(interval time.Duration) {
 		// Returns a list of all new tickets within the last loop
 		new := CheckNewTicket(tick, interval)
 
-		// Loop through all "active" SLA tickets and prepare SLA notification
+		// Loop through all active SLA tickets and prepare SLA notification
 		// for each.
 		for _, ticket := range active {
 
@@ -42,12 +42,9 @@ func RunTimer(interval time.Duration) {
 			}
 		}
 
+		// Loop through all tickets and check
 		for _, ticket := range new {
-			previousLoop := time.Now().Add(-interval)
-			nowLoop := time.Now()
-			if ticket.CreatedAt.After(previousLoop) && ticket.CreatedAt.Before(nowLoop) {
 
-			}
 		}
 
 		log.Info("Ticket notifications sent. Returning to idle state.")
