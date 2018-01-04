@@ -43,10 +43,10 @@ func RunTimer(interval time.Duration) {
 		// Returns a list of all new tickets within the last loop
 		new := CheckNewTicket(tick, interval)
 		var newTickets []slack.Ticket
-		// Loop through all tickets and check
+		// Loop through all tickets and add to Slack package friendly slice
 		for _, ticket := range new {
 			m := slack.Ticket(ticket)
-
+			log.Debug("Adding new ticket to notification: %x", m)
 			newTickets = append(newTickets, m)
 		}
 		slack.NewTicketMessage(newTickets)
