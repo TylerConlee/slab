@@ -141,22 +141,22 @@ func SLAMessage(n string, ticket Ticket) {
 // loop interval and sends the IDs and links to the tickets to the user
 // currently set as triager.
 func NewTicketMessage(tickets []Ticket) {
-	var idlist []byte
-	var bl = 0
+	var idlist []string
 
 	for _, ticket := range tickets {
-		bl += copy(
-			idlist[bl:],
+		idlist = append(
+			idlist,
 			fmt.Sprintf(
 				"%s/agent/tickets/%d",
 				c.Zendesk.URL,
 				ticket.ID,
 			),
 		)
+
 	}
 
 	message := fmt.Sprintf("The following tickets were received since the last loop: %x", idlist)
-	if len(idlist) > 0 {
+	if len(idlist) != 0 {
 		_, _, channelID, err := api.OpenIMChannel(Triager)
 
 		if err != nil {
