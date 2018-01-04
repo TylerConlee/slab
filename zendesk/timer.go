@@ -46,7 +46,7 @@ func RunTimer(interval time.Duration) {
 		// Loop through all tickets and check
 		for _, ticket := range new {
 			m := slack.Ticket(ticket)
-
+			log.Debug("Adding new ticket to notification: %x", m)
 			newTickets = append(newTickets, m)
 		}
 		slack.NewTicketMessage(newTickets)
