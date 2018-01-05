@@ -143,27 +143,28 @@ func SLAMessage(n string, ticket Ticket) {
 func NewTicketMessage(tickets []Ticket) {
 	var idlist []string
 
+	params := slack.PostMessageParameters{}
 	for _, ticket := range tickets {
-		idlist = append(
-			idlist,
-			fmt.Sprintf(
+		attachment := slack.Attachment{
+			Title: ticket.Subject,
+			TitleLink: fmt.Sprintf(
 				"%s/agent/tickets/%d",
 				c.Zendesk.URL,
 				ticket.ID,
 			),
-		)
-
+			Footer: ticket.CreatedAt.String(),
+		}
+		params.Attachments = append(params.Attachments, attachment)
 	}
 
-	message := fmt.Sprintf("The following tickets were received since the last loop: %v", idlist)
+	message := fmt.Sprintf("The following tickets were received since the last loop:")
+
 	if len(idlist) != 0 {
 		_, _, channelID, err := api.OpenIMChannel(Triager)
-
 		if err != nil {
 			fmt.Printf("%s\n", err)
 		}
-
-		api.PostMessage(channelID, message, slack.PostMessageParameters{})
+		api.PostMessage(channelID, message, params)
 	}
 }
 
