@@ -155,7 +155,7 @@ func NewTicketMessage(tickets []Ticket) {
 
 	}
 
-	message := fmt.Sprintf("The following tickets were received since the last loop: %x", idlist)
+	message := fmt.Sprintf("The following tickets were received since the last loop: %v", idlist)
 	if len(idlist) != 0 {
 		_, _, channelID, err := api.OpenIMChannel(Triager)
 
