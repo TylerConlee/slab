@@ -42,10 +42,8 @@ func CheckSLA(tick ZenOutput) (sla []ActiveTicket) {
 				CreatedAt:   ticket.CreatedAt,
 				Description: ticket.Description,
 			}
-			log.Debug("Ticket", ticket.ID, "successfully parsed. SLA found:", ticket.Slas.PolicyMetrics)
+			//log.Debug("Ticket", ticket.ID, "successfully parsed. SLA found:", ticket.Slas.PolicyMetrics)
 			sla = append(sla, t)
-		} else {
-			log.Debug("Ticket", ticket.ID, "successfully parsed.")
 		}
 
 	}
