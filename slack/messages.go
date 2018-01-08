@@ -48,6 +48,7 @@ func SetMessage() {
 				Value: fmt.Sprintf("<@%s>", Triager),
 			},
 		},
+
 		// Show a dropdown of all users to select new Triager target
 		Actions: []slack.AttachmentAction{
 			slack.AttachmentAction{
@@ -187,6 +188,71 @@ func StatusMessage() {
 	SendMessage("...", attachment)
 }
 
+// HelpMessage responds to @slab help with a help message outlining all
+// available commands
+func HelpMessage() {
+
+	params := slack.PostMessageParameters{}
+
+	setCommand := slack.Attachment{
+		Title: "@slab set",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Command Name",
+				Value: "Set",
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Command Description",
+				Value: "Used to set the active Triager, returns a dropdown of users",
+				Short: true,
+			},
+		},
+		Footer:     fmt.Sprintf("Current triager: %v", Triager),
+		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
+	}
+	whoisCommand := slack.Attachment{
+		Title: "@slab whois",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Command Name",
+				Value: "Whois",
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Command Description",
+				Value: "Returns the name of the user currently set as Triager",
+				Short: true,
+			},
+		},
+		Footer:     fmt.Sprintf("Current triager: %v", Triager),
+		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
+	}
+	statusCommand := slack.Attachment{
+		Title: "@slab status",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Command Name",
+				Value: "Status",
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Command Description",
+				Value: "Returns metadata about the Slab instance currently running",
+				Short: true,
+			},
+		},
+		Footer:     fmt.Sprintf("Current uptime: %v", time.Now().Sub(uptime).String()),
+		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
+	}
+
+	attachments := []slack.Attachment{setCommand, whoisCommand, statusCommand}
+	params.Attachments = attachments
+	message := "..."
+	api.PostMessage(c.Slack.ChannelID, message, params)
+
+}
+
 // ChatUpdate takes a channel ID, a timestamp and message text
 // and updated the message in the given Slack channel at the given
 // timestamp with the given message text. Currently, it also updates the
@@ -220,6 +286,8 @@ func parseCommand(text string) {
 		WhoIsMessage()
 	case "status":
 		StatusMessage()
+	case "help":
+		HelpMessage()
 	}
 
 }
