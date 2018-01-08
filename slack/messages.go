@@ -211,6 +211,23 @@ func HelpMessage() {
 		Footer:     fmt.Sprintf("Current triager: %v", Triager),
 		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
 	}
+	unsetCommand := slack.Attachment{
+		Title: "@slab unset",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Command Name",
+				Value: "Unset",
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Command Description",
+				Value: "Used to unset the active Triager. Sets the Triager to @slab",
+				Short: true,
+			},
+		},
+		Footer:     fmt.Sprintf("Current triager: %v", Triager),
+		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
+	}
 	whoisCommand := slack.Attachment{
 		Title: "@slab whois",
 		Fields: []slack.AttachmentField{
@@ -246,7 +263,12 @@ func HelpMessage() {
 		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
 	}
 
-	attachments := []slack.Attachment{setCommand, whoisCommand, statusCommand}
+	attachments := []slack.Attachment{
+		setCommand,
+		unsetCommand,
+		whoisCommand,
+		statusCommand,
+	}
 	params.Attachments = attachments
 	params.LinkNames = 1
 	message := "..."
