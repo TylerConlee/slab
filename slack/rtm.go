@@ -84,6 +84,7 @@ func startRTM() {
 				}
 				if user.Name == "slab" && user.IsBot == true {
 					chk = 1
+					Triager = user.ID
 				}
 
 			}
