@@ -80,7 +80,7 @@ func startRTM() {
 					log.Critical(err)
 					os.Exit(1)
 				}
-				if user.Name == "oncall" && user.IsBot == true {
+				if user.Name == "slab" && user.IsBot == true {
 					chk = 1
 				}
 
