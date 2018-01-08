@@ -49,7 +49,11 @@ func StartSlack(v string) {
 // accordingly.
 func startRTM() {
 	log.Debug(api)
-	rtm := api.NewRTM()
+
+	options := slack.RTMOptions{
+		UseRTMStart: false,
+	}
+	rtm := api.NewRTMWithOptions(&options)
 	chk := 0
 	var user *slack.User
 	var err error
@@ -57,7 +61,6 @@ func startRTM() {
 
 	// When a new event occurs in Slack, track it here
 	for msg := range rtm.IncomingEvents {
-		log.Debug(msg.Type)
 		log.Debug(msg.Data)
 		switch ev := msg.Data.(type) {
 
