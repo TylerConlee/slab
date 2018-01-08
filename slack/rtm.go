@@ -78,7 +78,7 @@ func startRTM() {
 
 					log.Debug("Slab user identified")
 					chk = 1
-					Triager = SlabUser
+					SlabUser = user.ID
 				}
 			}
 
@@ -104,7 +104,6 @@ func startRTM() {
 				}
 				if user.Name == "slab" && user.IsBot == true {
 					chk = 1
-					Triager = SlabUser
 				}
 			}
 		case *slack.RTMError:
