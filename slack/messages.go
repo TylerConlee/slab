@@ -67,7 +67,7 @@ func SetMessage() {
 func UnsetMessage() {
 	message := "Triager has been set to @slab. Please use `@slab set` to set Triager."
 
-	Triager = user.ID
+	Triager = SlabUser
 	t := fmt.Sprintf("<@%s> is now set as Triager", Triager)
 	attachment := slack.Attachment{
 		Fallback:   "You would be able to select the triager here.",
