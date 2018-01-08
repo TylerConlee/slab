@@ -63,6 +63,18 @@ func startRTM() {
 		// shows number of already connected users.
 		case *slack.ConnectedEvent:
 			log.Debug("Connection counter:", ev.ConnectionCount)
+			if chk == 0 {
+				user, err = api.GetUserInfo(ev.Info.User.ID)
+				log.Debug(user.Name)
+				if err != nil {
+					log.Critical(err)
+					os.Exit(1)
+				}
+				if user.Name == "slab" && user.IsBot == true {
+					chk = 1
+					Triager = SlabUser
+				}
+			}
 
 		// If a new message is sent, check to see if the bot user is mentioned.
 		case *slack.MessageEvent:
