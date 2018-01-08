@@ -71,6 +71,8 @@ func startRTM() {
 					os.Exit(1)
 				}
 				if user.Name == "slab" && user.IsBot == true {
+					rtm.SendMessage(rtm.NewOutgoingMessage("Hello world. Slab connected.", c.Slack.ChannelID))
+
 					log.Debug("Slab user identified")
 					chk = 1
 					Triager = SlabUser
