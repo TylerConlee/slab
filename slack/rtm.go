@@ -57,6 +57,7 @@ func startRTM() {
 
 	// When a new event occurs in Slack, track it here
 	for msg := range rtm.IncomingEvents {
+		log.Debug(msg)
 		switch ev := msg.Data.(type) {
 
 		// When a user connects to Slack for the first time. Logged message
