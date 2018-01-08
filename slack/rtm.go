@@ -13,8 +13,8 @@ var (
 	api *slack.Client
 	// Triager holds the User ID of the current person set as "Triager"
 	Triager string
-	// user is the user ID of the slab Slack bot
-	user *slack.User
+	// SlabUser is the user ID of the slab Slack bot
+	SlabUser string
 )
 
 // StartSlack initializes a connection with the given slack instance, gets
@@ -51,6 +51,7 @@ func startRTM() {
 	log.Debug(api)
 	rtm := api.NewRTM()
 	chk := 0
+	var user *slack.User
 	var err error
 	go rtm.ManageConnection()
 
@@ -75,18 +76,17 @@ func startRTM() {
 		// the first presence change for a bot that RTM will detect. Once
 		// detected, grab the ID for the bot user
 		case *slack.PresenceChangeEvent:
-
 			if chk == 0 {
 				user, err = api.GetUserInfo(ev.User)
+				log.Debug(user.Name)
 				if err != nil {
 					log.Critical(err)
 					os.Exit(1)
 				}
 				if user.Name == "slab" && user.IsBot == true {
 					chk = 1
-					Triager = user.ID
+					Triager = SlabUser
 				}
-
 			}
 		case *slack.RTMError:
 			log.Debugf("Error: %s\n", ev.Error())
