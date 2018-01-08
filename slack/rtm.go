@@ -109,6 +109,9 @@ func startRTM() {
 		case *slack.RTMError:
 			log.Debugf("Error: %s\n", ev.Error())
 
+		case *slack.ConnectionErrorEvent:
+			log.Debug(ev.Error, ev.ErrorObj.Error)
+
 		case *slack.InvalidAuthEvent:
 			log.Debugf("Invalid credentials")
 			return
