@@ -8,11 +8,14 @@ import (
 	"github.com/tylerconlee/slack"
 )
 
-// api is an instance of the tylerconlee/slack Client
-var api *slack.Client
-
-// Triager holds the User ID of the current person set as "Triager"
-var Triager string
+var (
+	// api is an instance of the tylerconlee/slack Client
+	api *slack.Client
+	// Triager holds the User ID of the current person set as "Triager"
+	Triager string
+	// user is the user ID of the slab Slack bot
+	user *slack.User
+)
 
 // StartSlack initializes a connection with the given slack instance, gets
 // team information, and starts a Go channel with the Real Time Messaging
@@ -48,7 +51,6 @@ func startRTM() {
 	log.Debug(api)
 	rtm := api.NewRTM()
 	chk := 0
-	var user *slack.User
 	var err error
 	go rtm.ManageConnection()
 
@@ -80,8 +82,9 @@ func startRTM() {
 					log.Critical(err)
 					os.Exit(1)
 				}
-				if user.Name == "oncall" && user.IsBot == true {
+				if user.Name == "slab" && user.IsBot == true {
 					chk = 1
+					Triager = user.ID
 				}
 
 			}
