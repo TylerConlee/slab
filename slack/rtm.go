@@ -71,6 +71,7 @@ func startRTM() {
 					os.Exit(1)
 				}
 				if user.Name == "slab" && user.IsBot == true {
+					log.Debug("Slab user identified")
 					chk = 1
 					Triager = SlabUser
 				}
@@ -78,6 +79,7 @@ func startRTM() {
 
 		// If a new message is sent, check to see if the bot user is mentioned.
 		case *slack.MessageEvent:
+			log.Debug("Parsing Slack message")
 			if chk == 1 {
 				if strings.Contains(ev.Msg.Text, user.ID) && c.TriageEnabled {
 					parseCommand(ev.Msg.Text)
