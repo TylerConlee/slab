@@ -64,7 +64,7 @@ func startRTM() {
 		case *slack.ConnectedEvent:
 			log.Debug("Connection counter:", ev.ConnectionCount)
 			if chk == 0 {
-				user, err = api.GetUserInfo(ev.User)
+				user, err = api.GetUserInfo(ev.Info.User.ID)
 				log.Debug(user.Name)
 				if err != nil {
 					log.Critical(err)
