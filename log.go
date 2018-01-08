@@ -11,7 +11,7 @@ import (
 
 // format is the log format used for most log messages.
 var format = logging.MustStringFormatter(
-	`%{color}%{time:2006-01-02T15:04:05.000} %{module} ▶ %{level:.4s} %{color:reset} %{message}`,
+	`%{color}%{time:2006-01-02T15:04:05.000} %{module} ▶ %{level:.4s} %{color:reset} %{message} ▶ %{shortfile}`,
 )
 
 // errorFormatStr is a special log format reserved for logging any major errors.
