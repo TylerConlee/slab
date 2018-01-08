@@ -109,7 +109,7 @@ func startRTM() {
 			log.Debugf("Error: %s\n", ev.Error())
 
 		case *slack.ConnectionErrorEvent:
-			log.Debug("Connection Error:", ev.Error, ev.ErrorObj.Error)
+			log.Debug("Connection Error:", ev.Error(), ev.ErrorObj.Error())
 
 		case *slack.InvalidAuthEvent:
 			log.Debugf("Invalid credentials")
