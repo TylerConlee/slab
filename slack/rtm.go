@@ -57,9 +57,8 @@ func startRTM() {
 
 	// When a new event occurs in Slack, track it here
 	for msg := range rtm.IncomingEvents {
-		log.Debug(msg.Data)
 		log.Debug(msg.Type)
-		log.Debug(rtm)
+		log.Debug(msg.Data)
 		switch ev := msg.Data.(type) {
 
 		// When a user connects to Slack for the first time. Logged message
@@ -110,7 +109,7 @@ func startRTM() {
 			log.Debugf("Error: %s\n", ev.Error())
 
 		case *slack.ConnectionErrorEvent:
-			log.Debug(ev.Error, ev.ErrorObj.Error)
+			log.Debug("Connection Error:", ev.Error, ev.ErrorObj.Error)
 
 		case *slack.InvalidAuthEvent:
 			log.Debugf("Invalid credentials")
