@@ -248,6 +248,7 @@ func HelpMessage() {
 
 	attachments := []slack.Attachment{setCommand, whoisCommand, statusCommand}
 	params.Attachments = attachments
+	params.LinkNames = 1
 	message := "..."
 	api.PostMessage(c.Slack.ChannelID, message, params)
 
