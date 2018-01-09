@@ -48,7 +48,6 @@ func StartSlack(v string) {
 // The RTM tracks each and every event within Slack and allows the bot to act
 // accordingly.
 func startRTM() {
-	log.Debug(api)
 
 	options := slack.RTMOptions{
 		UseRTMStart: false,
@@ -61,7 +60,6 @@ func startRTM() {
 
 	// When a new event occurs in Slack, track it here
 	for msg := range rtm.IncomingEvents {
-		log.Debug(msg.Data)
 		switch ev := msg.Data.(type) {
 
 		// When a user connects to Slack for the first time. Logged message
@@ -76,7 +74,6 @@ func startRTM() {
 					os.Exit(1)
 				}
 				if user.Name == "slab" && user.IsBot == true {
-					rtm.SendMessage(rtm.NewOutgoingMessage("Hello world. Slab connected.", c.Slack.ChannelID))
 
 					log.Debug("Slab user identified")
 					chk = 1
@@ -97,17 +94,6 @@ func startRTM() {
 		// the first presence change for a bot that RTM will detect. Once
 		// detected, grab the ID for the bot user
 		case *slack.PresenceChangeEvent:
-			if chk == 0 {
-				user, err = api.GetUserInfo(ev.User)
-				log.Debug(user.Name)
-				if err != nil {
-					log.Critical(err)
-					os.Exit(1)
-				}
-				if user.Name == "slab" && user.IsBot == true {
-					chk = 1
-				}
-			}
 		case *slack.RTMError:
 			log.Debugf("Error: %s\n", ev.Error())
 
