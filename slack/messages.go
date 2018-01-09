@@ -65,9 +65,9 @@ func SetMessage() {
 
 // UnsetMessage resets the Triager role to the slab bot.
 func UnsetMessage() {
-	message := "Triager has been set to @slab. Please use `@slab set` to set Triager."
+	message := "Triager has been reset. Please use `@slab set` to set Triager."
 
-	Triager = SlabUser
+	Triager = "None"
 	t := fmt.Sprintf("<@%s> is now set as Triager", Triager)
 	attachment := slack.Attachment{
 		Fallback:   "You would be able to select the triager here.",
