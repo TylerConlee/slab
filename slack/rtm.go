@@ -13,8 +13,6 @@ var (
 	api *slack.Client
 	// Triager holds the User ID of the current person set as "Triager"
 	Triager string
-	// SlabUser is the user ID of the slab Slack bot
-	SlabUser string
 )
 
 // StartSlack initializes a connection with the given slack instance, gets
@@ -74,16 +72,13 @@ func startRTM() {
 					os.Exit(1)
 				}
 				if user.Name == "slab" && user.IsBot == true {
-
 					log.Debug("Slab user identified")
 					chk = 1
-					SlabUser = user.ID
 				}
 			}
 
 		// If a new message is sent, check to see if the bot user is mentioned.
 		case *slack.MessageEvent:
-			log.Debug("Parsing Slack message")
 			if chk == 1 {
 				if strings.Contains(ev.Msg.Text, user.ID) && c.TriageEnabled {
 					parseCommand(ev.Msg.Text)

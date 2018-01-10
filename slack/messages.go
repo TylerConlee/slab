@@ -68,7 +68,7 @@ func UnsetMessage() {
 	message := "Triager has been reset. Please use `@slab set` to set Triager."
 
 	Triager = "None"
-	t := fmt.Sprintf("<@%s> is now set as Triager", Triager)
+	t := fmt.Sprintf("Triager has been reset to %s", Triager)
 	attachment := slack.Attachment{
 		Fallback:   "You would be able to select the triager here.",
 		CallbackID: "triager_dropdown",
@@ -236,7 +236,7 @@ func HelpMessage() {
 			},
 			slack.AttachmentField{
 				Title: "Command Description",
-				Value: "Used to unset the active Triager. Sets the Triager to @slab",
+				Value: "Used to unset the active Triager. Sets the Triager to 'None'",
 				Short: true,
 			},
 		},
