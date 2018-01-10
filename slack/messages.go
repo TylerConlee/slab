@@ -326,6 +326,8 @@ func parseCommand(text string) {
 		StatusMessage()
 	case "help":
 		HelpMessage()
+	case "unset":
+		UnsetMessage()
 	}
 
 }
