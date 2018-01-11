@@ -86,13 +86,8 @@ type Tickets []struct {
 func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 	log.Info("Starting request to Zendesk for tickets")
 
-	log.Debugf("Zendesk API User Found: %s", user)
-	log.Debugf("Zendesk API Key Found: %s", key)
-
 	t := time.Now().AddDate(0, 0, -3).Unix()
-	log.Debugf("Time: %d", t)
 	zenURL := url + "/api/v2/incremental/tickets.json?include=slas&start_time=" + strconv.FormatInt(t, 10)
-	log.Debugf("URL: %s", zenURL)
 	resp := makeRequest(user, key, zenURL)
 	tickets = parseJSON(resp)
 	log.Info("Request Complete. Parsing Ticket Data for", len(tickets.Tickets), "tickets")
