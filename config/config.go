@@ -16,6 +16,7 @@ var log = logging.MustGetLogger("config")
 type Config struct {
 	Zendesk       Zendesk
 	Slack         Slack
+	LogLevel      string
 	SLA           SLA
 	UpdateFreq    Duration
 	TriageEnabled bool
@@ -23,6 +24,7 @@ type Config struct {
 	Port          int
 }
 
+// Metadata holds configuration related to the server metadata used in status calls
 type Metadata struct {
 	Server string
 }

@@ -1,5 +1,5 @@
-hash: 13234e0323160b5a503a5f26e23e1913912061feca7123ae9ecd86be4df056ca
-updated: 2018-01-09T07:21:38.79257617-08:00
+hash: 5cfa9fda2ff4c63425fd74eb2010877bbc6ba41d40f02330e8589669d0ba33cc
+updated: 2018-01-11T15:15:47.471050878-08:00
 imports:
 - name: github.com/BurntSushi/toml
   version: a368813c5e648fee92e5f6c30e3944ff9d5e8895
@@ -9,10 +9,12 @@ imports:
   version: 5bbbb5b2b5729b132181cc7f4aa3b3c973e9a0ed
 - name: github.com/op/go-logging
   version: 970db520ece77730c7e4724c61121037378659d9
+- name: github.com/sirupsen/logrus
+  version: d682213848ed68c0a260ca37d6dd5ace8423f5ba
 - name: github.com/tylerconlee/slack
   version: 1bf41f4946f8f48d01f4fff42b371cac6c1d2627
 - name: golang.org/x/net
-  version: 434ec0c7fe3742c984919a691b2018a6e9694425
+  version: ab555f366c4508dbe0802550b1b20c46c5c18aa0
   subpackages:
   - websocket
 testImports: []
