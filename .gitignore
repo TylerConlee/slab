@@ -19,3 +19,4 @@ config.toml
 oncall-slab
 dev-slab
 vendor/
+release/
