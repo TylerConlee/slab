@@ -4,12 +4,12 @@ import (
 	"os"
 	"time"
 
-	logging "github.com/op/go-logging"
+	l "github.com/tylerconlee/slab/log"
 
 	"github.com/BurntSushi/toml"
 )
 
-var log = logging.MustGetLogger("config")
+var log l.Logger
 
 // Config maps the values of the configuration file to a struct usable by the
 // rest of the app
@@ -78,11 +78,17 @@ func (d *Duration) UnmarshalText(text []byte) error {
 func LoadConfig() (config Config) {
 	if len(os.Args) > 1 {
 		if _, err := toml.DecodeFile(os.Args[1], &config); err != nil {
-			log.Critical(err)
+			log.Fatal(map[string]interface{}{
+				"module": "main",
+				"error":  err,
+			})
 			config = defaultConfig()
 			return
 		}
-		log.Info("Configuration file", os.Args[1], "loaded successfully.")
+		log.Info("Configuration loaded successfully", map[string]interface{}{
+			"module": "main",
+			"file":   os.Args[1],
+		})
 		return config
 	}
 	config = defaultConfig()
@@ -94,7 +100,10 @@ func defaultConfig() (config Config) {
 	freq, err := time.ParseDuration("10m")
 
 	if err != nil {
-		log.Critical(err)
+		log.Fatal(map[string]interface{}{
+			"module": "main",
+			"error":  err,
+		})
 	}
 	config = Config{
 		Zendesk: Zendesk{

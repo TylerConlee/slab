@@ -8,6 +8,9 @@ import (
 
 type Logger struct{ e *logrus.Entry }
 
+func (s *Logger) Fatal(c map[string]interface{}) {
+	s.e.WithFields(c).Fatal("Error")
+}
 func (s *Logger) Error(msg string, c map[string]interface{}) {
 	s.e.WithFields(c).Error(msg)
 }
