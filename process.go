@@ -14,6 +14,7 @@ func RunTimer(interval time.Duration) {
 	log.Info("Starting timer with ", interval, " intervals")
 	t := time.NewTicker(interval)
 	for {
+		// TODO: Add func to connect to Zendesk and pass single config
 		tick := zendesk.GetAllTickets(
 			c.Zendesk.User,
 			c.Zendesk.APIKey,
