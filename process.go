@@ -11,7 +11,10 @@ import (
 // grabs the latest tickets, checks for upcoming SLAs and send notifications if
 // appropriate
 func RunTimer(interval time.Duration) {
-	log.Info("Starting timer with ", interval, " intervals")
+	log.Info("Starting timer", map[string]interface{}{
+		"module":   "main",
+		"interval": interval,
+	})
 	t := time.NewTicker(interval)
 	for {
 		// TODO: Add func to connect to Zendesk and pass single config
@@ -21,9 +24,12 @@ func RunTimer(interval time.Duration) {
 			c.Zendesk.URL,
 		)
 
-		log.Info("Successfully grabbed and parsed tickets from Zendesk")
-		log.Info("Checking ticket notifications...")
-
+		log.Info("Successfully grabbed and parsed tickets from Zendesk", map[string]interface{}{
+			"module": "main",
+		})
+		log.Info("Checking ticket notifications...", map[string]interface{}{
+			"module": "main",
+		})
 		// Returns a list of all upcoming SLA breaches
 		active := zendesk.CheckSLA(tick)
 
@@ -48,12 +54,21 @@ func RunTimer(interval time.Duration) {
 		// Loop through all tickets and add to Slack package friendly slice
 		for _, ticket := range new {
 			m := slack.Ticket(ticket)
-			log.Debug("Adding new ticket to notification: %x", m)
+			log.Info("Adding new ticket to notification", map[string]interface{}{
+				"module": "main",
+				"ticket": m.ID,
+			})
+			log.Debug("Ticket information", map[string]interface{}{
+				"module": "main",
+				"ticket": m,
+			})
 			newTickets = append(newTickets, m)
 		}
 		slack.NewTicketMessage(newTickets)
 
-		log.Info("Ticket notifications sent. Returning to idle state.")
+		log.Info("Ticket notifications sent. Returning to idle state.", map[string]interface{}{
+			"module": "main",
+		})
 		<-t.C
 	}
 }

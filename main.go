@@ -75,7 +75,9 @@ func shutdown(ticker *time.Ticker, s *server.Server) {
 		ticker.Stop()
 	}
 
-	log.Info("Shutdown complete.")
+	log.Info("Shutdown complete.", map[string]interface{}{
+		"module": "main",
+	})
 	os.Exit(0)
 }
 
