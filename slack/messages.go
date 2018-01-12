@@ -2,11 +2,8 @@ package slack
 
 import (
 	"fmt"
-	"os"
 	"strings"
 	"time"
-
-	logging "github.com/op/go-logging"
 
 	"github.com/tylerconlee/slab/config"
 	"github.com/tylerconlee/slack"
@@ -14,7 +11,6 @@ import (
 
 var (
 	c       = config.LoadConfig()
-	log     = logging.MustGetLogger("slack")
 	uptime  time.Time
 	version string
 )
@@ -32,7 +28,12 @@ func SendMessage(message string, attachment slack.Attachment) {
 		return
 	}
 	// Log message if succesfully sent.
-	log.Infof("Message successfully sent to channel %s at %s", channelID, timestamp)
+	log.Debug("Message sent successfully.", map[string]interface{}{
+		"module":    "slack",
+		"channel":   channelID,
+		"timestamp": timestamp,
+		"message":   message,
+	})
 }
 
 // SetMessage creates and sends a message to Slack with a menu attachment,
@@ -310,7 +311,13 @@ func ChatUpdate(
 		payload.OriginalMessage.Text,
 		params,
 	)
-	log.Debug(channelID, timestamp, t, err)
+	log.Debug("Message updated.", map[string]interface{}{
+		"module":    "slack",
+		"channel":   channelID,
+		"timestamp": timestamp,
+		"message":   t,
+		"error":     err,
+	})
 }
 
 // parseCommand takes the message that mentions the bot user and identifies
@@ -337,15 +344,20 @@ func parseCommand(text string) {
 func VerifyUser(user string) bool {
 	_, err := api.GetUserInfo(user)
 	if err != nil {
-		log.Critical(err)
-		os.Exit(1)
+		log.Fatal(map[string]interface{}{
+			"module": "slack",
+			"error":  err,
+		})
 	}
 	return true
 }
 
 // PrepSLANotification takes a given ticket and what notification level and returns a string to be sent to Slack.
 func PrepSLANotification(ticket Ticket, notify int64) (notification string) {
-	log.Debug("Preparing notification for", ticket.ID)
+	log.Debug("Preparing SLA notification message.", map[string]interface{}{
+		"module": "slack",
+		"ticket": ticket.ID,
+	})
 	var t, p string
 	var r bool
 

@@ -1,10 +1,10 @@
 package slack
 
 import (
-	"os"
 	"strings"
 	"time"
 
+	l "github.com/tylerconlee/slab/log"
 	"github.com/tylerconlee/slack"
 )
 
@@ -13,13 +13,16 @@ var (
 	api *slack.Client
 	// Triager holds the User ID of the current person set as "Triager"
 	Triager string
+	log     l.Logger
 )
 
 // StartSlack initializes a connection with the given slack instance, gets
 // team information, and starts a Go channel with the Real Time Messaging
 // API watcher.
 func StartSlack(v string) {
-	log.Info("Starting connection to Slack")
+	log.Info("Starting connection to Slack", map[string]interface{}{
+		"module": "slack",
+	})
 	version = v
 	uptime = time.Now()
 	// start a connection to Slack using the Slack Bot token
@@ -29,10 +32,15 @@ func StartSlack(v string) {
 	// retrieve the team info for the newly connected Slack team
 	d, err := api.GetTeamInfo()
 	if err != nil {
-		log.Critical(err)
-		os.Exit(1)
+		log.Fatal(map[string]interface{}{
+			"module": "slack",
+			"error":  err,
+		})
 	}
-	log.Info("Connected to Slack:", d.Domain)
+	log.Info("Connected to Slack", map[string]interface{}{
+		"module": "slack",
+		"team":   d.Domain,
+	})
 
 	// Set the initial value of Triager
 	Triager = "None"
@@ -63,16 +71,26 @@ func startRTM() {
 		// When a user connects to Slack for the first time. Logged message
 		// shows number of already connected users.
 		case *slack.ConnectedEvent:
-			log.Debug("Connection counter:", ev.ConnectionCount)
+
 			if chk == 0 {
 				user, err = api.GetUserInfo(ev.Info.User.ID)
-				log.Debug(user.Name)
+				log.Debug("New user connected", map[string]interface{}{
+					"module":   "slack",
+					"count":    ev.ConnectionCount,
+					"username": user.Name,
+				})
+
 				if err != nil {
-					log.Critical(err)
-					os.Exit(1)
+					log.Fatal(map[string]interface{}{
+						"module": "slack",
+						"error":  err,
+					})
 				}
 				if user.Name == "slab" && user.IsBot == true {
-					log.Debug("Slab user identified")
+					log.Debug("Slab user identified", map[string]interface{}{
+						"module": "slack",
+						"id":     user.ID,
+					})
 					chk = 1
 				}
 			}
@@ -90,13 +108,21 @@ func startRTM() {
 		// detected, grab the ID for the bot user
 		case *slack.PresenceChangeEvent:
 		case *slack.RTMError:
-			log.Debugf("Error: %s\n", ev.Error())
+			log.Error("RTMError Encountered", map[string]interface{}{
+				"module": "slack",
+				"error":  ev.Error(),
+			})
 
 		case *slack.ConnectionErrorEvent:
-			log.Debug("Connection Error:", ev.Error(), ev.ErrorObj.Error())
+			log.Error("Connection Error Encountered", map[string]interface{}{
+				"module": "slack",
+				"error":  ev.Error(),
+			})
 
 		case *slack.InvalidAuthEvent:
-			log.Debugf("Invalid credentials")
+			log.Error("Authentication Error Encountered. Invalid Credentials", map[string]interface{}{
+				"module": "slack",
+			})
 			return
 
 		default:
