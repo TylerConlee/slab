@@ -17,7 +17,7 @@ import (
 // VERSION lists the version number. On build, uses the git hash as a version ID
 var (
 	Version = "undefined"
-	log     l.Logger
+	log     = l.Log
 	c       config.Config
 )
 

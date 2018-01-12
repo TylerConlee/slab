@@ -10,7 +10,7 @@ import (
 	l "github.com/tylerconlee/slab/log"
 )
 
-var log l.Logger
+var log = l.Log
 
 // ZenOutput is the top level JSON-based struct that whatever is
 // returned by Zendesk goes into

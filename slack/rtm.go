@@ -13,7 +13,7 @@ var (
 	api *slack.Client
 	// Triager holds the User ID of the current person set as "Triager"
 	Triager string
-	log     l.Logger
+	log     = l.Log
 )
 
 // StartSlack initializes a connection with the given slack instance, gets

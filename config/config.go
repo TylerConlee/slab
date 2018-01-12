@@ -9,7 +9,7 @@ import (
 	"github.com/BurntSushi/toml"
 )
 
-var log l.Logger
+var log = l.Log
 
 // Config maps the values of the configuration file to a struct usable by the
 // rest of the app

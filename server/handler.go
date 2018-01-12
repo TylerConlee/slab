@@ -12,7 +12,7 @@ import (
 )
 
 // log adds a logger for the `api` package
-var log l.Logger
+var log = l.Log
 
 // NewRouter builds a new mux Router instance with the routes that
 // Slack uses to handle callbacks, and the index status page

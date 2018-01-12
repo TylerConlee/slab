@@ -8,6 +8,12 @@ import (
 
 type Logger struct{ e *logrus.Logger }
 
+var Log *Logger
+
+func init() {
+	Log = &Logger{logrus.New()}
+}
+
 func (s *Logger) Fatal(c map[string]interface{}) {
 	s.e.WithFields(c).Fatal("Error")
 }
@@ -35,4 +41,5 @@ func (s *Logger) SetLogLevel(level string) {
 		os.Exit(1)
 	}
 	logrus.SetLevel(lvl)
+
 }
