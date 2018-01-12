@@ -4,14 +4,13 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"strconv"
 	"time"
 
-	"github.com/op/go-logging"
+	l "github.com/tylerconlee/slab/log"
 )
 
-var log = logging.MustGetLogger("zendesk")
+var log l.Logger
 
 // ZenOutput is the top level JSON-based struct that whatever is
 // returned by Zendesk goes into
@@ -84,14 +83,18 @@ type Tickets []struct {
 
 // GetAllTickets grabs the latest tickets from Zendesk and returns the JSON
 func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
-	log.Info("Starting request to Zendesk for tickets")
+	log.Info("Starting request to Zendesk for tickets", map[string]interface{}{
+		"module": "zendesk",
+	})
 
 	t := time.Now().AddDate(0, 0, -3).Unix()
 	zenURL := url + "/api/v2/incremental/tickets.json?include=slas&start_time=" + strconv.FormatInt(t, 10)
 	resp := makeRequest(user, key, zenURL)
 	tickets = parseJSON(resp)
-	log.Info("Request Complete. Parsing Ticket Data for", len(tickets.Tickets), "tickets")
-
+	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
+		"module":      "zendesk",
+		"num_tickets": len(tickets.Tickets),
+	})
 	return tickets
 }
 
@@ -100,8 +103,10 @@ func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 func makeRequest(user string, key string, url string) (responseData []byte) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Critical(err)
-		os.Exit(1)
+		log.Fatal(map[string]interface{}{
+			"module": "zendesk",
+			"error":  err,
+		})
 	}
 	req.SetBasicAuth(user, key)
 
@@ -116,14 +121,18 @@ func makeRequest(user string, key string, url string) (responseData []byte) {
 
 	resp, err := netClient.Do(req)
 	if err != nil {
-		log.Critical(err)
-		os.Exit(1)
+		log.Fatal(map[string]interface{}{
+			"module": "zendesk",
+			"error":  err,
+		})
 	}
 	defer resp.Body.Close()
 	responseData, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Critical(err)
-		os.Exit(1)
+		log.Fatal(map[string]interface{}{
+			"module": "zendesk",
+			"error":  err,
+		})
 	}
 	return responseData
 }
@@ -135,8 +144,10 @@ func parseJSON(data []byte) (output ZenOutput) {
 	bytes := json.RawMessage(data)
 	err := json.Unmarshal(bytes, &output)
 	if err != nil {
-		log.Error("error:", err)
-		os.Exit(1)
+		log.Fatal(map[string]interface{}{
+			"module": "zendesk",
+			"error":  err,
+		})
 	}
 	return output
 }
