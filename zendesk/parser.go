@@ -69,7 +69,10 @@ func CheckNewTicket(tick ZenOutput, interval time.Duration) (new []ActiveTicket)
 			new = append(new, t)
 		}
 	}
-	log.Debug("New Tickets: %x", new)
+	log.Debug("New Tickets", map[string]interface{}{
+		"module":  "zendesk",
+		"tickets": new,
+	})
 	return new
 }
 

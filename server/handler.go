@@ -3,22 +3,23 @@ package server
 import (
 	"encoding/json"
 	"net/http"
-	"os"
 	"time"
 
 	"github.com/gorilla/mux"
-	logging "github.com/op/go-logging"
+	l "github.com/tylerconlee/slab/log"
 	sl "github.com/tylerconlee/slab/slack"
 	"github.com/tylerconlee/slack"
 )
 
 // log adds a logger for the `api` package
-var log = logging.MustGetLogger("server")
+var log = l.Log
 
 // NewRouter builds a new mux Router instance with the routes that
 // Slack uses to handle callbacks, and the index status page
 func (s *Server) NewRouter() *mux.Router {
-	log.Debug("Building Router")
+	log.Info("Building router", map[string]interface{}{
+		"module": "server",
+	})
 	r := mux.NewRouter()
 	r.HandleFunc("/slack", s.Callback).Methods("POST")
 	r.HandleFunc("/", s.Index).Methods("GET")
@@ -30,10 +31,15 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 	payload := &slack.AttachmentActionCallback{}
 	err := json.Unmarshal([]byte(r.PostFormValue("payload")), payload)
 	if err != nil {
-		log.Critical("Unable to parse JSON for callback payload")
-		os.Exit(1)
+		log.Fatal(map[string]interface{}{
+			"module": "server",
+			"error":  err,
+		})
 	}
-	log.Debug(payload.CallbackID)
+	log.Debug("Callback received.", map[string]interface{}{
+		"module":   "server",
+		"callback": payload.CallbackID,
+	})
 	switch payload.CallbackID {
 	case "sla":
 		sl.AcknowledgeSLA(payload)
@@ -70,8 +76,15 @@ func WriteJSON(w http.ResponseWriter, info interface{}, status int) {
 	encoder.SetEscapeHTML(false)
 
 	if err := encoder.Encode(info); err != nil {
-		log.Debug("Failed to write JSON")
+		log.Error("Failed to write JSON", map[string]interface{}{
+			"module": "server",
+			"error":  err,
+		})
 	} else {
-		log.Debug(json.Marshal(info))
+		j, _ := json.Marshal(info)
+		log.Debug("JSON write complete", map[string]interface{}{
+			"module": "server",
+			"json":   j,
+		})
 	}
 }

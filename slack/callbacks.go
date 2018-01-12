@@ -12,10 +12,14 @@ func SetTriager(payload *slack.AttachmentActionCallback) {
 	if len(payload.Actions) == 0 {
 		return
 	}
-	log.Debug("Triager set")
+
 	if VerifyUser(payload.Actions[0].SelectedOptions[0].Value) {
 		Triager = payload.Actions[0].SelectedOptions[0].Value
 		t := fmt.Sprintf("<@%s> is now set as Triager", Triager)
+		log.Info("Triager set.", map[string]interface{}{
+			"module":  "slack",
+			"triager": Triager,
+		})
 		attachment := slack.Attachment{
 			Fallback:   "You would be able to select the triager here.",
 			CallbackID: "triager_dropdown",
@@ -29,8 +33,11 @@ func SetTriager(payload *slack.AttachmentActionCallback) {
 // AcknowledgeSLA generates a new Slack attachment to state that a user has
 // acknowledged a ticket.
 func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
-	log.Debug("Ticket acknowledged")
 	t := fmt.Sprintf("<@%s> acknowledged this ticket", payload.User.Name)
+	log.Info("SLA ticket acknowledged.", map[string]interface{}{
+		"module": "slack",
+		"ack":    payload.User.Name,
+	})
 	attachment := slack.Attachment{
 		Title:      payload.OriginalMessage.Attachments[0].Title,
 		TitleLink:  payload.OriginalMessage.Attachments[0].TitleLink,
