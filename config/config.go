@@ -78,7 +78,7 @@ func (d *Duration) UnmarshalText(text []byte) error {
 func LoadConfig() (config Config) {
 	if len(os.Args) > 1 {
 		if _, err := toml.DecodeFile(os.Args[1], &config); err != nil {
-			log.Fatal(map[string]interface{}{
+			log.Error("Configuration file not found.", map[string]interface{}{
 				"module": "main",
 				"error":  err,
 			})
