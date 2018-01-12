@@ -6,3 +6,9 @@ import:
 - package: github.com/tylerconlee/slack
 - package: github.com/sirupsen/logrus
   version: ~1.0.4
+- package: golang.org/x/crypto
+  subpackages:
+  - ssh/terminal
+- package: golang.org/x/sys
+  subpackages:
+  - unix
