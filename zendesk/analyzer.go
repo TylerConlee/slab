@@ -1,7 +1,6 @@
 package zendesk
 
 import (
-	"os"
 	"reflect"
 	"time"
 )
@@ -25,8 +24,10 @@ func GetTimeRemaining(ticket ActiveTicket) (remain time.Time) {
 		if p["breach_at"] != nil {
 			breach, err := time.Parse(time.RFC3339, p["breach_at"].(string))
 			if nil != err {
-				log.Critical(err)
-				os.Exit(1)
+				log.Fatal(map[string]interface{}{
+					"module": "zendesk",
+					"error":  err,
+				})
 			}
 
 			return breach
@@ -77,7 +78,12 @@ func UpdateCache(ticket ActiveTicket) (bool, int64) {
 			f := s.FieldByName("ID")
 			if f.IsValid() {
 				if f.Interface() == ticket.ID && s.FieldByName("Type").Int() == notify {
-					log.Debug("Ticket", ticket.ID, ": `", ticket.Subject, "` has already received a notification: ", notify, ". Expires at", expire)
+					log.Debug("Ticket has already received a notification", map[string]interface{}{
+						"module":      "zendesk",
+						"ticket":      ticket.ID,
+						"notify_type": notify,
+						"expires":     expire,
+					})
 					return false, 0
 				}
 
@@ -85,7 +91,12 @@ func UpdateCache(ticket ActiveTicket) (bool, int64) {
 
 		}
 		Sent = append(Sent, NotifySent{ticket.ID, notify, expire})
-		log.Debug("Ticket", ticket.ID, ": `", ticket.Subject, "` should receive a notification: ", notify, ". Expires at", expire)
+		log.Debug("Ticket should receive a notification", map[string]interface{}{
+			"module":      "zendesk",
+			"ticket":      ticket.ID,
+			"notify_type": notify,
+			"expires":     expire,
+		})
 		return true, notify
 	}
 

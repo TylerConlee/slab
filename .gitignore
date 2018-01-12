@@ -20,3 +20,4 @@ oncall-slab
 dev-slab
 .circleci/config.yml
 vendor/
+release/

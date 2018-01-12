@@ -9,30 +9,27 @@ import (
 	"os"
 	"time"
 
-	logging "github.com/op/go-logging"
 	"github.com/tylerconlee/slab/config"
+	l "github.com/tylerconlee/slab/log"
 	"github.com/tylerconlee/slab/server"
-	"github.com/tylerconlee/slab/zendesk"
 )
-
-var log *logging.Logger
-var c config.Config
 
 // VERSION lists the version number. On build, uses the git hash as a version ID
 var (
 	Version = "undefined"
+	log     = l.Log
+	c       config.Config
 )
 
 func main() {
 	flagCheck()
 	// Start up the logging system
-	initLog()
-	log = logging.MustGetLogger("slab")
-
-	log.Notice("SLABot by Tyler Conlee")
-	log.Noticef("Version: %s", Version)
-
 	c = config.LoadConfig()
+	log.SetLogLevel(c.LogLevel)
+	log.Info("SLABot by Tyler Conlee", map[string]interface{}{
+		"module": "main",
+	})
+
 	// Start timer process. Takes an int as the number of minutes to loop
 
 	termChan := make(chan os.Signal, 1)
@@ -62,7 +59,7 @@ func startServer() *server.Server {
 		Uptime: time.Now(),
 	}
 	go func() {
-		zendesk.RunTimer(c.UpdateFreq.Duration)
+		RunTimer(c.UpdateFreq.Duration)
 	}()
 	go func() {
 		s.StartServer()
@@ -78,7 +75,9 @@ func shutdown(ticker *time.Ticker, s *server.Server) {
 		ticker.Stop()
 	}
 
-	log.Info("Shutdown complete.")
+	log.Info("Shutdown complete.", map[string]interface{}{
+		"module": "main",
+	})
 	os.Exit(0)
 }
 
