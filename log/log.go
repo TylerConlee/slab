@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type Logger struct{ e *logrus.Entry }
+type Logger struct{ e *logrus.Logger }
 
 func (s *Logger) Fatal(c map[string]interface{}) {
 	s.e.WithFields(c).Fatal("Error")
