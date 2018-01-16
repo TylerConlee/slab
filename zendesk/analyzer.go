@@ -78,7 +78,7 @@ func UpdateCache(ticket ActiveTicket) (bool, int64) {
 			f := s.FieldByName("ID")
 			if f.IsValid() {
 				if f.Interface() == ticket.ID && s.FieldByName("Type").Int() == notify {
-					log.Debug("Ticket has already received a notification", map[string]interface{}{
+					log.Info("Ticket has already received a notification", map[string]interface{}{
 						"module":      "zendesk",
 						"ticket":      ticket.ID,
 						"notify_type": notify,
@@ -91,7 +91,7 @@ func UpdateCache(ticket ActiveTicket) (bool, int64) {
 
 		}
 		Sent = append(Sent, NotifySent{ticket.ID, notify, expire})
-		log.Debug("Ticket should receive a notification", map[string]interface{}{
+		log.Info("Ticket should receive a notification", map[string]interface{}{
 			"module":      "zendesk",
 			"ticket":      ticket.ID,
 			"notify_type": notify,
