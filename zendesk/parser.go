@@ -47,10 +47,6 @@ func CheckSLA(tick ZenOutput) (sla []ActiveTicket) {
 		}
 
 	}
-	log.Info("SLA Notification Tickets", map[string]interface{}{
-		"module":  "zendesk",
-		"tickets": sla,
-	})
 	return sla
 }
 
