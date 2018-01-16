@@ -40,6 +40,10 @@ func RunTimer(interval time.Duration) {
 			if ticket.Priority != nil {
 				send, notify := zendesk.UpdateCache(ticket)
 				if send {
+					log.Info("Preparing SLA notification for ticket", map[string]interface{}{
+						"module": "main",
+						"ticket": ticket.ID,
+					})
 					m := slack.Ticket(ticket)
 					n := slack.PrepSLANotification(m, notify)
 
