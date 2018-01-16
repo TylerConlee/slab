@@ -354,7 +354,7 @@ func VerifyUser(user string) bool {
 
 // PrepSLANotification takes a given ticket and what notification level and returns a string to be sent to Slack.
 func PrepSLANotification(ticket Ticket, notify int64) (notification string) {
-	log.Debug("Preparing SLA notification message.", map[string]interface{}{
+	log.Info("Preparing SLA notification message.", map[string]interface{}{
 		"module": "slack",
 		"ticket": ticket.ID,
 	})
