@@ -47,6 +47,10 @@ func CheckSLA(tick ZenOutput) (sla []ActiveTicket) {
 		}
 
 	}
+	log.Info("SLA Notification Tickets", map[string]interface{}{
+		"module":  "zendesk",
+		"tickets": sla,
+	})
 	return sla
 }
 
@@ -69,7 +73,7 @@ func CheckNewTicket(tick ZenOutput, interval time.Duration) (new []ActiveTicket)
 			new = append(new, t)
 		}
 	}
-	log.Debug("New Tickets", map[string]interface{}{
+	log.Info("New Tickets", map[string]interface{}{
 		"module":  "zendesk",
 		"tickets": new,
 	})
