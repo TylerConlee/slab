@@ -42,7 +42,6 @@ func CheckSLA(tick ZenOutput) (sla []ActiveTicket) {
 				CreatedAt:   ticket.CreatedAt,
 				Description: ticket.Description,
 			}
-			//log.Debug("Ticket", ticket.ID, "successfully parsed. SLA found:", ticket.Slas.PolicyMetrics)
 			sla = append(sla, t)
 		}
 
@@ -69,10 +68,6 @@ func CheckNewTicket(tick ZenOutput, interval time.Duration) (new []ActiveTicket)
 			new = append(new, t)
 		}
 	}
-	log.Info("New Tickets", map[string]interface{}{
-		"module":  "zendesk",
-		"tickets": new,
-	})
 	return new
 }
 
