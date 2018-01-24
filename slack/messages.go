@@ -224,7 +224,7 @@ func HelpMessage() {
 				Short: true,
 			},
 		},
-		Footer:     fmt.Sprintf("Current triager: %v", Triager),
+		Footer:     fmt.Sprintf("Current triager: <@%s>", Triager),
 		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
 	}
 	unsetCommand := slack.Attachment{
@@ -241,7 +241,7 @@ func HelpMessage() {
 				Short: true,
 			},
 		},
-		Footer:     fmt.Sprintf("Current triager: %v", Triager),
+		Footer:     fmt.Sprintf("Current triager: <@%s>", Triager),
 		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
 	}
 	whoisCommand := slack.Attachment{
@@ -258,7 +258,7 @@ func HelpMessage() {
 				Short: true,
 			},
 		},
-		Footer:     fmt.Sprintf("Current triager: %v", Triager),
+		Footer:     fmt.Sprintf("Current triager: <@%s>", Triager),
 		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
 	}
 	statusCommand := slack.Attachment{
