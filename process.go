@@ -52,6 +52,8 @@ func RunTimer(interval time.Duration) {
 			}
 		}
 
+		slack.Sent = zendesk.Sent
+
 		// Returns a list of all new tickets within the last loop
 		new := zendesk.CheckNewTicket(tick, interval)
 		var newTickets []slack.Ticket
