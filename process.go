@@ -45,9 +45,8 @@ func RunTimer(interval time.Duration) {
 						"ticket": ticket.ID,
 					})
 					m := slack.Ticket(ticket)
-					n := slack.PrepSLANotification(m, notify)
-
-					slack.SLAMessage(n, m)
+					n, c := slack.PrepSLANotification(m, notify)
+					slack.SLAMessage(n, m, c)
 				}
 			}
 		}

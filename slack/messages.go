@@ -119,7 +119,7 @@ func WhoIsMessage() {
 }
 
 // SLAMessage sends off the SLA notification to Slack using the configured API key
-func SLAMessage(n string, ticket Ticket) {
+func SLAMessage(n string, ticket Ticket, color string) {
 	description := ticket.Description
 	if len(ticket.Description) > 100 {
 		description = description[0:100] + "..."
@@ -130,6 +130,7 @@ func SLAMessage(n string, ticket Ticket) {
 		Title:      ticket.Subject,
 		TitleLink:  url,
 		CallbackID: "sla",
+		Color:      color,
 		Fields: []slack.AttachmentField{
 			slack.AttachmentField{
 				Title: "Description",
@@ -417,7 +418,7 @@ func VerifyUser(user string) bool {
 }
 
 // PrepSLANotification takes a given ticket and what notification level and returns a string to be sent to Slack.
-func PrepSLANotification(ticket Ticket, notify int64) (notification string) {
+func PrepSLANotification(ticket Ticket, notify int64) (notification string, color string) {
 	log.Info("Preparing SLA notification message.", map[string]interface{}{
 		"module": "slack",
 		"ticket": ticket.ID,
@@ -442,19 +443,24 @@ func PrepSLANotification(ticket Ticket, notify int64) (notification string) {
 		r = c.SLA.LevelFour.Notify
 	}
 
-	var n string
+	var n, c string
 
 	switch notify {
 	case 1:
 		t = "15 minutes"
+		c = "danger"
 	case 2:
 		t = "30 minutes"
+		c = "warning"
 	case 3:
 		t = "1 hour"
+		c = "#ffec1e"
 	case 4:
 		t = "2 hours"
+		c = "#439fe0"
 	case 5:
 		t = "3 hours"
+		c = "#43e0d3"
 	}
 	if r {
 		n = fmt.Sprintf("@here SLA for *%s* ticket #%d has less than %s until expiration.", p, ticket.ID, t)
@@ -462,6 +468,6 @@ func PrepSLANotification(ticket Ticket, notify int64) (notification string) {
 		n = fmt.Sprintf("SLA for *%s* ticket #%d has less than %s until expiration.", p, ticket.ID, t)
 	}
 
-	return n
+	return n, c
 
 }
