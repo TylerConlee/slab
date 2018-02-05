@@ -13,7 +13,29 @@ var (
 	c       = config.LoadConfig()
 	uptime  time.Time
 	version string
+	Sent    interface{}
 )
+
+// Ticket represents an individual ticket to be used in SLAMessage and
+// NewTicketMessage
+type Ticket struct {
+	ID          int
+	Subject     string
+	SLA         []interface{}
+	Tags        []string
+	Level       string
+	Priority    interface{}
+	CreatedAt   time.Time
+	Description string
+}
+
+// NotifySent is represetative of an individual ticket, what kind of
+// notification was last sent for that ticket, and when the SLA breach time is.
+type NotifySent struct {
+	ID     int
+	Type   int64
+	Expire time.Time
+}
 
 // SendMessage takes an attachment and message and composes a message to be
 // sent to the configured Slack channel ID
@@ -96,19 +118,6 @@ func WhoIsMessage() {
 	SendMessage("...", attachment)
 }
 
-// Ticket represents an individual ticket to be used in SLAMessage and
-// NewTicketMessage
-type Ticket struct {
-	ID          int
-	Subject     string
-	SLA         []interface{}
-	Tags        []string
-	Level       string
-	Priority    interface{}
-	CreatedAt   time.Time
-	Description string
-}
-
 // SLAMessage sends off the SLA notification to Slack using the configured API key
 func SLAMessage(n string, ticket Ticket) {
 	description := ticket.Description
@@ -152,6 +161,42 @@ func SLAMessage(n string, ticket Ticket) {
 		},
 	}
 	SendMessage(n, attachment)
+}
+
+// DiagMessage sends a DM to requestor with the current state of SLA
+// notifications for tickets
+func DiagMessage(user string) {
+	params := slack.PostMessageParameters{}
+	attachment := slack.Attachment{
+		Title: "Slab Diagnostic Tool",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Current Notification Status",
+				Value: fmt.Sprintf("%x", Sent),
+			},
+			slack.AttachmentField{
+				Title: "Uptime",
+				Value: time.Now().Sub(uptime).String(),
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Current Triager",
+				Value: Triager,
+				Short: true,
+			},
+		},
+		Footer:     fmt.Sprintf("Version: %s", version),
+		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
+	}
+	params.Attachments = append(params.Attachments, attachment)
+	message := ""
+	if len(params.Attachments) != 0 {
+		_, _, channelID, err := api.OpenIMChannel(user)
+		if err != nil {
+			fmt.Printf("%s\n", err)
+		}
+		api.PostMessage(channelID, message, params)
+	}
 }
 
 // NewTicketMessage takes a slice of tickets that have been created in the last
@@ -224,7 +269,7 @@ func HelpMessage() {
 				Short: true,
 			},
 		},
-		Footer:     fmt.Sprintf("Current triager: %v", Triager),
+		Footer:     fmt.Sprintf("Current triager: <@%s>", Triager),
 		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
 	}
 	unsetCommand := slack.Attachment{
@@ -241,7 +286,7 @@ func HelpMessage() {
 				Short: true,
 			},
 		},
-		Footer:     fmt.Sprintf("Current triager: %v", Triager),
+		Footer:     fmt.Sprintf("Current triager: <@%s>", Triager),
 		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
 	}
 	whoisCommand := slack.Attachment{
@@ -258,7 +303,7 @@ func HelpMessage() {
 				Short: true,
 			},
 		},
-		Footer:     fmt.Sprintf("Current triager: %v", Triager),
+		Footer:     fmt.Sprintf("Current triager: <@%s>", Triager),
 		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
 	}
 	statusCommand := slack.Attachment{
@@ -278,12 +323,29 @@ func HelpMessage() {
 		Footer:     fmt.Sprintf("Current uptime: %v", time.Now().Sub(uptime).String()),
 		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
 	}
-
+	diagCommand := slack.Attachment{
+		Title: "@slab diag",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Command Name",
+				Value: "Diag",
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Command Description",
+				Value: "Sends a private message to the requestor with diagnostic information about Slab",
+				Short: true,
+			},
+		},
+		Footer:     fmt.Sprintf("Current uptime: %v", time.Now().Sub(uptime).String()),
+		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
+	}
 	attachments := []slack.Attachment{
 		setCommand,
 		unsetCommand,
 		whoisCommand,
 		statusCommand,
+		diagCommand,
 	}
 	params.Attachments = attachments
 	params.LinkNames = 1
@@ -322,11 +384,13 @@ func ChatUpdate(
 
 // parseCommand takes the message that mentions the bot user and identifies
 // what the user is asking for.
-func parseCommand(text string) {
+func parseCommand(text string, user string) {
 	t := strings.Fields(text)
 	switch t[1] {
 	case "set":
 		SetMessage()
+	case "diag":
+		DiagMessage(user)
 	case "whois":
 		WhoIsMessage()
 	case "status":
