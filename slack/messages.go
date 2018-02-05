@@ -323,12 +323,29 @@ func HelpMessage() {
 		Footer:     fmt.Sprintf("Current uptime: %v", time.Now().Sub(uptime).String()),
 		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
 	}
-
+	diagCommand := slack.Attachment{
+		Title: "@slab diag",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Command Name",
+				Value: "Diag",
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Command Description",
+				Value: "Sends a private message to the requestor with diagnostic information about Slab",
+				Short: true,
+			},
+		},
+		Footer:     fmt.Sprintf("Current uptime: %v", time.Now().Sub(uptime).String()),
+		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
+	}
 	attachments := []slack.Attachment{
 		setCommand,
 		unsetCommand,
 		whoisCommand,
 		statusCommand,
+		diagCommand,
 	}
 	params.Attachments = attachments
 	params.LinkNames = 1
