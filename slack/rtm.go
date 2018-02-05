@@ -99,7 +99,7 @@ func startRTM() {
 		case *slack.MessageEvent:
 			if chk == 1 {
 				if strings.Contains(ev.Msg.Text, user.ID) && c.TriageEnabled {
-					parseCommand(ev.Msg.Text)
+					parseCommand(ev.Msg.Text, ev.User)
 				}
 			}
 
