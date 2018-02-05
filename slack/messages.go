@@ -130,6 +130,7 @@ func SLAMessage(n string, ticket Ticket, color string) {
 		Title:      ticket.Subject,
 		TitleLink:  url,
 		CallbackID: "sla",
+		Color:      color,
 		Fields: []slack.AttachmentField{
 			slack.AttachmentField{
 				Title: "Description",
