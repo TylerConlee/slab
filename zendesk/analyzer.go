@@ -16,8 +16,8 @@ type NotifySent struct {
 	Expire time.Time
 }
 
-// GetTimeRemaining takes an instance of a ticket and returns the value of the next SLA
-// breach.
+// GetTimeRemaining takes an instance of a ticket and returns the value of the
+// next SLA breach.
 func GetTimeRemaining(ticket ActiveTicket) (remain time.Time) {
 	if len(ticket.SLA) >= 1 {
 		p := ticket.SLA[0].(map[string]interface{})
@@ -44,6 +44,7 @@ func GetNotifyType(remain time.Duration) (notifyType int64) {
 	r, _ := time.ParseDuration("1h")
 	s, _ := time.ParseDuration("30m")
 	t, _ := time.ParseDuration("15m")
+	u, _ := time.ParseDuration("0m")
 
 	switch {
 	case remain < t:
@@ -56,6 +57,8 @@ func GetNotifyType(remain time.Duration) (notifyType int64) {
 		return 4
 	case remain < p:
 		return 5
+	case remain < u:
+		return 9
 	default:
 		return 0
 	}
@@ -66,11 +69,17 @@ func GetNotifyType(remain time.Duration) (notifyType int64) {
 // notification type have been sent already. If yes, it returns True,
 // indicating a notifcation needs to be sent.
 func UpdateCache(ticket ActiveTicket) (bool, int64) {
-	cleanCache()
+	//cleanCache()
+
+	// get the expiration timestamp
 	expire := GetTimeRemaining(ticket)
 	notify := GetNotifyType(time.Until(expire))
 
+	// take the ticket expiration time and add 15 minutes
 	t := expire.Add(15 * time.Minute)
+
+	// if the ticket expiration time is after 15 minutes from now and there's a
+	// valid notification type
 	if t.After(time.Now()) && notify != 0 {
 		rangeOnMe := reflect.ValueOf(Sent)
 		for i := 0; i < rangeOnMe.Len(); i++ {
