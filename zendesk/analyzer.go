@@ -44,6 +44,7 @@ func GetNotifyType(remain time.Duration) (notifyType int64) {
 	r, _ := time.ParseDuration("1h")
 	s, _ := time.ParseDuration("30m")
 	t, _ := time.ParseDuration("15m")
+	u, _ := time.ParseDuration("0m")
 
 	switch {
 	case remain < t:
@@ -56,6 +57,8 @@ func GetNotifyType(remain time.Duration) (notifyType int64) {
 		return 4
 	case remain < p:
 		return 5
+	case remain < u:
+		return 9
 	default:
 		return 0
 	}
