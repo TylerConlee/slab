@@ -14,6 +14,7 @@ var log = l.Log
 
 // ZenOutput is the top level JSON-based struct that whatever is
 // returned by Zendesk goes into
+// TODO: Change Tickets to Tickets []Ticket
 type ZenOutput struct {
 	Tickets      `json:"tickets"`
 	NextPage     interface{} `json:"next_page"`
@@ -24,6 +25,7 @@ type ZenOutput struct {
 // Tickets is a subset of ZenOutput that contains the details of the tickets
 // outputted from the request to Zendesk
 // TODO: use the OrgID to make a request for Org name using a different API call
+// TODO: rename this Ticket, as it represents a singular entity
 type Tickets []struct {
 	URL        string      `json:"url"`
 	ID         int         `json:"id"`
@@ -85,6 +87,7 @@ type Tickets []struct {
 
 // GetAllTickets grabs the latest tickets from Zendesk and returns the JSON
 // Zendesk Endpoint: /incremental/tickets.json?include=slas
+// TODO: update tickets.Tickets with new naimg scheme
 func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 	log.Info("Starting request to Zendesk for tickets", map[string]interface{}{
 		"module": "zendesk",
