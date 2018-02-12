@@ -82,6 +82,7 @@ type Tickets []struct {
 }
 
 // GetAllTickets grabs the latest tickets from Zendesk and returns the JSON
+// Zendesk Endpoint: /incremental/tickets.json?include=slas
 func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 	log.Info("Starting request to Zendesk for tickets", map[string]interface{}{
 		"module": "zendesk",
@@ -96,6 +97,36 @@ func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 		"num_tickets": len(tickets.Tickets),
 	})
 	return tickets
+}
+
+// GetTicketRequester takes the requester ID from the tickets grabbed in
+// GetAllTickets and sends a request to Zendesk for the user info
+// Zendesk Endpoint /users/{USER-ID}.json
+func GetTicketRequester(url string) {
+
+}
+
+// GetOrganization takes the org ID from the tickets grabbed in
+// GetAllTickets and sends a request to Zendesk for the Org information
+// Zendesk Endpoint /users/{USER-ID}/organizations.json
+func GetOrganization(url string) {
+
+}
+
+// GetRequestedTickets takes a user ID and sends a request to Zendesk to grab
+// the IDs of tickets requested by that user
+// Zendesk Endpoint /users/{USER-ID}/tickets/requested.json
+func GetRequestedTickets(url string) {
+
+}
+
+// GetSatisfactionRatings takes a satisfaction rating ID, found in the ticket
+// information from GetRequestedTickets and sends a request to Zendesk for
+// additional details on the satisfaction rating.
+// May not be necessary, as the struct for Satisfaction ratings from the ticket
+// API call may have all the information needed.
+func GetSatisfactionRatings(url string) {
+
 }
 
 // makeRequests takes the Zendesk auth information and sends the curl request
