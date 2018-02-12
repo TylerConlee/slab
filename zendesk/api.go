@@ -65,7 +65,9 @@ type Tickets []struct {
 		Value interface{} `json:"value"`
 	} `json:"custom_fields"`
 	SatisfactionRating struct {
-		Score string `json:"score"`
+		Score   string `json:"score"`
+		Comment string `json:"comment"`
+		ID      string `json:"id"`
 	} `json:"satisfaction_rating"`
 	SharingAgreementIds []interface{} `json:"sharing_agreement_ids"`
 	Fields              []struct {
