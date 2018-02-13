@@ -161,6 +161,12 @@ func SLAMessage(n string, ticket Ticket, color string) {
 					DismissText: "Leave it",
 				},
 			},
+			slack.AttachmentAction{
+				Name:  "more_info_sla",
+				Text:  "More Info",
+				Type:  "button",
+				Style: "success",
+			},
 		},
 	}
 	SendMessage(n, attachment)

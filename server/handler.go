@@ -42,6 +42,10 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 	})
 	switch payload.CallbackID {
 	case "sla":
+		log.Info("SLA", map[string]interface{}{
+			"module":  "server",
+			"payload": payload,
+		})
 		sl.AcknowledgeSLA(payload)
 
 	case "triage_set":
