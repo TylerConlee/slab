@@ -2,7 +2,9 @@ package slack
 
 import (
 	"fmt"
+	"strconv"
 
+	"github.com/tylerconlee/slab/zendesk"
 	"github.com/tylerconlee/slack"
 )
 
@@ -47,4 +49,17 @@ func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
 		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
 	}
 	ChatUpdate(payload, attachment)
+}
+
+func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
+	log.Info("More info SLA button clicked.", map[string]interface{}{
+		"module": "slack",
+		"ticket": payload.Actions[0].Value,
+	})
+	id, _ := strconv.Atoi(payload.Actions[0].Value)
+	user := zendesk.GetTicketRequester(id)
+	log.Info("user grabbed", map[string]interface{}{
+		"module": "slack",
+		"user":   user,
+	})
 }

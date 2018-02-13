@@ -42,11 +42,11 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 	})
 	switch payload.CallbackID {
 	case "sla":
-		log.Info("SLA", map[string]interface{}{
-			"module":  "server",
-			"payload": payload.Actions[0].Value,
-		})
-		sl.AcknowledgeSLA(payload)
+		if payload.Actions[0].Value == "ack" {
+			sl.AcknowledgeSLA(payload)
+		} else {
+			sl.MoreInfoSLA(payload)
+		}
 
 	case "triage_set":
 		sl.SetTriager(payload)
