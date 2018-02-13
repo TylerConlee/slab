@@ -13,13 +13,15 @@ var (
 	c       = config.LoadConfig()
 	uptime  time.Time
 	version string
-	Sent    interface{}
+	// Sent represents the NotifySent from the zendesk package
+	Sent interface{}
 )
 
 // Ticket represents an individual ticket to be used in SLAMessage and
 // NewTicketMessage
 type Ticket struct {
 	ID          int
+	Requester   int64
 	Subject     string
 	SLA         []interface{}
 	Tags        []string

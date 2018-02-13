@@ -14,6 +14,7 @@ var log = l.Log
 
 // ZenOutput is the top level JSON-based struct that whatever is
 // returned by Zendesk goes into
+// TODO: Change Tickets to Tickets []Ticket
 type ZenOutput struct {
 	Tickets      `json:"tickets"`
 	NextPage     interface{} `json:"next_page"`
@@ -24,6 +25,7 @@ type ZenOutput struct {
 // Tickets is a subset of ZenOutput that contains the details of the tickets
 // outputted from the request to Zendesk
 // TODO: use the OrgID to make a request for Org name using a different API call
+// TODO: rename this Ticket, as it represents a singular entity
 type Tickets []struct {
 	URL        string      `json:"url"`
 	ID         int         `json:"id"`
@@ -65,7 +67,9 @@ type Tickets []struct {
 		Value interface{} `json:"value"`
 	} `json:"custom_fields"`
 	SatisfactionRating struct {
-		Score string `json:"score"`
+		Score   string `json:"score"`
+		Comment string `json:"comment"`
+		ID      int    `json:"id"`
 	} `json:"satisfaction_rating"`
 	SharingAgreementIds []interface{} `json:"sharing_agreement_ids"`
 	Fields              []struct {
@@ -82,6 +86,8 @@ type Tickets []struct {
 }
 
 // GetAllTickets grabs the latest tickets from Zendesk and returns the JSON
+// Zendesk Endpoint: /incremental/tickets.json?include=slas
+// TODO: update tickets.Tickets with new naimg scheme
 func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 	log.Info("Starting request to Zendesk for tickets", map[string]interface{}{
 		"module": "zendesk",
@@ -96,6 +102,36 @@ func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 		"num_tickets": len(tickets.Tickets),
 	})
 	return tickets
+}
+
+// GetTicketRequester takes the requester ID from the tickets grabbed in
+// GetAllTickets and sends a request to Zendesk for the user info
+// Zendesk Endpoint /users/{USER-ID}.json
+func GetTicketRequester(user int64) {
+	log.Info("Starting request to Zendesk for user info", map[string]interface{}{
+		"module": "zendesk",
+	})
+
+	zen := c.Zendesk.URL + "/api/v2/users/" + strconv.FormatInt(user, 10)
+	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
+	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
+		"module": "zendesk",
+		"resp":   resp,
+	})
+}
+
+// GetOrganization takes the org ID from the tickets grabbed in
+// GetAllTickets and sends a request to Zendesk for the Org information
+// Zendesk Endpoint /users/{USER-ID}/organizations.json
+func GetOrganization(url string) {
+
+}
+
+// GetRequestedTickets takes a user ID and sends a request to Zendesk to grab
+// the IDs of tickets requested by that user
+// Zendesk Endpoint /users/{USER-ID}/tickets/requested.json
+func GetRequestedTickets(url string) {
+
 }
 
 // makeRequests takes the Zendesk auth information and sends the curl request

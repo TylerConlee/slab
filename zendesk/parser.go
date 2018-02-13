@@ -16,6 +16,7 @@ var c = config.LoadConfig()
 // breach time can be compared
 type ActiveTicket struct {
 	ID          int
+	Requester   int64
 	Subject     string
 	SLA         []interface{}
 	Tags        []string
@@ -37,6 +38,7 @@ func CheckSLA(tick ZenOutput) (sla []ActiveTicket) {
 				Level:       priority,
 				SLA:         ticket.Slas.PolicyMetrics,
 				Tags:        ticket.Tags,
+				Requester:   ticket.RequesterID,
 				Subject:     ticket.Subject,
 				Priority:    ticket.Priority,
 				CreatedAt:   ticket.CreatedAt,
