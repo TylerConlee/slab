@@ -2,6 +2,7 @@ package slack
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -164,7 +165,7 @@ func SLAMessage(n string, ticket Ticket, color string) {
 			},
 			slack.AttachmentAction{
 				Name:  "more_info_sla",
-				Value: "moreinfo",
+				Value: strconv.Itoa(ticket.ID),
 				Text:  "More Info",
 				Type:  "button",
 				Style: "success",

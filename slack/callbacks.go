@@ -48,3 +48,11 @@ func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
 	}
 	ChatUpdate(payload, attachment)
 }
+
+func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
+	log.Info("More info SLA button clicked.", map[string]interface{}{
+		"module": "slack",
+		"ticket": payload.Actions[0].Value,
+	})
+
+}
