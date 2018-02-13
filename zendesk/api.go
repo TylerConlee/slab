@@ -69,7 +69,7 @@ type Tickets []struct {
 	SatisfactionRating struct {
 		Score   string `json:"score"`
 		Comment string `json:"comment"`
-		ID      string `json:"id"`
+		ID      int    `json:"id"`
 	} `json:"satisfaction_rating"`
 	SharingAgreementIds []interface{} `json:"sharing_agreement_ids"`
 	Fields              []struct {
@@ -122,15 +122,6 @@ func GetOrganization(url string) {
 // the IDs of tickets requested by that user
 // Zendesk Endpoint /users/{USER-ID}/tickets/requested.json
 func GetRequestedTickets(url string) {
-
-}
-
-// GetSatisfactionRatings takes a satisfaction rating ID, found in the ticket
-// information from GetRequestedTickets and sends a request to Zendesk for
-// additional details on the satisfaction rating.
-// May not be necessary, as the struct for Satisfaction ratings from the ticket
-// API call may have all the information needed.
-func GetSatisfactionRatings(url string) {
 
 }
 
