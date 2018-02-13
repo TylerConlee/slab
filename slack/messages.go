@@ -21,9 +21,9 @@ var (
 // NewTicketMessage
 type Ticket struct {
 	ID          int
+	Requester   int64
 	Subject     string
 	SLA         []interface{}
-	Requester   int64
 	Tags        []string
 	Level       string
 	Priority    interface{}
