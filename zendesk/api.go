@@ -85,6 +85,48 @@ type Tickets []struct {
 	AllowChannelback bool `json:"allow_channelback"`
 }
 
+type User struct {
+	ID                   int64         `json:"id"`
+	URL                  string        `json:"url"`
+	Name                 string        `json:"name"`
+	Email                string        `json:"email"`
+	CreatedAt            time.Time     `json:"created_at"`
+	UpdatedAt            time.Time     `json:"updated_at"`
+	TimeZone             string        `json:"time_zone"`
+	Phone                interface{}   `json:"phone"`
+	SharedPhoneNumber    interface{}   `json:"shared_phone_number"`
+	Photo                interface{}   `json:"photo"`
+	LocaleID             int           `json:"locale_id"`
+	Locale               string        `json:"locale"`
+	OrganizationID       int64         `json:"organization_id"`
+	Role                 string        `json:"role"`
+	Verified             bool          `json:"verified"`
+	ExternalID           interface{}   `json:"external_id"`
+	Tags                 []interface{} `json:"tags"`
+	Alias                interface{}   `json:"alias"`
+	Active               bool          `json:"active"`
+	Shared               bool          `json:"shared"`
+	SharedAgent          bool          `json:"shared_agent"`
+	LastLoginAt          time.Time     `json:"last_login_at"`
+	TwoFactorAuthEnabled bool          `json:"two_factor_auth_enabled"`
+	Signature            interface{}   `json:"signature"`
+	Details              interface{}   `json:"details"`
+	Notes                interface{}   `json:"notes"`
+	RoleType             interface{}   `json:"role_type"`
+	CustomRoleID         interface{}   `json:"custom_role_id"`
+	Moderator            bool          `json:"moderator"`
+	TicketRestriction    string        `json:"ticket_restriction"`
+	OnlyPrivateComments  bool          `json:"only_private_comments"`
+	RestrictedAgent      bool          `json:"restricted_agent"`
+	Suspended            bool          `json:"suspended"`
+	ChatOnly             bool          `json:"chat_only"`
+	DefaultGroupID       interface{}   `json:"default_group_id"`
+	UserFields           struct {
+		Mrr                      int         `json:"mrr"`
+		SystemEmbeddableLastSeen interface{} `json:"system::embeddable_last_seen"`
+	} `json:"user_fields"`
+}
+
 // GetAllTickets grabs the latest tickets from Zendesk and returns the JSON
 // Zendesk Endpoint: /incremental/tickets.json?include=slas
 // TODO: update tickets.Tickets with new naimg scheme
@@ -107,7 +149,7 @@ func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 // GetTicketRequester takes the requester ID from the tickets grabbed in
 // GetAllTickets and sends a request to Zendesk for the user info
 // Zendesk Endpoint /users/{USER-ID}.json
-func GetTicketRequester(user int) (resp json.RawMessage) {
+func GetTicketRequester(user int) (output json.RawMessage) {
 	log.Info("Starting request to Zendesk for user info", map[string]interface{}{
 		"module": "zendesk",
 	})
@@ -116,10 +158,17 @@ func GetTicketRequester(user int) (resp json.RawMessage) {
 	data := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
 		"module": "zendesk",
-		"resp":   resp,
+		"resp":   data,
 		"user":   user,
 	})
-	resp = json.RawMessage(data)
+	resp := json.RawMessage(data)
+	err := json.Unmarshal(resp, &output)
+	if err != nil {
+		log.Fatal(map[string]interface{}{
+			"module": "zendesk",
+			"error":  err,
+		})
+	}
 	return
 }
 
