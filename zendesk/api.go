@@ -117,6 +117,7 @@ func GetTicketRequester(user int) (resp json.RawMessage) {
 	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
 		"module": "zendesk",
 		"resp":   resp,
+		"user":   user,
 	})
 	resp = json.RawMessage(data)
 	return
