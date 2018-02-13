@@ -160,6 +160,7 @@ func GetTicketRequester(user int) (output User) {
 		"module": "zendesk",
 		"resp":   data,
 		"user":   user,
+		"url":    zen,
 	})
 	resp := json.RawMessage(data)
 	err := json.Unmarshal(resp, &output)
