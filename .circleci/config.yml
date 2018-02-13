@@ -33,6 +33,16 @@ jobs:
       - restore_cache:
           key: glide-cache-{{ .Branch }}-{{ checksum "glide.lock" }}
       - run: go test -v $(go list ./... | grep -v /vendor/) 
+  dev-deploy:
+    working_directory: /go/src/github.com/tylerconlee/slab
+    docker:
+      - image: circleci/golang:1.8.1
+    steps:
+      - checkout
+      - restore_cache:
+          key: glide-cache-{{ .Branch }}-{{ checksum "glide.lock" }}
+      - run: make
+      - run: make dev
   deploy:
     working_directory: /go/src/github.com/tylerconlee/slab
     docker:
@@ -52,6 +62,12 @@ workflows:
       - test:
           requires:
             - build
+      - dev-deploy:
+          requires:
+            - test
+          filters:
+            branches:
+              only: develop
       - deploy:
           requires:
             - test
