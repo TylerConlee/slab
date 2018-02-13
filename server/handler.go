@@ -44,7 +44,7 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 	case "sla":
 		log.Info("SLA", map[string]interface{}{
 			"module":  "server",
-			"payload": payload,
+			"payload": payload.Value,
 		})
 		sl.AcknowledgeSLA(payload)
 
