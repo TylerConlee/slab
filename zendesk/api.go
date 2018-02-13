@@ -113,11 +113,12 @@ func GetTicketRequester(user int) (resp []byte) {
 	})
 
 	zen := c.Zendesk.URL + "/api/v2/users/" + strconv.Itoa(user)
-	resp = makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
+	data := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
 		"module": "zendesk",
 		"resp":   resp,
 	})
+	resp = json.RawMessage(data)
 	return
 }
 
