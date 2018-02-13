@@ -107,7 +107,7 @@ func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 // GetTicketRequester takes the requester ID from the tickets grabbed in
 // GetAllTickets and sends a request to Zendesk for the user info
 // Zendesk Endpoint /users/{USER-ID}.json
-func GetTicketRequester(user int) (resp []byte) {
+func GetTicketRequester(user int) (resp json.RawMessage) {
 	log.Info("Starting request to Zendesk for user info", map[string]interface{}{
 		"module": "zendesk",
 	})
