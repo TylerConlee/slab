@@ -60,6 +60,6 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 	user := zendesk.GetTicketRequester(id)
 	log.Info("user grabbed", map[string]interface{}{
 		"module": "slack",
-		"user":   user,
+		"user":   user.Name,
 	})
 }
