@@ -165,7 +165,7 @@ func SLAMessage(n string, ticket Ticket, color string) {
 			},
 			slack.AttachmentAction{
 				Name:  "more_info_sla",
-				Value: strconv.Itoa(ticket.ID),
+				Value: strconv.FormatInt(ticket.Requester, 10),
 				Text:  "More Info",
 				Type:  "button",
 				Style: "success",
