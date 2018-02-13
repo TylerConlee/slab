@@ -12,6 +12,6 @@ deploy:
 	scp -o StrictHostKeyChecking=no slab ubuntu@35.160.9.184:slab
 	ssh -o StrictHostKeyChecking=no ubuntu@35.160.9.184 supervisorctl start slab
 dev:
-	ssh -o StrictHostKeyChecking=no ubuntu@35.160.9.184 supervisorctl stop slabdev
-	scp -o StrictHostKeyChecking=no slab ubuntu@35.160.9.184:slabdev/slab
-	ssh -o StrictHostKeyChecking=no ubuntu@35.160.9.184 supervisorctl start slabdev
+	ssh -o StrictHostKeyChecking=no ubuntu@35.160.9.184 supervisorctl stop slab-dev
+	scp -o StrictHostKeyChecking=no slab ubuntu@35.160.9.184:slab-dev/slab
+	ssh -o StrictHostKeyChecking=no ubuntu@35.160.9.184 supervisorctl start slab-dev
