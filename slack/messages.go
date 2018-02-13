@@ -23,6 +23,7 @@ type Ticket struct {
 	ID          int
 	Subject     string
 	SLA         []interface{}
+	Requester   int64
 	Tags        []string
 	Level       string
 	Priority    interface{}
