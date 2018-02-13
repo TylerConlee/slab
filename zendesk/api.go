@@ -154,7 +154,7 @@ func GetTicketRequester(user int) (output User) {
 		"module": "zendesk",
 	})
 
-	zen := c.Zendesk.URL + "/api/v2/users/" + strconv.Itoa(user)
+	zen := c.Zendesk.URL + "/api/v2/users/" + strconv.Itoa(user) + ".json"
 	data := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
 		"module": "zendesk",
