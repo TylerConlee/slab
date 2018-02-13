@@ -154,6 +154,7 @@ func SLAMessage(n string, ticket Ticket, color string) {
 				Name:  "ack_sla",
 				Text:  "Acknowledge",
 				Type:  "button",
+				Value: "ack",
 				Style: "primary",
 				Confirm: &slack.ConfirmationField{
 					Text:        "Are you sure?",
@@ -163,6 +164,7 @@ func SLAMessage(n string, ticket Ticket, color string) {
 			},
 			slack.AttachmentAction{
 				Name:  "more_info_sla",
+				Value: "moreinfo",
 				Text:  "More Info",
 				Type:  "button",
 				Style: "success",
