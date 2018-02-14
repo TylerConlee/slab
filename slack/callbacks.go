@@ -57,9 +57,15 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 		"ticket": payload.Actions[0].Value,
 	})
 	id, _ := strconv.Atoi(payload.Actions[0].Value)
+	// GetOrg
+	// GetRequestedTickets
+	// GetSatisfactionRatings - use requested tickets
+
 	user := zendesk.GetTicketRequester(id)
 	log.Info("user grabbed", map[string]interface{}{
-		"module": "slack",
-		"user":   user.Name,
+		"module":    "slack",
+		"user":      user.Name,
+		"slackuser": payload.User,
 	})
+
 }
