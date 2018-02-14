@@ -122,7 +122,7 @@ func WhoIsMessage() {
 }
 
 // SLAMessage sends off the SLA notification to Slack using the configured API key
-func SLAMessage(n string, ticket Ticket, color string) {
+func SLAMessage(n string, ticket Ticket, color string, user string) {
 	description := ticket.Description
 	if len(ticket.Description) > 100 {
 		description = description[0:100] + "..."
@@ -132,6 +132,8 @@ func SLAMessage(n string, ticket Ticket, color string) {
 		// Uncomment the following part to send a field too
 		Title:      ticket.Subject,
 		TitleLink:  url,
+		AuthorName: user,
+		AuthorLink: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/google/119/bust-in-silhouette_1f464.png",
 		CallbackID: "sla",
 		Color:      color,
 		Fields: []slack.AttachmentField{
