@@ -57,20 +57,19 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 		"ticket": payload.Actions[0].Value,
 	})
 	id, _ := strconv.Atoi(payload.Actions[0].Value)
-	// GetOrg
-	// GetRequestedTickets
-	// GetSatisfactionRatings - use requested tickets
-
-	user := zendesk.GetTicketRequester(id)
-	log.Info("user grabbed", map[string]interface{}{
-		"module":    "slack",
-		"user":      user.Name,
-		"slackuser": payload.User,
-	})
+	// ORG Details
+	org := zendesk.GetOrganization(id)
 	attachment := slack.Attachment{
 		Fallback:   "User acknowledged a ticket.",
 		Footer:     payload.Actions[0].Value,
-		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
+		FooterIcon: ":mag:",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Organization",
+				Value: org[0].Name,
+				Short: true,
+			},
+		},
 	}
 	SendEphemeralMessage("More information on ticket", attachment, payload.User.ID)
 }

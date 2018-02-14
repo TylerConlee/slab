@@ -120,3 +120,29 @@ type User struct {
 		SystemEmbeddableLastSeen interface{} `json:"system::embeddable_last_seen"`
 	} `json:"user_fields"`
 }
+
+type Organizations struct {
+	Orgs         `json:"organizations"`
+	NextPage     interface{} `json:"next_page"`
+	PreviousPage interface{} `json:"previous_page"`
+	Count        int         `json:"count"`
+}
+
+type Orgs []struct {
+	URL                string      `json:"url"`
+	ID                 int64       `json:"id"`
+	Name               string      `json:"name"`
+	SharedTickets      bool        `json:"shared_tickets"`
+	SharedComments     bool        `json:"shared_comments"`
+	ExternalID         interface{} `json:"external_id"`
+	CreatedAt          time.Time   `json:"created_at"`
+	UpdatedAt          time.Time   `json:"updated_at"`
+	DomainNames        []string    `json:"domain_names"`
+	Details            string      `json:"details"`
+	Notes              string      `json:"notes"`
+	GroupID            interface{} `json:"group_id"`
+	Tags               []string    `json:"tags"`
+	OrganizationFields struct {
+		SLALevel string `json:"sla_level"`
+	} `json:"organization_fields"`
+}

@@ -37,15 +37,14 @@ func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 func GetTicketRequester(user int) (output User) {
 	log.Info("Starting request to Zendesk for user info", map[string]interface{}{
 		"module": "zendesk",
+		"user":   user,
 	})
 
 	zen := c.Zendesk.URL + "/api/v2/users/" + strconv.Itoa(user) + ".json"
 	data := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
 		"module": "zendesk",
-		"resp":   data,
 		"user":   user,
-		"url":    zen,
 	})
 	resp := json.RawMessage(data)
 	users := Users{}
@@ -62,7 +61,27 @@ func GetTicketRequester(user int) (output User) {
 // GetOrganization takes the org ID from the tickets grabbed in
 // GetAllTickets and sends a request to Zendesk for the Org information
 // Zendesk Endpoint /users/{USER-ID}/organizations.json
-func GetOrganization(url string) {
+func GetOrganization(user int) (org Orgs) {
+	log.Info("Starting request to Zendesk for organization info", map[string]interface{}{
+		"module": "zendesk",
+		"user":   user,
+	})
+	zen := c.Zendesk.URL + "/api/v2/users/" + strconv.Itoa(user) + "/organizations.json"
+	data := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
+	log.Info("Request Complete. Parsing Organization Data", map[string]interface{}{
+		"module": "zendesk",
+		"user":   user,
+	})
+	resp := json.RawMessage(data)
+	orgs := Organizations{}
+	err := json.Unmarshal(resp, &orgs)
+	if err != nil {
+		log.Fatal(map[string]interface{}{
+			"module": "zendesk",
+			"error":  err,
+		})
+	}
+	return orgs.Orgs
 
 }
 
