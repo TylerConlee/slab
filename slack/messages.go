@@ -133,7 +133,7 @@ func SLAMessage(n string, ticket Ticket, color string, user string) {
 		Title:      ticket.Subject,
 		TitleLink:  url,
 		AuthorName: user,
-		AuthorLink: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/google/119/bust-in-silhouette_1f464.png",
+		AuthorIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/google/119/bust-in-silhouette_1f464.png",
 		CallbackID: "sla",
 		Color:      color,
 		Fields: []slack.AttachmentField{
