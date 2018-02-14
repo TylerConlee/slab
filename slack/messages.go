@@ -128,7 +128,7 @@ func SLAMessage(n string, ticket Ticket, color string, user string, uid int) {
 		description = description[0:100] + "..."
 	}
 	url := fmt.Sprintf("%s/agent/tickets/%d", c.Zendesk.URL, ticket.ID)
-	link := fmt.Sprintf("%s/agent/users/%d", c.Zendesk.URL, uid)
+	link := fmt.Sprintf("%s/agent/users/%d", c.Zendesk.URL, int64(uid))
 	attachment := slack.Attachment{
 		// Uncomment the following part to send a field too
 		Title:      ticket.Subject,
