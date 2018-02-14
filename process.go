@@ -36,7 +36,7 @@ func RunTimer(interval time.Duration) {
 		// Loop through all active SLA tickets and prepare SLA notification
 		// for each.
 		for _, ticket := range active {
-
+			user := zendesk.GetTicketRequester(int(ticket.Requester))
 			if ticket.Priority != nil {
 				send, notify := zendesk.UpdateCache(ticket)
 				if send {
@@ -46,7 +46,7 @@ func RunTimer(interval time.Duration) {
 					})
 					m := slack.Ticket(ticket)
 					n, c := slack.PrepSLANotification(m, notify)
-					slack.SLAMessage(n, m, c)
+					slack.SLAMessage(n, m, c, user.Name)
 				}
 			}
 		}
