@@ -122,13 +122,13 @@ func WhoIsMessage() {
 }
 
 // SLAMessage sends off the SLA notification to Slack using the configured API key
-func SLAMessage(n string, ticket Ticket, color string, user string, uid int) {
+func SLAMessage(n string, ticket Ticket, color string, user string, uid int64) {
 	description := ticket.Description
 	if len(ticket.Description) > 100 {
 		description = description[0:100] + "..."
 	}
 	url := fmt.Sprintf("%s/agent/tickets/%d", c.Zendesk.URL, ticket.ID)
-	link := fmt.Sprintf("%s/agent/users/%d", c.Zendesk.URL, int64(uid))
+	link := fmt.Sprintf("%s/agent/users/%d", c.Zendesk.URL, uid)
 	attachment := slack.Attachment{
 		// Uncomment the following part to send a field too
 		Title:      ticket.Subject,
