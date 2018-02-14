@@ -157,7 +157,7 @@ func SLAMessage(n string, ticket Ticket, color string, user string, uid int64) {
 		Actions: []slack.AttachmentAction{
 			slack.AttachmentAction{
 				Name:  "ack_sla",
-				Text:  "Acknowledge",
+				Text:  ":white_check_mark: Acknowledge",
 				Type:  "button",
 				Value: "ack",
 				Style: "primary",
@@ -170,9 +170,9 @@ func SLAMessage(n string, ticket Ticket, color string, user string, uid int64) {
 			slack.AttachmentAction{
 				Name:  "more_info_sla",
 				Value: strconv.FormatInt(ticket.Requester, 10),
-				Text:  "More Info",
+				Text:  ":mag: More Info",
 				Type:  "button",
-				Style: "success",
+				Style: "default",
 			},
 		},
 	}
