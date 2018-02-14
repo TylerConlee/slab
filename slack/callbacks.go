@@ -67,5 +67,10 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 		"user":      user.Name,
 		"slackuser": payload.User,
 	})
-
+	attachment := slack.Attachment{
+		Fallback:   "User acknowledged a ticket.",
+		Footer:     payload.Actions[0].Value,
+		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
+	}
+	SendEphemeralMessage("More information on ticket", attachment, payload.User.ID)
 }

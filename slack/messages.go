@@ -60,6 +60,26 @@ func SendMessage(message string, attachment slack.Attachment) {
 		"message":   message,
 	})
 }
+func SendEphemeralMessage(message string, attachment slack.Attachment, user string) {
+	params := slack.PostMessageParameters{}
+	params.Attachments = []slack.Attachment{attachment}
+	params.LinkNames = 1
+
+	// Send a message to the given channel with pretext and the parameters
+	timestamp, err := api.PostEphemeral(c.Slack.ChannelID, user, slack.MsgOptionText(message, params.EscapeText),
+		slack.MsgOptionAttachments(params.Attachments...),
+		slack.MsgOptionPostMessageParameters(params))
+	if err != nil {
+		fmt.Printf("%s\n", err)
+		return
+	}
+	// Log message if succesfully sent.
+	log.Debug("Message sent successfully.", map[string]interface{}{
+		"module":    "slack",
+		"timestamp": timestamp,
+		"message":   message,
+	})
+}
 
 // SetMessage creates and sends a message to Slack with a menu attachment,
 // allowing users to set the triager staff member.
