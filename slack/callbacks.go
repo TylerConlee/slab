@@ -116,7 +116,7 @@ func satisfactionDecode(sat string) (s string) {
 	case "bad":
 		s = ":x:"
 	case "unoffered":
-		s = ":heavy-minus-sign:"
+		s = ":heavy_minus_sign:"
 	}
 	return
 }
