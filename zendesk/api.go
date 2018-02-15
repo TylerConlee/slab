@@ -88,8 +88,26 @@ func GetOrganization(user int) (org Orgs) {
 // GetRequestedTickets takes a user ID and sends a request to Zendesk to grab
 // the IDs of tickets requested by that user
 // Zendesk Endpoint /users/{USER-ID}/tickets/requested.json
-func GetRequestedTickets(url string) {
-
+func GetRequestedTickets(user int) (output ZenOutput) {
+	log.Info("Starting request to Zendesk for requested ticket info", map[string]interface{}{
+		"module": "zendesk",
+		"user":   user,
+	})
+	zen := c.Zendesk.URL + "/api/v2/users/" + strconv.Itoa(user) + "/tickets/requested.json"
+	data := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
+	log.Info("Request Complete. Parsing Organization Data", map[string]interface{}{
+		"module": "zendesk",
+		"user":   user,
+	})
+	resp := json.RawMessage(data)
+	err := json.Unmarshal(resp, &output)
+	if err != nil {
+		log.Fatal(map[string]interface{}{
+			"module": "zendesk",
+			"error":  err,
+		})
+	}
+	return
 }
 
 // makeRequests takes the Zendesk auth information and sends the curl request
