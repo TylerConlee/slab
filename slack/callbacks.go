@@ -59,24 +59,34 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 	id, _ := strconv.Atoi(payload.Actions[0].Value)
 	// ORG Details
 	org := zendesk.GetOrganization(id)
+	// REQUESTED tickets
 	requested := zendesk.GetRequestedTickets(id)
 	var t string
+	var s string
 	for _, ticket := range requested.Tickets {
 		i := strconv.Itoa(ticket.ID)
 		status := statusDecode(ticket.Status)
+		sat := satisfactionDecode(ticket.SatisfactionRating.Score)
 		t = t + "<" + ticket.URL + "| #" + i + " (" + status + ")> "
+		s = s + sat + ", "
 	}
+
 	attachment := slack.Attachment{
 		Fallback: "User acknowledged a ticket.",
 		Fields: []slack.AttachmentField{
 			slack.AttachmentField{
 				Title: "Organization",
 				Value: org[0].Name,
-				Short: true,
 			},
 			slack.AttachmentField{
 				Title: "Tickets from this user",
 				Value: t,
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Satisfaction history",
+				Value: s,
+				Short: true,
 			},
 		},
 	}
@@ -95,6 +105,18 @@ func statusDecode(status string) (img string) {
 		img = ":parking:"
 	case "closed":
 		img = ":lock:"
+	}
+	return
+}
+
+func satisfactionDecode(sat string) (s string) {
+	switch sat {
+	case "good":
+		s = ":white_check_mark:"
+	case "bad":
+		s = ":x:"
+	case "unoffered":
+		s = ":heavy-minus-sign:"
 	}
 	return
 }
