@@ -63,7 +63,8 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 	var t string
 	for _, ticket := range requested.Tickets {
 		i := strconv.Itoa(ticket.ID)
-		t = t + "<" + ticket.URL + "| #" + i + " (" + ticket.Status + ")> "
+		status := statusDecode(ticket.Status)
+		t = t + "<" + ticket.URL + "| #" + i + " (" + status + ")> "
 	}
 	attachment := slack.Attachment{
 		Fallback:   "User acknowledged a ticket.",
@@ -82,4 +83,20 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 		},
 	}
 	SendEphemeralMessage("More information on ticket", attachment, payload.User.ID)
+}
+
+func statusDecode(status string) (img string) {
+	switch status {
+	case "solved":
+		img = ":white_check_mark:"
+	case "new":
+		img = ":new:"
+	case "open":
+		img = ":o2:"
+	case "pending":
+		img = ":parking:"
+	case "closed":
+		img = ":lock:"
+	}
+	return
 }
