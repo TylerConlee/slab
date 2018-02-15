@@ -67,9 +67,7 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 		t = t + "<" + ticket.URL + "| #" + i + " (" + status + ")> "
 	}
 	attachment := slack.Attachment{
-		Fallback:   "User acknowledged a ticket.",
-		Footer:     payload.Actions[0].Value,
-		FooterIcon: ":mag:",
+		Fallback: "User acknowledged a ticket.",
 		Fields: []slack.AttachmentField{
 			slack.AttachmentField{
 				Title: "Organization",
