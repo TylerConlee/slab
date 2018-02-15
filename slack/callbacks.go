@@ -67,16 +67,18 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 		i := strconv.Itoa(ticket.ID)
 		status := statusDecode(ticket.Status)
 		sat := satisfactionDecode(ticket.SatisfactionRating.Score)
-		t = t + "<" + ticket.URL + "| #" + i + " (" + status + ")> "
+		link := fmt.Sprintf("%s/agent/tickets/%d", c.Zendesk.URL, ticket.ID)
+		t = t + "<" + link + "| #" + i + " (" + status + ")> "
 		s = s + sat + ", "
 	}
-
+	orglink := fmt.Sprintf("%s/agent/organizations/%d", c.Zendesk.URL, org[0].ID)
+	o := "<" + orglink + "| " + org[0].Name + "> "
 	attachment := slack.Attachment{
 		Fallback: "User acknowledged a ticket.",
 		Fields: []slack.AttachmentField{
 			slack.AttachmentField{
 				Title: "Organization",
-				Value: org[0].Name,
+				Value: o,
 			},
 			slack.AttachmentField{
 				Title: "Tickets from this user",
