@@ -77,7 +77,7 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 				Short: true,
 			},
 			slack.AttachmentField{
-				Title: "Organization",
+				Title: "Tickets from this user",
 				Value: t,
 			},
 		},
