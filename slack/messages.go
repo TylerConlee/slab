@@ -2,6 +2,7 @@ package slack
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -13,13 +14,15 @@ var (
 	c       = config.LoadConfig()
 	uptime  time.Time
 	version string
-	Sent    interface{}
+	// Sent represents the NotifySent from the zendesk package
+	Sent interface{}
 )
 
 // Ticket represents an individual ticket to be used in SLAMessage and
 // NewTicketMessage
 type Ticket struct {
 	ID          int
+	Requester   int64
 	Subject     string
 	SLA         []interface{}
 	Tags        []string
@@ -53,6 +56,26 @@ func SendMessage(message string, attachment slack.Attachment) {
 	log.Debug("Message sent successfully.", map[string]interface{}{
 		"module":    "slack",
 		"channel":   channelID,
+		"timestamp": timestamp,
+		"message":   message,
+	})
+}
+func SendEphemeralMessage(message string, attachment slack.Attachment, user string) {
+	params := slack.PostMessageParameters{}
+	params.Attachments = []slack.Attachment{attachment}
+	params.LinkNames = 1
+
+	// Send a message to the given channel with pretext and the parameters
+	timestamp, err := api.PostEphemeral(c.Slack.ChannelID, user, slack.MsgOptionText(message, params.EscapeText),
+		slack.MsgOptionAttachments(params.Attachments...),
+		slack.MsgOptionPostMessageParameters(params))
+	if err != nil {
+		fmt.Printf("%s\n", err)
+		return
+	}
+	// Log message if succesfully sent.
+	log.Debug("Message sent successfully.", map[string]interface{}{
+		"module":    "slack",
 		"timestamp": timestamp,
 		"message":   message,
 	})
@@ -119,16 +142,20 @@ func WhoIsMessage() {
 }
 
 // SLAMessage sends off the SLA notification to Slack using the configured API key
-func SLAMessage(n string, ticket Ticket, color string) {
+func SLAMessage(n string, ticket Ticket, color string, user string, uid int64) {
 	description := ticket.Description
 	if len(ticket.Description) > 100 {
 		description = description[0:100] + "..."
 	}
 	url := fmt.Sprintf("%s/agent/tickets/%d", c.Zendesk.URL, ticket.ID)
+	link := fmt.Sprintf("%s/agent/users/%d", c.Zendesk.URL, uid)
 	attachment := slack.Attachment{
 		// Uncomment the following part to send a field too
 		Title:      ticket.Subject,
 		TitleLink:  url,
+		AuthorName: user,
+		AuthorLink: link,
+		AuthorIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/google/119/bust-in-silhouette_1f464.png",
 		CallbackID: "sla",
 		Color:      color,
 		Fields: []slack.AttachmentField{
@@ -150,14 +177,22 @@ func SLAMessage(n string, ticket Ticket, color string) {
 		Actions: []slack.AttachmentAction{
 			slack.AttachmentAction{
 				Name:  "ack_sla",
-				Text:  "Acknowledge",
+				Text:  ":white_check_mark: Acknowledge",
 				Type:  "button",
+				Value: "ack",
 				Style: "primary",
 				Confirm: &slack.ConfirmationField{
 					Text:        "Are you sure?",
 					OkText:      "Take it",
 					DismissText: "Leave it",
 				},
+			},
+			slack.AttachmentAction{
+				Name:  "more_info_sla",
+				Value: strconv.FormatInt(ticket.Requester, 10),
+				Text:  ":mag: More Info",
+				Type:  "button",
+				Style: "default",
 			},
 		},
 	}

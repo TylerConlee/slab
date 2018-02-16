@@ -12,76 +12,9 @@ import (
 
 var log = l.Log
 
-// ZenOutput is the top level JSON-based struct that whatever is
-// returned by Zendesk goes into
-type ZenOutput struct {
-	Tickets      `json:"tickets"`
-	NextPage     interface{} `json:"next_page"`
-	PreviousPage interface{} `json:"previous_page"`
-	Count        int         `json:"count"`
-}
-
-// Tickets is a subset of ZenOutput that contains the details of the tickets
-// outputted from the request to Zendesk
-// TODO: use the OrgID to make a request for Org name using a different API call
-type Tickets []struct {
-	URL        string      `json:"url"`
-	ID         int         `json:"id"`
-	ExternalID interface{} `json:"external_id"`
-	Via        struct {
-		Channel string `json:"channel"`
-		Source  struct {
-			From struct {
-			} `json:"from"`
-			To struct {
-			} `json:"to"`
-			Rel string `json:"rel"`
-		} `json:"source"`
-	} `json:"via"`
-	CreatedAt       time.Time     `json:"created_at"`
-	UpdatedAt       time.Time     `json:"updated_at"`
-	Type            interface{}   `json:"type"`
-	Subject         string        `json:"subject"`
-	RawSubject      string        `json:"raw_subject"`
-	Description     string        `json:"description"`
-	Priority        interface{}   `json:"priority"`
-	Status          string        `json:"status"`
-	Recipient       interface{}   `json:"recipient"`
-	RequesterID     int64         `json:"requester_id"`
-	SubmitterID     int64         `json:"submitter_id"`
-	AssigneeID      interface{}   `json:"assignee_id"`
-	OrganizationID  int64         `json:"organization_id"`
-	GroupID         int           `json:"group_id"`
-	CollaboratorIds []interface{} `json:"collaborator_ids"`
-	FollowerIds     []interface{} `json:"follower_ids"`
-	ForumTopicID    interface{}   `json:"forum_topic_id"`
-	ProblemID       interface{}   `json:"problem_id"`
-	HasIncidents    bool          `json:"has_incidents"`
-	IsPublic        bool          `json:"is_public"`
-	DueAt           interface{}   `json:"due_at"`
-	Tags            []string      `json:"tags"`
-	CustomFields    []struct {
-		ID    int         `json:"id"`
-		Value interface{} `json:"value"`
-	} `json:"custom_fields"`
-	SatisfactionRating struct {
-		Score string `json:"score"`
-	} `json:"satisfaction_rating"`
-	SharingAgreementIds []interface{} `json:"sharing_agreement_ids"`
-	Fields              []struct {
-		ID    int         `json:"id"`
-		Value interface{} `json:"value"`
-	} `json:"fields"`
-	TicketFormID            int         `json:"ticket_form_id"`
-	BrandID                 int         `json:"brand_id"`
-	SatisfactionProbability interface{} `json:"satisfaction_probability"`
-	Slas                    struct {
-		PolicyMetrics []interface{} `json:"policy_metrics"`
-	} `json:"slas"`
-	AllowChannelback bool `json:"allow_channelback"`
-}
-
 // GetAllTickets grabs the latest tickets from Zendesk and returns the JSON
+// Zendesk Endpoint: /incremental/tickets.json?include=slas
+// TODO: update tickets.Tickets with new naimg scheme
 func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 	log.Info("Starting request to Zendesk for tickets", map[string]interface{}{
 		"module": "zendesk",
@@ -96,6 +29,85 @@ func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
 		"num_tickets": len(tickets.Tickets),
 	})
 	return tickets
+}
+
+// GetTicketRequester takes the requester ID from the tickets grabbed in
+// GetAllTickets and sends a request to Zendesk for the user info
+// Zendesk Endpoint /users/{USER-ID}.json
+func GetTicketRequester(user int) (output User) {
+	log.Info("Starting request to Zendesk for user info", map[string]interface{}{
+		"module": "zendesk",
+		"user":   user,
+	})
+
+	zen := c.Zendesk.URL + "/api/v2/users/" + strconv.Itoa(user) + ".json"
+	data := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
+	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
+		"module": "zendesk",
+		"user":   user,
+	})
+	resp := json.RawMessage(data)
+	users := Users{}
+	err := json.Unmarshal(resp, &users)
+	if err != nil {
+		log.Fatal(map[string]interface{}{
+			"module": "zendesk",
+			"error":  err,
+		})
+	}
+	return users.User
+}
+
+// GetOrganization takes the org ID from the tickets grabbed in
+// GetAllTickets and sends a request to Zendesk for the Org information
+// Zendesk Endpoint /users/{USER-ID}/organizations.json
+func GetOrganization(user int) (org Orgs) {
+	log.Info("Starting request to Zendesk for organization info", map[string]interface{}{
+		"module": "zendesk",
+		"user":   user,
+	})
+	zen := c.Zendesk.URL + "/api/v2/users/" + strconv.Itoa(user) + "/organizations.json"
+	data := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
+	log.Info("Request Complete. Parsing Organization Data", map[string]interface{}{
+		"module": "zendesk",
+		"user":   user,
+	})
+	resp := json.RawMessage(data)
+	orgs := Organizations{}
+	err := json.Unmarshal(resp, &orgs)
+	if err != nil {
+		log.Fatal(map[string]interface{}{
+			"module": "zendesk",
+			"error":  err,
+		})
+	}
+	return orgs.Orgs
+
+}
+
+// GetRequestedTickets takes a user ID and sends a request to Zendesk to grab
+// the IDs of tickets requested by that user
+// Zendesk Endpoint /users/{USER-ID}/tickets/requested.json
+func GetRequestedTickets(user int) (output ZenOutput) {
+	log.Info("Starting request to Zendesk for requested ticket info", map[string]interface{}{
+		"module": "zendesk",
+		"user":   user,
+	})
+	zen := c.Zendesk.URL + "/api/v2/users/" + strconv.Itoa(user) + "/tickets/requested.json"
+	data := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
+	log.Info("Request Complete. Parsing Organization Data", map[string]interface{}{
+		"module": "zendesk",
+		"user":   user,
+	})
+	resp := json.RawMessage(data)
+	err := json.Unmarshal(resp, &output)
+	if err != nil {
+		log.Fatal(map[string]interface{}{
+			"module": "zendesk",
+			"error":  err,
+		})
+	}
+	return
 }
 
 // makeRequests takes the Zendesk auth information and sends the curl request

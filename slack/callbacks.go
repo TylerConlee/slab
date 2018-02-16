@@ -2,7 +2,9 @@ package slack
 
 import (
 	"fmt"
+	"strconv"
 
+	"github.com/tylerconlee/slab/zendesk"
 	"github.com/tylerconlee/slack"
 )
 
@@ -47,4 +49,91 @@ func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
 		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
 	}
 	ChatUpdate(payload, attachment)
+}
+
+func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
+	log.Info("More info SLA button clicked.", map[string]interface{}{
+		"module": "slack",
+		"ticket": payload.Actions[0].Value,
+	})
+	id, _ := strconv.Atoi(payload.Actions[0].Value)
+	// ORG Details
+	org := zendesk.GetOrganization(id)
+	// REQUESTED tickets
+	requested := zendesk.GetRequestedTickets(id)
+	name := "Not Set"
+	if requested.Tickets[0].AssigneeID != nil {
+		assignee := zendesk.GetTicketRequester(int(requested.Tickets[0].AssigneeID.(float64)))
+		name = assignee.Name
+	}
+	var t string
+	var s string
+	for _, ticket := range requested.Tickets {
+		i := strconv.Itoa(ticket.ID)
+		status := statusDecode(ticket.Status)
+		sat := satisfactionDecode(ticket.SatisfactionRating.Score)
+		link := fmt.Sprintf("%s/agent/tickets/%d", c.Zendesk.URL, ticket.ID)
+		t = t + "<" + link + "| #" + i + " (" + status + ")> "
+		s = s + sat + ", "
+	}
+	orglink := fmt.Sprintf("%s/agent/organizations/%d", c.Zendesk.URL, org[0].ID)
+	o := "<" + orglink + "| " + org[0].Name + "> "
+	attachment := slack.Attachment{
+		Fallback: "User acknowledged a ticket.",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Organization",
+				Value: o,
+			},
+			slack.AttachmentField{
+				Title: "Ticket Last Updated",
+				Value: requested.Tickets[0].UpdatedAt.String(),
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Ticket Assigned To",
+				Value: name,
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Tickets from this user",
+				Value: t,
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Satisfaction history",
+				Value: s,
+				Short: true,
+			},
+		},
+	}
+	SendEphemeralMessage("More information on ticket", attachment, payload.User.ID)
+}
+
+func statusDecode(status string) (img string) {
+	switch status {
+	case "solved":
+		img = ":white_check_mark:"
+	case "new":
+		img = ":new:"
+	case "open":
+		img = ":o2:"
+	case "pending":
+		img = ":parking:"
+	case "closed":
+		img = ":lock:"
+	}
+	return
+}
+
+func satisfactionDecode(sat string) (s string) {
+	switch sat {
+	case "good":
+		s = ":white_check_mark:"
+	case "bad":
+		s = ":x:"
+	case "unoffered":
+		s = ":heavy_minus_sign:"
+	}
+	return
 }
