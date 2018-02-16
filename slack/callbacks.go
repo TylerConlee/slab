@@ -82,6 +82,7 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 
 		o = "<" + orglink + "| " + org[0].Name + "> "
 	}
+	len := len(requested.Tickets) - 1
 	attachment := slack.Attachment{
 		Fallback: "User acknowledged a ticket.",
 		Fields: []slack.AttachmentField{
@@ -91,7 +92,7 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 			},
 			slack.AttachmentField{
 				Title: "Ticket Last Updated",
-				Value: requested.Tickets[0].UpdatedAt.String(),
+				Value: requested.Tickets[len].UpdatedAt.String(),
 				Short: true,
 			},
 			slack.AttachmentField{
