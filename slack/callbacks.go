@@ -2,7 +2,6 @@ package slack
 
 import (
 	"fmt"
-	"reflect"
 	"strconv"
 
 	"github.com/tylerconlee/slab/zendesk"
@@ -63,7 +62,7 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 	// REQUESTED tickets
 	requested := zendesk.GetRequestedTickets(id)
 	name := "Not Set"
-	if !reflect.ValueOf(requested.Tickets[0].AssigneeID).IsNil() {
+	if requested.Tickets[0].AssigneeID != nil {
 		assignee := zendesk.GetTicketRequester(requested.Tickets[0].AssigneeID.(int))
 		name = assignee.Name
 	}
