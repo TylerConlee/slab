@@ -2,6 +2,7 @@ package slack
 
 import (
 	"fmt"
+	"reflect"
 	"strconv"
 
 	"github.com/tylerconlee/slab/zendesk"
@@ -61,8 +62,11 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 	org := zendesk.GetOrganization(id)
 	// REQUESTED tickets
 	requested := zendesk.GetRequestedTickets(id)
-
-	assignee := zendesk.GetTicketRequester(requested.Tickets[0].AssigneeID.(int))
+	name := "Not Set"
+	if !reflect.ValueOf(requested.Tickets[0].AssigneeID.(int)).IsNil() {
+		assignee := zendesk.GetTicketRequester(requested.Tickets[0].AssigneeID.(int))
+		name = assignee.Name
+	}
 	var t string
 	var s string
 	for _, ticket := range requested.Tickets {
@@ -89,7 +93,7 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 			},
 			slack.AttachmentField{
 				Title: "Ticket Assigned To",
-				Value: assignee.Name,
+				Value: name,
 				Short: true,
 			},
 			slack.AttachmentField{
