@@ -63,7 +63,7 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 	// REQUESTED tickets
 	requested := zendesk.GetRequestedTickets(id)
 	name := "Not Set"
-	if !reflect.ValueOf(requested.Tickets[0].AssigneeID.(int)).IsNil() {
+	if !reflect.ValueOf(requested.Tickets[0].AssigneeID).IsNil() {
 		assignee := zendesk.GetTicketRequester(requested.Tickets[0].AssigneeID.(int))
 		name = assignee.Name
 	}
