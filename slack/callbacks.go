@@ -61,6 +61,8 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 	org := zendesk.GetOrganization(id)
 	// REQUESTED tickets
 	requested := zendesk.GetRequestedTickets(id)
+
+	assignee := zendesk.GetTicketRequester(requested.Tickets[0].AssigneeID.(int))
 	var t string
 	var s string
 	for _, ticket := range requested.Tickets {
@@ -79,6 +81,16 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 			slack.AttachmentField{
 				Title: "Organization",
 				Value: o,
+			},
+			slack.AttachmentField{
+				Title: "Ticket Last Updated",
+				Value: requested.Tickets[0].UpdatedAt.String(),
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Ticket Assigned To",
+				Value: assignee.Name,
+				Short: true,
 			},
 			slack.AttachmentField{
 				Title: "Tickets from this user",
