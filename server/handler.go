@@ -36,13 +36,17 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 			"error":  err,
 		})
 	}
-	log.Debug("Callback received.", map[string]interface{}{
+	log.Info("Callback received.", map[string]interface{}{
 		"module":   "server",
 		"callback": payload.CallbackID,
 	})
 	switch payload.CallbackID {
 	case "sla":
-		sl.AcknowledgeSLA(payload)
+		if payload.Actions[0].Value == "ack" {
+			sl.AcknowledgeSLA(payload)
+		} else {
+			sl.MoreInfoSLA(payload)
+		}
 
 	case "triage_set":
 		sl.SetTriager(payload)
