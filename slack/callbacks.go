@@ -51,6 +51,9 @@ func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
 	ChatUpdate(payload, attachment)
 }
 
+// MoreInfoSLA grabs additional information from Zendesk using the information
+// from the More Info button. It then sends  an ephemeral message to the
+// requester with additional Zendesk information.
 func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 	log.Info("More info SLA button clicked.", map[string]interface{}{
 		"module": "slack",

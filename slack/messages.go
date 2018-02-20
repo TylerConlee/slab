@@ -60,6 +60,9 @@ func SendMessage(message string, attachment slack.Attachment) {
 		"message":   message,
 	})
 }
+
+// SendEphemeralMessage takes a message, attachment and a user ID and sends a
+// message to that user ID.
 func SendEphemeralMessage(message string, attachment slack.Attachment, user string) {
 	params := slack.PostMessageParameters{}
 	params.Attachments = []slack.Attachment{attachment}
