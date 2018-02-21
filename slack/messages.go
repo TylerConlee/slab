@@ -256,7 +256,6 @@ func NewTicketMessage(tickets []Ticket) {
 				c.Zendesk.URL,
 				ticket.ID,
 			),
-			Footer: ticket.CreatedAt.String(),
 			Fields: []slack.AttachmentField{
 				slack.AttachmentField{
 					Title: "Ticket ID",
