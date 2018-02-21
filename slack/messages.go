@@ -97,6 +97,22 @@ func SetMessage() {
 				Value: fmt.Sprintf("<@%s>", Triager),
 			},
 		},
+
+		// Show a dropdown of all users to select new Triager target
+		Actions: []slack.AttachmentAction{
+			slack.AttachmentAction{
+				Name:  "triage_select",
+				Text:  ":white_check_mark: Set",
+				Type:  "button",
+				Value: "ack",
+				Style: "primary",
+				Confirm: &slack.ConfirmationField{
+					Text:        "Are you sure?",
+					OkText:      "Take it",
+					DismissText: "Leave it",
+				},
+			},
+		},
 	}
 	SendMessage("...", attachment)
 }
