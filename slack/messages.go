@@ -60,6 +60,9 @@ func SendMessage(message string, attachment slack.Attachment) {
 		"message":   message,
 	})
 }
+
+// SendEphemeralMessage takes a message, attachment and a user ID and sends a
+// message to that user ID.
 func SendEphemeralMessage(message string, attachment slack.Attachment, user string) {
 	params := slack.PostMessageParameters{}
 	params.Attachments = []slack.Attachment{attachment}
@@ -98,11 +101,16 @@ func SetMessage() {
 		// Show a dropdown of all users to select new Triager target
 		Actions: []slack.AttachmentAction{
 			slack.AttachmentAction{
-				Name:       "triage_select",
-				Text:       "Select Team Member",
-				Type:       "select",
-				Style:      "primary",
-				DataSource: "users",
+				Name:  "triage_select",
+				Text:  ":white_check_mark: Set",
+				Type:  "button",
+				Value: "ack",
+				Style: "primary",
+				Confirm: &slack.ConfirmationField{
+					Text:        "Are you sure?",
+					OkText:      "Take it",
+					DismissText: "Leave it",
+				},
 			},
 		},
 	}
