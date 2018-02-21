@@ -257,6 +257,18 @@ func NewTicketMessage(tickets []Ticket) {
 				ticket.ID,
 			),
 			Footer: ticket.CreatedAt.String(),
+			Fields: []slack.AttachmentField{
+				slack.AttachmentField{
+					Title: "Ticket ID",
+					Value: strconv.Itoa(ticket.ID),
+					Short: true,
+				},
+				slack.AttachmentField{
+					Title: "Created At",
+					Value: ticket.CreatedAt.String(),
+					Short: true,
+				},
+			},
 		}
 		params.Attachments = append(params.Attachments, attachment)
 
