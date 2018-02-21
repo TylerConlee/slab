@@ -15,8 +15,8 @@ func SetTriager(payload *slack.AttachmentActionCallback) {
 		return
 	}
 
-	if VerifyUser(payload.Actions[0].SelectedOptions[0].Value) {
-		Triager = payload.Actions[0].SelectedOptions[0].Value
+	if VerifyUser(payload.User.ID) {
+		Triager = payload.User.ID
 		t := fmt.Sprintf("<@%s> is now set as Triager", Triager)
 		log.Info("Triager set.", map[string]interface{}{
 			"module":  "slack",
@@ -51,6 +51,9 @@ func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
 	ChatUpdate(payload, attachment)
 }
 
+// MoreInfoSLA grabs additional information from Zendesk using the information
+// from the More Info button. It then sends  an ephemeral message to the
+// requester with additional Zendesk information.
 func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 	log.Info("More info SLA button clicked.", map[string]interface{}{
 		"module": "slack",
