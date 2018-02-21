@@ -16,13 +16,9 @@ func RunTimer(interval time.Duration) {
 		"interval": interval,
 	})
 	t := time.NewTicker(interval)
+	// TODO: Plugin Check
 	for {
-		// TODO: Add func to connect to Zendesk and pass single config
-		tick := zendesk.GetAllTickets(
-			c.Zendesk.User,
-			c.Zendesk.APIKey,
-			c.Zendesk.URL,
-		)
+		tick := zendesk.GetAllTickets()
 
 		log.Info("Successfully grabbed and parsed tickets from Zendesk", map[string]interface{}{
 			"module": "main",
@@ -47,6 +43,7 @@ func RunTimer(interval time.Duration) {
 					m := slack.Ticket(ticket)
 					n, c := slack.PrepSLANotification(m, notify)
 					user := zendesk.GetTicketRequester(int(ticket.Requester))
+					// TODO: Send Notifications to plugins
 					slack.SLAMessage(n, m, c, user.Name, user.ID)
 				}
 			}
