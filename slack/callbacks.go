@@ -15,8 +15,8 @@ func SetTriager(payload *slack.AttachmentActionCallback) {
 		return
 	}
 
-	if VerifyUser(payload.Actions[0].SelectedOptions[0].Value) {
-		Triager = payload.Actions[0].SelectedOptions[0].Value
+	if VerifyUser(payload.User.ID) {
+		Triager = payload.User.ID
 		t := fmt.Sprintf("<@%s> is now set as Triager", Triager)
 		log.Info("Triager set.", map[string]interface{}{
 			"module":  "slack",

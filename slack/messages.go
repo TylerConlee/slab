@@ -97,17 +97,6 @@ func SetMessage() {
 				Value: fmt.Sprintf("<@%s>", Triager),
 			},
 		},
-
-		// Show a dropdown of all users to select new Triager target
-		Actions: []slack.AttachmentAction{
-			slack.AttachmentAction{
-				Name:       "triage_select",
-				Text:       "Select Team Member",
-				Type:       "select",
-				Style:      "primary",
-				DataSource: "users",
-			},
-		},
 	}
 	SendMessage("...", attachment)
 }
