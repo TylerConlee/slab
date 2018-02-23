@@ -12,6 +12,17 @@ import (
 //	set)
 var TwilioPhone string
 
+// EnableTwilio changes the Enabled Twilio option to the setting passed to it.
+func EnableTwilio(e bool) {
+	p.Twilio.Enabled = e
+}
+
+// SetTwilioPhone changes the TwilioPhone to the value of the number passed to
+// it.
+func SetTwilioPhone(n string) {
+	TwilioPhone = n
+}
+
 // SendTwilio sends a message to the phone number currently set
 // as TwilioPhone using the connection data found in the config
 func SendTwilio(message string) {
