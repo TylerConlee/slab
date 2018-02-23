@@ -2,11 +2,18 @@ package plugins
 
 import "github.com/tylerconlee/slab/config"
 
+// plugins contains a list of all available plugins
+type plugins struct {
+	Twilio    Twilio
+	PagerDuty PagerDuty
+}
+
 // Twilio contains the connection details for the Twilio API:
 // https://www.twilio.com/docs/api
 type Twilio struct {
-	Email string
-	Key   string
+	AccountID string
+	Auth      string
+	Phone     string
 }
 
 // PagerDuty contains the connection details for the PagerDuty API:
@@ -16,12 +23,6 @@ type PagerDuty struct {
 	Key   string
 }
 
-// plugins contains a list of all available plugins
-type plugins struct {
-	Twilio    Twilio
-	PagerDuty PagerDuty
-}
-
 var p plugins
 
 // LoadPlugins is sent a map of the plugin configuration. It parses the
@@ -29,8 +30,9 @@ var p plugins
 func LoadPlugins(c config.Config) {
 	p = plugins{
 		Twilio{
-			c.Twilio.Email,
-			c.Twilio.Key,
+			c.Twilio.AccountID,
+			c.Twilio.Auth,
+			c.Twilio.Phone,
 		},
 		PagerDuty{
 			c.PagerDuty.Email,
