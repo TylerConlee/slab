@@ -1,6 +1,8 @@
 package slack
 
-import "strings"
+import (
+	"strings"
+)
 
 // parseCommand takes the message that mentions the bot user and identifies
 // what the user is asking for.
@@ -19,6 +21,7 @@ func parseCommand(text string, user string) {
 		HelpMessage()
 	case "unset":
 		UnsetMessage()
+
 	}
 
 }

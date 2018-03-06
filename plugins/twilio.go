@@ -17,10 +17,20 @@ func EnableTwilio(e bool) {
 	p.Twilio.Enabled = e
 }
 
-// SetTwilioPhone changes the TwilioPhone to the value of the number passed to
+// TwilioSet changes the TwilioPhone to the value of the number passed to
 // it.
-func SetTwilioPhone(n string) {
+func TwilioSet(n string) {
 	TwilioPhone = n
+}
+
+// TwilioUnset sets the TwilioPhone to `none`
+func TwilioUnset() {
+
+}
+
+// TwilioStatus returns the current setting
+func TwilioStatus() {
+
 }
 
 // SendTwilio sends a message to the phone number currently set
