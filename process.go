@@ -3,6 +3,7 @@ package main
 import (
 	"time"
 
+	"github.com/tylerconlee/slab/plugins"
 	"github.com/tylerconlee/slab/slack"
 	"github.com/tylerconlee/slab/zendesk"
 )
@@ -16,7 +17,7 @@ func RunTimer(interval time.Duration) {
 		"interval": interval,
 	})
 	t := time.NewTicker(interval)
-	// TODO: Plugin Check
+	plugins.LoadPlugins(c)
 	for {
 		tick := zendesk.GetAllTickets()
 
@@ -42,8 +43,8 @@ func RunTimer(interval time.Duration) {
 					})
 					m := slack.Ticket(ticket)
 					n, c := slack.PrepSLANotification(m, notify)
+					plugins.SendDispatcher(n)
 					user := zendesk.GetTicketRequester(int(ticket.Requester))
-					// TODO: Send Notifications to plugins
 					slack.SLAMessage(n, m, c, user.Name, user.ID)
 				}
 			}

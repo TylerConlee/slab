@@ -437,27 +437,6 @@ func ChatUpdate(
 	})
 }
 
-// parseCommand takes the message that mentions the bot user and identifies
-// what the user is asking for.
-func parseCommand(text string, user string) {
-	t := strings.Fields(text)
-	switch t[1] {
-	case "set":
-		SetMessage()
-	case "diag":
-		DiagMessage(user)
-	case "whois":
-		WhoIsMessage()
-	case "status":
-		StatusMessage()
-	case "help":
-		HelpMessage()
-	case "unset":
-		UnsetMessage()
-	}
-
-}
-
 // VerifyUser takes a User ID string and runs the Slack GetUserInfo request. If
 // the user exists, the function returns true.
 func VerifyUser(user string) bool {
