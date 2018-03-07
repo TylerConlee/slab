@@ -2,6 +2,8 @@ package slack
 
 import (
 	"strings"
+
+	"github.com/tylerconlee/slab/plugins"
 )
 
 // parseCommand takes the message that mentions the bot user and identifies
@@ -21,6 +23,16 @@ func parseCommand(text string, user string) {
 		HelpMessage()
 	case "unset":
 		UnsetMessage()
+	case "twilio":
+		switch t[2] {
+		case "set":
+			plugins.TwilioSet(t[3])
+
+		case "unset":
+			plugins.TwilioUnset()
+		case "status":
+			plugins.TwilioStatus()
+		}
 
 	}
 
