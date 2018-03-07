@@ -19,6 +19,7 @@ var TwilioPhone string
 // EnableTwilio changes the Enabled Twilio option to the setting passed to it.
 func EnableTwilio(e bool) {
 	p.Twilio.Enabled = e
+
 }
 
 // TwilioSet changes the TwilioPhone to the value of the number passed to
@@ -35,7 +36,7 @@ func TwilioSet(n string) {
 
 // TwilioUnset sets the TwilioPhone to `none`
 func TwilioUnset() {
-
+	TwilioPhone = ""
 }
 
 // TwilioStatus returns the current setting
