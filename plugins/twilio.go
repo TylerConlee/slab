@@ -6,7 +6,11 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	l "github.com/tylerconlee/slab/log"
 )
+
+var log = l.Log
 
 // TwilioPhone is the "to" phone number that's set through Slack (@slab twilio
 //	set)
@@ -21,6 +25,12 @@ func EnableTwilio(e bool) {
 // it.
 func TwilioSet(n string) {
 	TwilioPhone = n
+	log.Info("Phone number set.", map[string]interface{}{
+		"module": "plugin",
+		"plugin": "Twilio",
+		"phone":  TwilioPhone,
+	})
+
 }
 
 // TwilioUnset sets the TwilioPhone to `none`
