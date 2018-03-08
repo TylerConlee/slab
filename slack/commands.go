@@ -31,7 +31,8 @@ func parseCommand(text string, user string) {
 		case "unset":
 			plugins.TwilioUnset()
 		case "status":
-			plugins.TwilioStatus()
+			s := plugins.TwilioStatus()
+			SendMessage("Plugin status", s)
 		case "enable":
 			plugins.EnableTwilio()
 			a := slack.Attachment{
