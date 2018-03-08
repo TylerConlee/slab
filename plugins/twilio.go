@@ -16,10 +16,14 @@ var log = l.Log
 //	set)
 var TwilioPhone string
 
-// EnableTwilio changes the Enabled Twilio option to the setting passed to it.
-func EnableTwilio(e bool) {
-	p.Twilio.Enabled = e
+// EnableTwilio changes the Enabled Twilio option to true.
+func EnableTwilio() {
+	p.Twilio.Enabled = true
+}
 
+// DisableTwilio changes the Enabled Twilio option to false.
+func DisableTwilio() {
+	p.Twilio.Enabled = false
 }
 
 // TwilioSet changes the TwilioPhone to the value of the number passed to
@@ -31,7 +35,6 @@ func TwilioSet(n string) {
 		"plugin": "Twilio",
 		"phone":  TwilioPhone,
 	})
-
 }
 
 // TwilioUnset sets the TwilioPhone to `none`

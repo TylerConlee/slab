@@ -1,7 +1,6 @@
 package slack
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/tylerconlee/slab/plugins"
@@ -34,16 +33,28 @@ func parseCommand(text string, user string) {
 		case "status":
 			plugins.TwilioStatus()
 		case "enable":
-			s, err := strconv.ParseBool(t[3])
-			if err != nil {
-				log.Error("Error parsing boolean to enable plugin", map[string]interface{}{
-					"module": "slack",
-					"plugin": "twilio",
-				})
-			}
-			plugins.EnableTwilio(s)
+			plugins.EnableTwilio()
 			a := slack.Attachment{
-				Title: "Twilio Enabled: " + strconv.FormatBool(s),
+				Title: "Twilio Plugin",
+				Fields: []slack.AttachmentField{
+					slack.AttachmentField{
+						Title: "Enabled",
+						Value: ":white_check_mark:",
+					},
+				},
+			}
+			SendMessage("Plugin Twilio has been updated", a)
+
+		case "disable":
+			plugins.DisableTwilio()
+			a := slack.Attachment{
+				Title: "Twilio Plugin",
+				Fields: []slack.AttachmentField{
+					slack.AttachmentField{
+						Title: "Enabled",
+						Value: ":x:",
+					},
+				},
 			}
 			SendMessage("Plugin Twilio has been updated", a)
 		}
