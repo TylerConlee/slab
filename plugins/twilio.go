@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	l "github.com/tylerconlee/slab/log"
+	"github.com/tylerconlee/slack"
 )
 
 var log = l.Log
@@ -16,10 +17,14 @@ var log = l.Log
 //	set)
 var TwilioPhone string
 
-// EnableTwilio changes the Enabled Twilio option to the setting passed to it.
-func EnableTwilio(e bool) {
-	p.Twilio.Enabled = e
+// EnableTwilio changes the Enabled Twilio option to true.
+func EnableTwilio() {
+	p.Twilio.Enabled = true
+}
 
+// DisableTwilio changes the Enabled Twilio option to false.
+func DisableTwilio() {
+	p.Twilio.Enabled = false
 }
 
 // TwilioSet changes the TwilioPhone to the value of the number passed to
@@ -31,7 +36,6 @@ func TwilioSet(n string) {
 		"plugin": "Twilio",
 		"phone":  TwilioPhone,
 	})
-
 }
 
 // TwilioUnset sets the TwilioPhone to `none`
@@ -40,8 +44,27 @@ func TwilioUnset() {
 }
 
 // TwilioStatus returns the current setting
-func TwilioStatus() {
-
+func TwilioStatus() (attachment slack.Attachment) {
+	s := ":x:"
+	if p.Twilio.Enabled {
+		s = ":white_check_mark:"
+	}
+	attachment = slack.Attachment{
+		Title: "Twilio",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Enabled",
+				Value: s,
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Current Phone Number",
+				Value: TwilioPhone,
+				Short: true,
+			},
+		},
+	}
+	return attachment
 }
 
 // SendTwilio sends a message to the phone number currently set
