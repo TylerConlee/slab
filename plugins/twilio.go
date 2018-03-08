@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	l "github.com/tylerconlee/slab/log"
+	"github.com/tylerconlee/slack"
 )
 
 var log = l.Log
@@ -43,8 +44,27 @@ func TwilioUnset() {
 }
 
 // TwilioStatus returns the current setting
-func TwilioStatus() {
-
+func TwilioStatus() (attachment slack.Attachment) {
+	s := ":x:"
+	if p.Twilio.Enabled {
+		s = ":white_check_mark:"
+	}
+	attachment = slack.Attachment{
+		Title: "Twilio",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Enabled",
+				Value: s,
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Current Phone Number",
+				Value: TwilioPhone,
+				Short: true,
+			},
+		},
+	}
+	return attachment
 }
 
 // SendTwilio sends a message to the phone number currently set
