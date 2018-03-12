@@ -25,16 +25,17 @@ func parseCommand(text string, user string) {
 	case "unset":
 		UnsetMessage()
 	case "twilio":
+		p := plugins.LoadPlugins(c)
 		switch t[2] {
 		case "set":
 			plugins.TwilioSet(t[3])
 		case "unset":
 			plugins.TwilioUnset()
 		case "status":
-			s := plugins.TwilioStatus()
+			s := p.TwilioStatus()
 			SendMessage("Plugin status", s)
 		case "enable":
-			plugins.EnableTwilio()
+			p.EnableTwilio()
 			a := slack.Attachment{
 				Title: "Twilio Plugin",
 				Fields: []slack.AttachmentField{
@@ -47,7 +48,7 @@ func parseCommand(text string, user string) {
 			SendMessage("Plugin Twilio has been updated", a)
 
 		case "disable":
-			plugins.DisableTwilio()
+			p.DisableTwilio()
 			a := slack.Attachment{
 				Title: "Twilio Plugin",
 				Fields: []slack.AttachmentField{
