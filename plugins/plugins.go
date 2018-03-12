@@ -3,7 +3,7 @@ package plugins
 import "github.com/tylerconlee/slab/config"
 
 // plugins contains a list of all available plugins
-type plugins struct {
+type Plugins struct {
 	Twilio    Twilio
 	PagerDuty PagerDuty
 }
@@ -25,12 +25,10 @@ type PagerDuty struct {
 	Enabled bool
 }
 
-var p plugins
-
 // LoadPlugins is sent a map of the plugin configuration. It parses the
 // configuration and determines which plugins are available.
-func LoadPlugins(c config.Config) {
-	p = plugins{
+func LoadPlugins(c config.Config) (p Plugins) {
+	return Plugins{
 		Twilio{
 			c.Twilio.AccountID,
 			c.Twilio.Auth,
@@ -47,7 +45,7 @@ func LoadPlugins(c config.Config) {
 
 // SendDispatcher receives the message from the process loop and checks which
 // plugins are enabled and sends the appropriate notifications through them.
-func SendDispatcher(message string) {
+func (p *Plugins) SendDispatcher(message string) {
 	log.Info("Plugins reached.", map[string]interface{}{
 		"module": "plugin",
 		"plugin": p,
@@ -57,6 +55,6 @@ func SendDispatcher(message string) {
 			"module": "plugin",
 			"plugin": "twilio",
 		})
-		SendTwilio(message)
+		p.SendTwilio(message)
 	}
 }

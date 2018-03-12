@@ -18,12 +18,12 @@ var log = l.Log
 var TwilioPhone string
 
 // EnableTwilio changes the Enabled Twilio option to true.
-func EnableTwilio() {
+func (p *Plugins) EnableTwilio() {
 	p.Twilio.Enabled = true
 }
 
 // DisableTwilio changes the Enabled Twilio option to false.
-func DisableTwilio() {
+func (p *Plugins) DisableTwilio() {
 	p.Twilio.Enabled = false
 }
 
@@ -44,7 +44,7 @@ func TwilioUnset() {
 }
 
 // TwilioStatus returns the current setting
-func TwilioStatus() (attachment slack.Attachment) {
+func (p *Plugins) TwilioStatus() (attachment slack.Attachment) {
 	s := ":x:"
 	if p.Twilio.Enabled {
 		s = ":white_check_mark:"
@@ -69,7 +69,7 @@ func TwilioStatus() (attachment slack.Attachment) {
 
 // SendTwilio sends a message to the phone number currently set
 // as TwilioPhone using the connection data found in the config
-func SendTwilio(message string) {
+func (p *Plugins) SendTwilio(message string) {
 
 	// Prep text message
 	msgData := url.Values{}
