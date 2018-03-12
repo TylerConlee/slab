@@ -48,6 +48,10 @@ func LoadPlugins(c config.Config) {
 // SendDispatcher receives the message from the process loop and checks which
 // plugins are enabled and sends the appropriate notifications through them.
 func SendDispatcher(message string) {
+	log.Info("Plugins reached.", map[string]interface{}{
+		"module": "plugin",
+		"plugin": p,
+	})
 	if (p.Twilio.Enabled) && (p.Twilio.Phone != "") {
 		log.Info("Plugin loaded. Sending Twilio message.", map[string]interface{}{
 			"module": "plugin",
