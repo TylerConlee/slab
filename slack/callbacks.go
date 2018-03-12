@@ -35,7 +35,7 @@ func SetTriager(payload *slack.AttachmentActionCallback) {
 // AcknowledgeSLA generates a new Slack attachment to state that a user has
 // acknowledged a ticket.
 func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
-	t := fmt.Sprintf("<@%s> acknowledged this ticket", payload.User.Name)
+	t := fmt.Sprintf("<@%s> acknowledged this ticket at %s", payload.User.Name, payload.ActionTs)
 	log.Info("SLA ticket acknowledged.", map[string]interface{}{
 		"module": "slack",
 		"ack":    payload.User.Name,
