@@ -18,6 +18,10 @@ func RunTimer(interval time.Duration) {
 	})
 	t := time.NewTicker(interval)
 	p := plugins.LoadPlugins(c)
+	log.Info("Loaded plugins.", map[string]interface{}{
+		"module":  "main",
+		"plugins": p,
+	})
 	for {
 		tick := zendesk.GetAllTickets()
 
