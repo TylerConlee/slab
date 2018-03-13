@@ -2,7 +2,7 @@ package plugins
 
 import "github.com/tylerconlee/slab/config"
 
-// plugins contains a list of all available plugins
+// Plugins contains a list of all available plugins
 type Plugins struct {
 	Twilio    Twilio
 	PagerDuty PagerDuty

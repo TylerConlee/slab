@@ -17,6 +17,10 @@ var log = l.Log
 //	set)
 var TwilioPhone string
 
+// TwilioFrom is the "from" phone number that's set through Slack (@slab twilio
+// configure)
+var TwilioFrom string
+
 // EnableTwilio changes the Enabled Twilio option to true.
 func (p *Plugins) EnableTwilio() {
 	p.Twilio.Enabled = true
@@ -100,4 +104,15 @@ func (p *Plugins) SendTwilio(message string) {
 	} else {
 		fmt.Println(resp.Status)
 	}
+}
+
+// TwilioConfigure sets the "from" phone number to allow for international
+// numbers to be set properly
+func TwilioConfigure(n string) {
+	TwilioFrom = n
+	log.Info("From phone number set.", map[string]interface{}{
+		"module": "plugin",
+		"plugin": "Twilio",
+		"from":   TwilioFrom,
+	})
 }
