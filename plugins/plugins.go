@@ -30,14 +30,14 @@ type PagerDuty struct {
 func LoadPlugins(c config.Config) (p Plugins) {
 	return Plugins{
 		Twilio{
-			c.Twilio.AccountID,
-			c.Twilio.Auth,
-			c.Twilio.Phone,
+			c.Plugins.Twilio.AccountID,
+			c.Plugins.Twilio.Auth,
+			c.Plugins.Twilio.Phone,
 			true,
 		},
 		PagerDuty{
-			c.PagerDuty.Email,
-			c.PagerDuty.Key,
+			c.Plugins.PagerDuty.Email,
+			c.Plugins.PagerDuty.Key,
 			true,
 		},
 	}
