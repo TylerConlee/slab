@@ -13,7 +13,6 @@ type Plugins struct {
 type Twilio struct {
 	AccountID string
 	Auth      string
-	Phone     string
 	Enabled   bool
 }
 
@@ -32,7 +31,6 @@ func LoadPlugins(c config.Config) (p Plugins) {
 		Twilio{
 			c.Plugins.Twilio.AccountID,
 			c.Plugins.Twilio.Auth,
-			c.Plugins.Twilio.Phone,
 			true,
 		},
 		PagerDuty{

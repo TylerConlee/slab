@@ -78,7 +78,7 @@ func (p *Plugins) SendTwilio(message string) {
 	// Prep text message
 	msgData := url.Values{}
 	msgData.Set("To", TwilioPhone)
-	msgData.Set("From", p.Twilio.Phone)
+	msgData.Set("From", TwilioFrom)
 	msgData.Set("Body", message)
 	msgDataReader := *strings.NewReader(msgData.Encode())
 
