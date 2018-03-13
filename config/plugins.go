@@ -1,8 +1,8 @@
 package config
 
 type Plugins struct {
-	Twilio
-	PagerDuty
+	Twilio    Twilio
+	PagerDuty PagerDuty
 }
 
 type Twilio struct {
