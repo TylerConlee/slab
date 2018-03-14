@@ -28,11 +28,14 @@ func parseCommand(text string, user string) {
 		p := plugins.LoadPlugins(c)
 		switch t[2] {
 		case "set":
-			plugins.TwilioSet(t[3])
+			s := plugins.TwilioSet(t[3])
+			SendMessage("Plugin message", s)
 		case "unset":
-			plugins.TwilioUnset()
+			s := plugins.TwilioUnset()
+			SendMessage("Plugin message", s)
 		case "configure":
-			plugins.TwilioConfigure(t[3])
+			s := plugins.TwilioConfigure(t[3])
+			SendMessage("Plugin message", s)
 		case "status":
 			s := p.TwilioStatus()
 			SendMessage("Plugin status", s)

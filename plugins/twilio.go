@@ -22,45 +22,29 @@ var TwilioPhone string
 var TwilioFrom string
 
 // EnableTwilio changes the Enabled Twilio option to true.
-func (p *Plugins) EnableTwilio() {
+func (p *Plugins) EnableTwilio() (attachment slack.Attachment) {
 	p.Twilio.Enabled = true
+	return p.checkStatus()
 }
 
 // DisableTwilio changes the Enabled Twilio option to false.
-func (p *Plugins) DisableTwilio() {
+func (p *Plugins) DisableTwilio() (attachment slack.Attachment) {
 	p.Twilio.Enabled = false
+	return p.checkStatus()
 }
 
 // TwilioSet changes the TwilioPhone to the value of the number passed to
 // it.
-func TwilioSet(n string) {
+func TwilioSet(n string) (attachment slack.Attachment) {
 	TwilioPhone = n
 	log.Info("Phone number set.", map[string]interface{}{
 		"module": "plugin",
 		"plugin": "Twilio",
 		"phone":  TwilioPhone,
 	})
-}
-
-// TwilioUnset sets the TwilioPhone to `none`
-func TwilioUnset() {
-	TwilioPhone = ""
-}
-
-// TwilioStatus returns the current setting
-func (p *Plugins) TwilioStatus() (attachment slack.Attachment) {
-	s := ":x:"
-	if p.Twilio.Enabled {
-		s = ":white_check_mark:"
-	}
 	attachment = slack.Attachment{
-		Title: "Twilio",
+		Title: "Twilio 'To' Phone Number Set",
 		Fields: []slack.AttachmentField{
-			slack.AttachmentField{
-				Title: "Enabled",
-				Value: s,
-				Short: true,
-			},
 			slack.AttachmentField{
 				Title: "Current Phone Number",
 				Value: TwilioPhone,
@@ -69,6 +53,27 @@ func (p *Plugins) TwilioStatus() (attachment slack.Attachment) {
 		},
 	}
 	return attachment
+}
+
+// TwilioUnset sets the TwilioPhone to `none`
+func TwilioUnset() (attachment slack.Attachment) {
+	TwilioPhone = ""
+	attachment = slack.Attachment{
+		Title: "Twilio 'To' Phone Number Unset",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Current Phone Number",
+				Value: TwilioPhone,
+				Short: true,
+			},
+		},
+	}
+	return attachment
+}
+
+// TwilioStatus returns the current setting
+func (p *Plugins) TwilioStatus() (attachment slack.Attachment) {
+	return p.checkStatus()
 }
 
 // SendTwilio sends a message to the phone number currently set
@@ -108,11 +113,48 @@ func (p *Plugins) SendTwilio(message string) {
 
 // TwilioConfigure sets the "from" phone number to allow for international
 // numbers to be set properly
-func TwilioConfigure(n string) {
+func TwilioConfigure(n string) (attachment slack.Attachment) {
 	TwilioFrom = n
 	log.Info("From phone number set.", map[string]interface{}{
 		"module": "plugin",
 		"plugin": "Twilio",
 		"from":   TwilioFrom,
 	})
+	attachment = slack.Attachment{
+		Title: "Twilio 'From' Phone Number Set",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Current Phone Number",
+				Value: TwilioFrom,
+				Short: true,
+			},
+		},
+	}
+	return attachment
+}
+
+func (p *Plugins) checkStatus() (attachment slack.Attachment) {
+	s := ":x:"
+	if p.Twilio.Enabled {
+		s = ":white_check_mark:"
+	}
+	attachment = slack.Attachment{
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Enabled",
+				Value: s,
+			},
+			slack.AttachmentField{
+				Title: "Current 'From' Phone Number",
+				Value: TwilioFrom,
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Current 'To' Phone Number",
+				Value: TwilioPhone,
+				Short: true,
+			},
+		},
+	}
+	return attachment
 }
