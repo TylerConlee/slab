@@ -8,7 +8,6 @@ type Plugins struct {
 type Twilio struct {
 	AccountID string
 	Auth      string
-	Phone     string
 }
 
 type PagerDuty struct {

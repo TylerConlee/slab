@@ -13,7 +13,6 @@ type Plugins struct {
 type Twilio struct {
 	AccountID string
 	Auth      string
-	Phone     string
 	Enabled   bool
 }
 
@@ -32,7 +31,6 @@ func LoadPlugins(c config.Config) (p Plugins) {
 		Twilio{
 			c.Plugins.Twilio.AccountID,
 			c.Plugins.Twilio.Auth,
-			c.Plugins.Twilio.Phone,
 			true,
 		},
 		PagerDuty{
@@ -50,7 +48,19 @@ func (p *Plugins) SendDispatcher(message string) {
 		"module": "plugin",
 		"plugin": p,
 	})
-	if (p.Twilio.Enabled) && (p.Twilio.Phone != "") {
+	if TwilioPhone == "" {
+		log.Info("To phone number for Twilio not set.", map[string]interface{}{
+			"module": "plugin",
+			"plugin": "twilio",
+		})
+	}
+	if TwilioFrom == "" {
+		log.Info("From phone number for Twilio not set.", map[string]interface{}{
+			"module": "plugin",
+			"plugin": "twilio",
+		})
+	}
+	if (p.Twilio.Enabled) && (TwilioPhone != "") {
 		log.Info("Plugin loaded. Sending Twilio message.", map[string]interface{}{
 			"module": "plugin",
 			"plugin": "twilio",
