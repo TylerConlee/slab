@@ -442,7 +442,7 @@ func ChatUpdate(
 func VerifyUser(user string) bool {
 	_, err := api.GetUserInfo(user)
 	if err != nil {
-		log.Fatal(map[string]interface{}{
+		log.Error("Error verifying user", map[string]interface{}{
 			"module": "slack",
 			"error":  err,
 		})
