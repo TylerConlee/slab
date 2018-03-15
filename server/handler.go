@@ -31,7 +31,7 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 	payload := &slack.AttachmentActionCallback{}
 	err := json.Unmarshal([]byte(r.PostFormValue("payload")), payload)
 	if err != nil {
-		log.Fatal(map[string]interface{}{
+		log.Error("Error unmarshaling callback payload.", map[string]interface{}{
 			"module": "server",
 			"error":  err,
 		})

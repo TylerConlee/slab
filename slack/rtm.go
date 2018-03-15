@@ -32,7 +32,7 @@ func StartSlack(v string) {
 	// retrieve the team info for the newly connected Slack team
 	d, err := api.GetTeamInfo()
 	if err != nil {
-		log.Fatal(map[string]interface{}{
+		log.Error("Error retrieving team information from Slack.", map[string]interface{}{
 			"module": "slack",
 			"error":  err,
 		})
@@ -81,7 +81,7 @@ func startRTM() {
 				})
 
 				if err != nil {
-					log.Fatal(map[string]interface{}{
+					log.Error("Error getting user information from Slack", map[string]interface{}{
 						"module": "slack",
 						"error":  err,
 					})

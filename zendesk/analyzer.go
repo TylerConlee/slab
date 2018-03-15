@@ -24,7 +24,7 @@ func GetTimeRemaining(ticket ActiveTicket) (remain time.Time) {
 		if p["breach_at"] != nil {
 			breach, err := time.Parse(time.RFC3339, p["breach_at"].(string))
 			if nil != err {
-				log.Fatal(map[string]interface{}{
+				log.Error("Error getting remaining time for ticket.", map[string]interface{}{
 					"module": "zendesk",
 					"error":  err,
 				})
