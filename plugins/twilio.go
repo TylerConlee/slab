@@ -11,25 +11,30 @@ import (
 	"github.com/tylerconlee/slack"
 )
 
-var log = l.Log
+var (
+	log = l.Log
 
-// TwilioPhone is the "to" phone number that's set through Slack (@slab twilio
-//	set)
-var TwilioPhone string
+	// TwilioPhone is the "to" phone number that's set through Slack (@slab twilio
+	//	set)
+	TwilioPhone string
 
-// TwilioFrom is the "from" phone number that's set through Slack (@slab twilio
-// configure)
-var TwilioFrom string
+	// TwilioFrom is the "from" phone number that's set through Slack (@slab twilio
+	// configure)
+	TwilioFrom string
+
+	// TwilioEnabled holds whether the Twilio plugin is enabled or disabled.
+	TwilioEnabled bool
+)
 
 // EnableTwilio changes the Enabled Twilio option to true.
 func (p *Plugins) EnableTwilio() (attachment slack.Attachment) {
-	p.Twilio.Enabled = true
+	TwilioEnabled = true
 	return p.checkStatus()
 }
 
 // DisableTwilio changes the Enabled Twilio option to false.
 func (p *Plugins) DisableTwilio() (attachment slack.Attachment) {
-	p.Twilio.Enabled = false
+	TwilioEnabled = false
 	return p.checkStatus()
 }
 

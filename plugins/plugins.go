@@ -60,7 +60,7 @@ func (p *Plugins) SendDispatcher(message string) {
 			"plugin": "twilio",
 		})
 	}
-	if (p.Twilio.Enabled) && (TwilioPhone != "") {
+	if (TwilioEnabled) && (TwilioPhone != "") {
 		log.Info("Plugin loaded. Sending Twilio message.", map[string]interface{}{
 			"module": "plugin",
 			"plugin": "twilio",
