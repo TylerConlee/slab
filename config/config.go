@@ -22,6 +22,7 @@ type Config struct {
 	TriageEnabled bool
 	Metadata      Metadata
 	Port          int
+	Plugins       Plugins
 }
 
 // Metadata holds configuration related to the server metadata used in status calls
