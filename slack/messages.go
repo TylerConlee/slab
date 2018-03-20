@@ -256,7 +256,18 @@ func NewTicketMessage(tickets []Ticket) {
 				c.Zendesk.URL,
 				ticket.ID,
 			),
-			Footer: ticket.CreatedAt.String(),
+			Fields: []slack.AttachmentField{
+				slack.AttachmentField{
+					Title: "Ticket ID",
+					Value: strconv.Itoa(ticket.ID),
+					Short: true,
+				},
+				slack.AttachmentField{
+					Title: "Created At",
+					Value: ticket.CreatedAt.String(),
+					Short: true,
+				},
+			},
 		}
 		params.Attachments = append(params.Attachments, attachment)
 
@@ -426,33 +437,12 @@ func ChatUpdate(
 	})
 }
 
-// parseCommand takes the message that mentions the bot user and identifies
-// what the user is asking for.
-func parseCommand(text string, user string) {
-	t := strings.Fields(text)
-	switch t[1] {
-	case "set":
-		SetMessage()
-	case "diag":
-		DiagMessage(user)
-	case "whois":
-		WhoIsMessage()
-	case "status":
-		StatusMessage()
-	case "help":
-		HelpMessage()
-	case "unset":
-		UnsetMessage()
-	}
-
-}
-
 // VerifyUser takes a User ID string and runs the Slack GetUserInfo request. If
 // the user exists, the function returns true.
 func VerifyUser(user string) bool {
 	_, err := api.GetUserInfo(user)
 	if err != nil {
-		log.Fatal(map[string]interface{}{
+		log.Error("Error verifying user", map[string]interface{}{
 			"module": "slack",
 			"error":  err,
 		})

@@ -37,6 +37,10 @@ glide install
 
 ## Release History
 
+* v1.3
+  * **[FEATURE]** - Plugins - Third party plugins that integrate with Slab and provide additional notification functionality, such as Twilio.
+  * **[BUGFIX]** - Slab no longer crashes when the Zendesk API is unreachable
+  * **[CHANGE]** - Added timestamp to acknowledge message for further clarity
 * v1.2
   * **[FEATURE]** - More Info - When a ticket sends an SLA notification to Slack,
     you can now see more information about the ticket and who requested it with the new More Info button
@@ -76,7 +80,7 @@ Distributed under the MIT license. See ``LICENSE`` for more information.
 
 ## Contributing
 
-1. Fork it (<https://github.com/yourname/yourproject/fork>)
+1. Fork it (<https://github.com/tylerconlee/slab/fork>)
 2. Create your feature branch (`git checkout -b feature/fooBar`)
 3. Commit your changes (`git commit -am 'Add some fooBar'`)
 4. Push to the branch (`git push origin feature/fooBar`)

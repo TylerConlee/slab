@@ -14,15 +14,14 @@ var log = l.Log
 
 // GetAllTickets grabs the latest tickets from Zendesk and returns the JSON
 // Zendesk Endpoint: /incremental/tickets.json?include=slas
-// TODO: update tickets.Tickets with new naimg scheme
-func GetAllTickets(user string, key string, url string) (tickets ZenOutput) {
+func GetAllTickets() (tickets ZenOutput) {
 	log.Info("Starting request to Zendesk for tickets", map[string]interface{}{
 		"module": "zendesk",
 	})
 
 	t := time.Now().AddDate(0, 0, -5).Unix()
-	zenURL := url + "/api/v2/incremental/tickets.json?include=slas&start_time=" + strconv.FormatInt(t, 10)
-	resp := makeRequest(user, key, zenURL)
+	zen := c.Zendesk.URL + "/api/v2/incremental/tickets.json?include=slas&start_time=" + strconv.FormatInt(t, 10)
+	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 	tickets = parseJSON(resp)
 	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
 		"module":      "zendesk",
@@ -50,7 +49,7 @@ func GetTicketRequester(user int) (output User) {
 	users := Users{}
 	err := json.Unmarshal(resp, &users)
 	if err != nil {
-		log.Fatal(map[string]interface{}{
+		log.Error("Error with Zendesk requestor parsing", map[string]interface{}{
 			"module": "zendesk",
 			"error":  err,
 		})
@@ -76,10 +75,11 @@ func GetOrganization(user int) (org Orgs) {
 	orgs := Organizations{}
 	err := json.Unmarshal(resp, &orgs)
 	if err != nil {
-		log.Fatal(map[string]interface{}{
-			"module": "zendesk",
-			"error":  err,
-		})
+		log.Error(
+			"Error with Zendesk org parsing.", map[string]interface{}{
+				"module": "zendesk",
+				"error":  err,
+			})
 	}
 	return orgs.Orgs
 
@@ -102,7 +102,7 @@ func GetRequestedTickets(user int) (output ZenOutput) {
 	resp := json.RawMessage(data)
 	err := json.Unmarshal(resp, &output)
 	if err != nil {
-		log.Fatal(map[string]interface{}{
+		log.Error("Error with Zendesk ticket parsing", map[string]interface{}{
 			"module": "zendesk",
 			"error":  err,
 		})
@@ -115,7 +115,7 @@ func GetRequestedTickets(user int) (output ZenOutput) {
 func makeRequest(user string, key string, url string) (responseData []byte) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Fatal(map[string]interface{}{
+		log.Error("Error forming HTTP request", map[string]interface{}{
 			"module": "zendesk",
 			"error":  err,
 		})
@@ -133,7 +133,7 @@ func makeRequest(user string, key string, url string) (responseData []byte) {
 
 	resp, err := netClient.Do(req)
 	if err != nil {
-		log.Fatal(map[string]interface{}{
+		log.Error("Error reaching Zendesk", map[string]interface{}{
 			"module": "zendesk",
 			"error":  err,
 		})
@@ -141,7 +141,7 @@ func makeRequest(user string, key string, url string) (responseData []byte) {
 	defer resp.Body.Close()
 	responseData, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
-		log.Fatal(map[string]interface{}{
+		log.Error("Error reading Zendesk response", map[string]interface{}{
 			"module": "zendesk",
 			"error":  err,
 		})
@@ -156,7 +156,7 @@ func parseJSON(data []byte) (output ZenOutput) {
 	bytes := json.RawMessage(data)
 	err := json.Unmarshal(bytes, &output)
 	if err != nil {
-		log.Fatal(map[string]interface{}{
+		log.Error("Error parsing Zendesk JSON", map[string]interface{}{
 			"module": "zendesk",
 			"error":  err,
 		})
