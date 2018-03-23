@@ -84,6 +84,12 @@ func SendEphemeralMessage(message string, attachment slack.Attachment, user stri
 	})
 }
 
+// SendDirectMessage takes a message, an attachment and a user and sends a
+// direct message to the user.
+func SendDirectMessage(message string, attachment slack.Attachment, user string) {
+
+}
+
 // SetMessage creates and sends a message to Slack with a menu attachment,
 // allowing users to set the triager staff member.
 func SetMessage() {
@@ -406,6 +412,12 @@ func HelpMessage() {
 	params.LinkNames = 1
 	message := "..."
 	api.PostMessage(c.Slack.ChannelID, message, params)
+
+}
+
+// ShowConfigMessage takes a user string and sends that user the value of the
+// config.toml configuration file. Used for identifying configuration issues.
+func ShowConfigMessage(user string) {
 
 }
 
