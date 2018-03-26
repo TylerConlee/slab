@@ -3,6 +3,7 @@ package slack
 import (
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/tylerconlee/slab/zendesk"
 	"github.com/tylerconlee/slack"
@@ -35,7 +36,14 @@ func SetTriager(payload *slack.AttachmentActionCallback) {
 // AcknowledgeSLA generates a new Slack attachment to state that a user has
 // acknowledged a ticket.
 func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
-	t := fmt.Sprintf("<@%s> acknowledged this ticket at %s", payload.User.Name, payload.ActionTs)
+	format := "Jan 2, 2006 at 3:04pm"
+	ts, err := time.Parse(format, payload.ActionTs)
+	if err != nil {
+		log.Error("Error parsing acknowledge time", map[string]interface{}{
+			"error": err,
+		})
+	}
+	t := fmt.Sprintf("<@%s> acknowledged this ticket at %s", payload.User.Name, ts)
 	log.Info("SLA ticket acknowledged.", map[string]interface{}{
 		"module": "slack",
 		"ack":    payload.User.Name,
