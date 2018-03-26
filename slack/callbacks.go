@@ -38,6 +38,12 @@ func SetTriager(payload *slack.AttachmentActionCallback) {
 func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
 	i, _ := strconv.ParseInt(payload.ActionTs, 10, 64)
 	ts := time.Unix(i, 0)
+	log.Info("Ticket acknowledged.", map[string]interface{}{
+		"module":   "slack",
+		"actionts": payload.ActionTs,
+		"ts":       ts.String(),
+		"i":        i,
+	})
 	t := fmt.Sprintf("<@%s> acknowledged this ticket at %s", payload.User.Name, ts.String())
 	log.Info("SLA ticket acknowledged.", map[string]interface{}{
 		"module": "slack",
