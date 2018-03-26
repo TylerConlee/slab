@@ -368,6 +368,11 @@ func HelpMessage() {
 // ShowConfigMessage takes a user string and sends that user the value of the
 // config.toml configuration file. Used for identifying configuration issues.
 func ShowConfigMessage(user string) {
+	attachment := slack.Attachment{
+		Title: "Config",
+	}
+	message := "Test direct message for config."
+	SendDirectMessage(message, attachment, user)
 
 }
 
