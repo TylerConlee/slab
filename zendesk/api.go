@@ -19,7 +19,7 @@ func GetAllTickets() (tickets ZenOutput) {
 		"module": "zendesk",
 	})
 
-	t := time.Now().AddDate(0, 0, -5).Unix()
+	t := time.Now().AddDate(0, 0, -3).Unix()
 	zen := c.Zendesk.URL + "/api/v2/incremental/tickets.json?include=slas&start_time=" + strconv.FormatInt(t, 10)
 	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 	tickets = parseJSON(resp)
