@@ -12,6 +12,9 @@ type configUser struct {
 	step string
 }
 
+// ConfigInProgressMessage takes a user ID string and sends a message to that
+// user letting them know that there's already a configuration wizard in
+// progress to avoid overlap.
 func ConfigInProgressMessage(user string) {}
 
 // ConfigSetupMessage sends the first message to the specified user to start
@@ -47,6 +50,8 @@ func ConfigSetupMessage(user string) {
 	SendDirectMessage(message, attachment, user)
 }
 
+// ChannelSelectMessage takes a user string and sends that user a direct message
+// asking for a channel to be selected that Slab will monitor/send alerts to.
 func ChannelSelectMessage(user string) {
 	attachment := slack.Attachment{
 		Title: "Channels",

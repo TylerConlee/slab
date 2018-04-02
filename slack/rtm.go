@@ -104,6 +104,10 @@ func startRTM() {
 				// the configuration step the user is currently in.
 				c := getChannel(ev.Channel)
 				if c == 1 {
+
+					// Run check to see if user is in configuration wizard
+					// if yes, run Next Step(), otherwise send a DM indicating
+					// that the configuration is already being edited.
 					if activeWizard {
 						if ev.User == activeUser.user {
 							nextStep()
@@ -111,13 +115,12 @@ func startRTM() {
 							ConfigInProgressMessage(ev.User)
 						}
 					} else {
+						// Otherwise, parse DM command, such as twilio, so that
+						// phone numbers aren't shared in public channels
+						// Leave open for future expansion
 						parseDMCommand(ev.Msg.Text, ev.User)
 					}
-					// Run check to see if user is in configuration wizard
-					// if yes, run Next Step()
-					// Otherwise, parse DM command, such as twilio, so that
-					// phone numbers aren't shared in public channels
-					// Leave open for future expansion
+
 				} else if c == 2 {
 					if strings.Contains(ev.Msg.Text, user.ID) {
 						parseCommand(ev.Msg.Text, ev.User)
