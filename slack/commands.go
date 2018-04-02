@@ -77,3 +77,5 @@ func parseCommand(text string, user string) {
 	}
 
 }
+
+func parseDMCommand(text string, user string) {}
