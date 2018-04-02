@@ -12,6 +12,13 @@ type configUser struct {
 	step string
 }
 
+// StartWizard takes the user ID, sets the configUser and starts the
+// ConfigSetupMessage function
+func StartWizard(user string) {
+	activeUser.user = user
+	ConfigSetupMessage(user)
+}
+
 // ConfigInProgressMessage takes a user ID string and sends a message to that
 // user letting them know that there's already a configuration wizard in
 // progress to avoid overlap.
@@ -25,7 +32,6 @@ func ConfigInProgressMessage(user string) {
 // the configuration setup wizard process.
 func ConfigSetupMessage(user string) {
 	activeUser.step = "1"
-	activeUser.user = user
 	message := "Hi! Let's get Slab set up! First, how many channels need access?"
 	attachment := slack.Attachment{
 		Title: "Number of Channels",

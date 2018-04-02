@@ -78,4 +78,13 @@ func parseCommand(text string, user string) {
 
 }
 
-func parseDMCommand(text string, user string) {}
+func parseDMCommand(text string, user string) {
+	t := strings.ToLower(text)
+	switch t {
+	case "start config":
+		StartWizard(user)
+	default:
+		UnknownCommandMessage(text, user)
+	}
+
+}
