@@ -15,7 +15,11 @@ type configUser struct {
 // ConfigInProgressMessage takes a user ID string and sends a message to that
 // user letting them know that there's already a configuration wizard in
 // progress to avoid overlap.
-func ConfigInProgressMessage(user string) {}
+func ConfigInProgressMessage(user string) {
+	message := "Oops! The configuration wizard is currently being used by another user. Please try again later."
+	attachment := slack.Attachment{}
+	SendDirectMessage(message, attachment, user)
+}
 
 // ConfigSetupMessage sends the first message to the specified user to start
 // the configuration setup wizard process.
