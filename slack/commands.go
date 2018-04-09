@@ -24,14 +24,6 @@ func parseCommand(text string, user string) {
 		HelpMessage()
 	case "unset":
 		UnsetMessage()
-	case "config":
-		switch t[2] {
-		case "show":
-			ShowConfigMessage(user)
-		case "setup":
-			ConfigSetupMessage(user)
-		}
-
 	case "twilio":
 		p := plugins.LoadPlugins(c)
 		switch t[2] {

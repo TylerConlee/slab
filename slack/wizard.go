@@ -3,20 +3,23 @@ package slack
 import "github.com/tylerconlee/slack"
 
 var (
-	activeWizard bool
-	activeUser   configUser
+	activeWizard      bool
+	activeUser        configUser
+	ChannelsRemaining int
 )
 
 type configUser struct {
 	user string
-	step string
+	step int
 }
 
 // StartWizard takes the user ID, sets the configUser and starts the
 // ConfigSetupMessage function
 func StartWizard(user string) {
 	activeUser.user = user
-	ConfigSetupMessage(user)
+	activeUser.step = 0
+	ConfirmWizard()
+
 }
 
 // ConfigInProgressMessage takes a user ID string and sends a message to that
@@ -28,10 +31,36 @@ func ConfigInProgressMessage(user string) {
 	SendDirectMessage(message, attachment, user)
 }
 
+// ConfirmWizard sends a confirmation message to the user letting them know
+// that the changes made will overwrite the current configuration.
+func ConfirmWizard() {
+	message := "Hi! Let's get started using Slab!"
+	attachment := slack.Attachment{
+		Title:      "Warning! Using the Slab configuration wizard will overwrite the current configuration. Please select an option below.",
+		CallbackID: "cfgwiz",
+		Actions: []slack.AttachmentAction{
+			slack.AttachmentAction{
+				Name:  "confirm",
+				Text:  "Start Wizard",
+				Type:  "button",
+				Value: "start",
+			},
+			slack.AttachmentAction{
+				Name:  "view",
+				Text:  "View Current Configuration",
+				Type:  "button",
+				Value: "view",
+			},
+			// TODO: Add in button for diagnostic info
+		},
+	}
+	SendDirectMessage(message, attachment, activeUser.user)
+}
+
 // ConfigSetupMessage sends the first message to the specified user to start
 // the configuration setup wizard process.
-func ConfigSetupMessage(user string) {
-	activeUser.step = "1"
+func ConfigSetupMessage() {
+	activeUser.step = 1
 	message := "Hi! Let's get Slab set up! First, how many channels need access?"
 	attachment := slack.Attachment{
 		Title: "Number of Channels",
@@ -57,12 +86,12 @@ func ConfigSetupMessage(user string) {
 			},
 		},
 	}
-	SendDirectMessage(message, attachment, user)
+	SendDirectMessage(message, attachment, activeUser.user)
 }
 
 // ChannelSelectMessage takes a user string and sends that user a direct message
 // asking for a channel to be selected that Slab will monitor/send alerts to.
-func ChannelSelectMessage(user string) {
+func ChannelSelectMessage() {
 	attachment := slack.Attachment{
 		Title: "Channels",
 		Actions: []slack.AttachmentAction{
@@ -74,9 +103,18 @@ func ChannelSelectMessage(user string) {
 			},
 		},
 	}
-	SendDirectMessage("Select a channel", attachment, user)
+	SendDirectMessage("Select a channel", attachment, activeUser.user)
 }
 
-func nextStep() {
+func NextStep(msg string) {
+	log.Info("Processing next step", map[string]interface{}{
+		"module":  "slack",
+		"message": msg,
+	})
+	switch activeUser.step {
+	case 0:
+		ConfigSetupMessage()
+		// set ChannelsRemaining, have the callback check ChannelsRemaining and subtract one until all channels are taken care of
 
+	}
 }

@@ -110,7 +110,7 @@ func startRTM() {
 					// that the configuration is already being edited.
 					if activeWizard {
 						if ev.User == activeUser.user {
-							nextStep()
+							NextStep(ev.Msg.Text)
 						} else {
 							ConfigInProgressMessage(ev.User)
 						}
