@@ -98,6 +98,9 @@ func startRTM() {
 		// If a new message is sent, check to see if the bot user is mentioned.
 		case *slack.MessageEvent:
 			if chk == 1 {
+				log.Info("Channel identified", map[string]interface{}{
+					"channel": ev.Channel,
+				})
 				// GetChannelList to see if the incoming message comes from DM
 				// or regular channel. If DM, identify the user and if they're
 				// in the middle of the configuration routine. Then identify
@@ -125,6 +128,8 @@ func startRTM() {
 					if strings.Contains(ev.Msg.Text, user.ID) {
 						parseCommand(ev.Msg.Text, ev.User)
 					}
+				} else if (c == 0) && (ev.Type == "message") {
+
 				}
 			}
 
