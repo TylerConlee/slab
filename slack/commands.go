@@ -24,11 +24,6 @@ func parseCommand(text string, user string) {
 		HelpMessage()
 	case "unset":
 		UnsetMessage()
-	case "config":
-		switch t[2] {
-		case "show":
-			ShowConfigMessage(user)
-		}
 	case "twilio":
 		p := plugins.LoadPlugins(c)
 		switch t[2] {
@@ -71,6 +66,17 @@ func parseCommand(text string, user string) {
 			SendMessage("Plugin Twilio has been updated", a)
 		}
 
+	}
+
+}
+
+func parseDMCommand(text string, user string) {
+	t := strings.ToLower(text)
+	switch t {
+	case "start config":
+		StartWizard(user)
+	default:
+		UnknownCommandMessage(text, user)
 	}
 
 }

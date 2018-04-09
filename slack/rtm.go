@@ -98,8 +98,33 @@ func startRTM() {
 		// If a new message is sent, check to see if the bot user is mentioned.
 		case *slack.MessageEvent:
 			if chk == 1 {
-				if strings.Contains(ev.Msg.Text, user.ID) && c.TriageEnabled {
-					parseCommand(ev.Msg.Text, ev.User)
+				// GetChannelList to see if the incoming message comes from DM
+				// or regular channel. If DM, identify the user and if they're
+				// in the middle of the configuration routine. Then identify
+				// the configuration step the user is currently in.
+				c := getChannel(ev.Channel)
+				if c == 1 {
+
+					// Run check to see if user is in configuration wizard
+					// if yes, run Next Step(), otherwise send a DM indicating
+					// that the configuration is already being edited.
+					if activeWizard {
+						if ev.User == activeUser.user {
+							NextStep(ev.Msg.Text)
+						} else {
+							ConfigInProgressMessage(ev.User)
+						}
+					} else {
+						// Otherwise, parse DM command, such as twilio, so that
+						// phone numbers aren't shared in public channels
+						// Leave open for future expansion
+						parseDMCommand(ev.Msg.Text, ev.User)
+					}
+
+				} else if c == 2 {
+					if strings.Contains(ev.Msg.Text, user.ID) {
+						parseCommand(ev.Msg.Text, ev.User)
+					}
 				}
 			}
 

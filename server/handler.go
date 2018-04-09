@@ -50,6 +50,14 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 
 	case "triage_set":
 		sl.SetTriager(payload)
+	case "cfgwiz":
+		log.Info("Config wizard step detected", map[string]interface{}{
+			"module": "server",
+			"step":   payload.Actions[0].Value,
+		})
+		if payload.Actions[0].Value == "start" {
+			sl.NextStep("start")
+		}
 	}
 	return
 }

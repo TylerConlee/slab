@@ -376,6 +376,14 @@ func ShowConfigMessage(user string) {
 
 }
 
+// UnknownCommandMessage sends a direct message to the user provided indicating
+// that the command that they attempted is not a valid command.
+func UnknownCommandMessage(text string, user string) {
+	message := fmt.Sprintf("Sorry, the command `%s` is an invalid command. Please type `help` for a list of all available DM commands", text)
+	attachment := slack.Attachment{}
+	SendDirectMessage(message, attachment, user)
+}
+
 // ChatUpdate takes a channel ID, a timestamp and message text
 // and updated the message in the given Slack channel at the given
 // timestamp with the given message text. Currently, it also updates the
