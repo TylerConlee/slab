@@ -100,6 +100,7 @@ func startRTM() {
 			if chk == 1 {
 				log.Info("Channel identified", map[string]interface{}{
 					"channel": ev.Channel,
+					"user":    user.ID,
 				})
 				// GetChannelList to see if the incoming message comes from DM
 				// or regular channel. If DM, identify the user and if they're
@@ -128,8 +129,8 @@ func startRTM() {
 					if strings.Contains(ev.Msg.Text, user.ID) {
 						parseCommand(ev.Msg.Text, ev.User)
 					}
-				} else if (c == 0) && (ev.Type == "message") {
-
+				} else if (c == 0) && (string(ev.Channel[0]) == "D") {
+					log.Info("DM recognized", map[string]interface{}{})
 				}
 			}
 
