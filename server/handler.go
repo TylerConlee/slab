@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -55,8 +56,18 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 			"module": "server",
 			"step":   payload.Actions[0].Value,
 		})
-		if payload.Actions[0].Value == "start" {
+		if sl.ChannelSelect {
+			channel := sl.Channel{ID: payload.Actions[0].Value}
+			sl.ChannelList = append(sl.ChannelList, channel)
+			sl.ChannelSelectMessage()
+		}
+		switch {
+		case payload.Actions[0].Value == "start":
 			sl.NextStep("start")
+		case strings.Contains(payload.Actions[0].Value, "channel"):
+			sl.NextStep(strings.Trim(payload.Actions[0].Value, "channel"))
+		default:
+			sl.NextStep(payload.Actions[0].Value)
 		}
 	}
 	return

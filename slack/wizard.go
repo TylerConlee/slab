@@ -1,11 +1,16 @@
 package slack
 
-import "github.com/tylerconlee/slack"
+import (
+	"strconv"
+
+	"github.com/tylerconlee/slack"
+)
 
 var (
 	activeWizard      bool
 	activeUser        configUser
 	ChannelsRemaining int
+	ChannelSelect     bool
 )
 
 type configUser struct {
@@ -61,9 +66,11 @@ func ConfirmWizard() {
 // the configuration setup wizard process.
 func ConfigSetupMessage() {
 	activeUser.step = 1
-	message := "Hi! Let's get Slab set up! First, how many channels need access?"
+	message := "To start, how many channels need Slab alerts?"
 	attachment := slack.Attachment{
 		Title: "Number of Channels",
+
+		CallbackID: "cfgwiz",
 		Actions: []slack.AttachmentAction{
 			slack.AttachmentAction{
 				Name: "channels_list",
@@ -92,18 +99,26 @@ func ConfigSetupMessage() {
 // ChannelSelectMessage takes a user string and sends that user a direct message
 // asking for a channel to be selected that Slab will monitor/send alerts to.
 func ChannelSelectMessage() {
-	attachment := slack.Attachment{
-		Title: "Channels",
-		Actions: []slack.AttachmentAction{
-			slack.AttachmentAction{
-				Name:       "channels_list",
-				Text:       "Channel for Slab",
-				Type:       "select",
-				DataSource: "channels",
+	if ChannelsRemaining > 0 {
+		attachment := slack.Attachment{
+			Title:      "Channels",
+			CallbackID: "cfgwiz",
+			Actions: []slack.AttachmentAction{
+				slack.AttachmentAction{
+					Name:       "channels_list",
+					Text:       "Channel for Slab",
+					Type:       "select",
+					DataSource: "channels",
+				},
 			},
-		},
+		}
+		ChannelSelect = true
+		SendDirectMessage("Select a channel", attachment, activeUser.user)
+		ChannelsRemaining--
+	} else {
+		ChannelSelect = false
+		activeUser.step = 2
 	}
-	SendDirectMessage("Select a channel", attachment, activeUser.user)
 }
 
 func NextStep(msg string) {
@@ -115,6 +130,14 @@ func NextStep(msg string) {
 	case 0:
 		ConfigSetupMessage()
 		// set ChannelsRemaining, have the callback check ChannelsRemaining and subtract one until all channels are taken care of
-
+	case 1:
+		ChannelsRemaining, _ = strconv.Atoi(msg)
+		ChannelSelect = true
+		ChannelSelectMessage()
+	case 2:
+		log.Info("Final step reached", map[string]interface{}{
+			"module": "slack",
+			"msg":    msg,
+		})
 	}
 }
