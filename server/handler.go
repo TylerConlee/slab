@@ -57,7 +57,7 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 			"step":   payload.Actions[0].Value,
 		})
 		if sl.ChannelSelect {
-			channel := sl.Channel{ID: payload.Actions[0].Value}
+			channel := sl.Channel{ID: payload.Actions[0].SelectedOptions[0].Value}
 			sl.ChannelList = append(sl.ChannelList, channel)
 			sl.ChannelSelectMessage()
 		}
@@ -67,7 +67,7 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 		case strings.Contains(payload.Actions[0].Value, "channel"):
 			sl.NextStep(strings.Trim(payload.Actions[0].Value, "channel"))
 		default:
-			sl.NextStep(payload.Actions[0].Value)
+			sl.NextStep(payload.Actions[0].SelectedOptions[0].Value)
 		}
 	}
 	return
