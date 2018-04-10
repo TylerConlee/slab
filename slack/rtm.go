@@ -130,7 +130,7 @@ func startRTM() {
 						parseCommand(ev.Msg.Text, ev.User)
 					}
 				} else if (c == 0) && (string(ev.Channel[0]) == "D") && (strings.Contains(ev.Msg.Text, user.ID)) {
-					t := strings.TrimPrefix(ev.Msg.Text, "<"+user.ID+"> ")
+					t := strings.TrimPrefix(ev.Msg.Text, "<@"+user.ID+"> ")
 					log.Info("DM recognized", map[string]interface{}{
 						"command": t,
 						"user":    user.ID,
