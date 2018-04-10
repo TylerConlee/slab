@@ -131,7 +131,15 @@ func NextStep(msg string) {
 		ConfigSetupMessage()
 		// set ChannelsRemaining, have the callback check ChannelsRemaining and subtract one until all channels are taken care of
 	case 1:
-		ChannelsRemaining, _ = strconv.Atoi(msg)
+		if ChannelsRemaining == 0 {
+			var err error
+			ChannelsRemaining, err = strconv.Atoi(msg)
+			if err != nil {
+				log.Error("error parsing channels remaining value", map[string]interface{}{
+					"error": err,
+				})
+			}
+		}
 		ChannelSelect = true
 		ChannelSelectMessage()
 	case 2:
