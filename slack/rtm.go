@@ -133,6 +133,7 @@ func startRTM() {
 					t := strings.TrimPrefix(ev.Msg.Text, "<"+user.ID+"> ")
 					log.Info("DM recognized", map[string]interface{}{
 						"command": t,
+						"user":    user.ID,
 					})
 					parseDMCommand(t, ev.User)
 				}
