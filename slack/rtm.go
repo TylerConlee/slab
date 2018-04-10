@@ -131,7 +131,7 @@ func startRTM() {
 					}
 				} else if (c == 0) && (string(ev.Channel[0]) == "D") && (strings.Contains(ev.Msg.Text, user.ID)) {
 
-					t := strings.TrimLeft(ev.Msg.Text, "start")
+					t := strings.TrimLeft(ev.Msg.Text, " ")
 					log.Info("DM recognized", map[string]interface{}{
 						"command": t,
 					})
