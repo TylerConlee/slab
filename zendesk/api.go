@@ -14,12 +14,13 @@ var log = l.Log
 
 // GetAllTickets grabs the latest tickets from Zendesk and returns the JSON
 // Zendesk Endpoint: /incremental/tickets.json?include=slas
+// TODO: Handle paging from the Incremental API
 func GetAllTickets() (tickets ZenOutput) {
 	log.Info("Starting request to Zendesk for tickets", map[string]interface{}{
 		"module": "zendesk",
 	})
 
-	t := time.Now().AddDate(0, 0, -3).Unix()
+	t := time.Now().AddDate(0, 0, -5).Unix()
 	zen := c.Zendesk.URL + "/api/v2/incremental/tickets.json?include=slas&start_time=" + strconv.FormatInt(t, 10)
 	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 	tickets = parseJSON(resp)
