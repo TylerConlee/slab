@@ -23,6 +23,7 @@ type configUser struct {
 func StartWizard(user string) {
 	activeUser.user = user
 	activeUser.step = 0
+	activeWizard = true
 	ConfirmWizard()
 
 }
