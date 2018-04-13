@@ -56,9 +56,9 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 			"module": "server",
 			"step":   payload.Actions[0].Value,
 		})
+		sl.AddChannel(payload.Channel.ID, 1)
 		if sl.ChannelSelect {
-			channel := sl.Channel{ID: payload.Actions[0].SelectedOptions[0].Value}
-			sl.ChannelList = append(sl.ChannelList, channel)
+			sl.AddChannel(payload.Actions[0].SelectedOptions[0].Value, 2)
 			sl.ChannelSelectMessage()
 		}
 		switch {
