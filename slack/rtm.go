@@ -113,6 +113,11 @@ func startRTM() {
 					// if yes, run Next Step(), otherwise send a DM indicating
 					// that the configuration is already being edited.
 					if activeWizard {
+						log.Info("User", map[string]interface{}{
+							"module":          "slack",
+							"DMuser":          ev.User,
+							"activeuser.user": activeUser.user,
+						})
 						if ev.User == activeUser.user {
 							NextStep(ev.Msg.Text)
 						} else {
