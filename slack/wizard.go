@@ -121,6 +121,27 @@ func ChannelSelectMessage() {
 	}
 }
 
+func GetZendeskURL() {
+	activeUser.step = 3
+	message := "Please enter your Zendesk URL"
+	attachment := slack.Attachment{}
+	SendDirectMessage(message, attachment, activeUser.user)
+}
+
+func GetZendeskUser() {
+	activeUser.step = 4
+	message := "Please enter your Zendesk username"
+	attachment := slack.Attachment{}
+	SendDirectMessage(message, attachment, activeUser.user)
+}
+
+func GetZendeskAPIKey() {
+	activeUser.step = 5
+	message := "Please enter your Zendesk API Key"
+	attachment := slack.Attachment{}
+	SendDirectMessage(message, attachment, activeUser.user)
+}
+
 func NextStep(msg string) {
 	log.Info("Processing next step", map[string]interface{}{
 		"module":  "slack",
@@ -143,9 +164,24 @@ func NextStep(msg string) {
 		ChannelSelect = true
 		ChannelSelectMessage()
 	case 2:
-		log.Info("Final step reached", map[string]interface{}{
-			"module": "slack",
-			"msg":    msg,
+		GetZendeskURL()
+	case 3:
+		log.Info("Zendesk URL received.", map[string]interface{}{
+			"module":  "slack",
+			"message": msg,
+		})
+		GetZendeskUser()
+	case 4:
+		log.Info("Zendesk username received.", map[string]interface{}{
+			"module":  "slack",
+			"message": msg,
+		})
+		GetZendeskAPIKey()
+	case 5:
+		log.Info("Zendesk API key received.", map[string]interface{}{
+			"module":  "slack",
+			"message": msg,
 		})
 	}
+
 }
