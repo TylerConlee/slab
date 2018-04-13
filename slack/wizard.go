@@ -146,6 +146,7 @@ func NextStep(msg string) {
 	log.Info("Processing next step", map[string]interface{}{
 		"module":  "slack",
 		"message": msg,
+		"step":    activeUser.step,
 	})
 	switch activeUser.step {
 	case 0:
