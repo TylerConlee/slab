@@ -64,6 +64,8 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case payload.Actions[0].Value == "start":
 			sl.NextStep("start")
+		case payload.Actions[0].Value == "view":
+			sl.ViewConfig()
 		case strings.Contains(payload.Actions[0].Value, "channel"):
 			sl.NextStep(strings.Trim(payload.Actions[0].Value, "channel"))
 		default:
