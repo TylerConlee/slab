@@ -23,6 +23,7 @@ func GetAllTickets() (tickets ZenOutput) {
 	t := time.Now().AddDate(0, 0, -5).Unix()
 	zen := c.Zendesk.URL + "/api/v2/incremental/tickets.json?include=slas&start_time=" + strconv.FormatInt(t, 10)
 	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
+
 	tickets = parseJSON(resp)
 	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
 		"module":      "zendesk",
@@ -138,6 +139,7 @@ func makeRequest(user string, key string, url string) (responseData []byte) {
 			"module": "zendesk",
 			"error":  err,
 		})
+		return
 	}
 	defer resp.Body.Close()
 	responseData, err = ioutil.ReadAll(resp.Body)
@@ -146,6 +148,7 @@ func makeRequest(user string, key string, url string) (responseData []byte) {
 			"module": "zendesk",
 			"error":  err,
 		})
+		return
 	}
 	return responseData
 }
