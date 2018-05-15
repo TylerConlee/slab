@@ -4,8 +4,6 @@
 package main
 
 import (
-	"flag"
-	"fmt"
 	"os"
 	"strings"
 	"time"
@@ -23,7 +21,6 @@ var (
 )
 
 func main() {
-	flagCheck()
 	keyCheck()
 	log.Info("SLABot by Tyler Conlee", map[string]interface{}{
 		"module": "main",
@@ -81,30 +78,6 @@ func shutdown(ticker *time.Ticker, s *Server) {
 		"module": "main",
 	})
 	os.Exit(0)
-}
-
-// flagCheck parses any flags that are passed when calling SLAB on the
-// command line.
-func flagCheck() {
-	var help bool
-
-	var helpText = "SLAB is a utility designed to integrate Zendesk SLAs with Slack notifications.\nUsage: ./slab [configuration-file-path]"
-
-	flag.BoolVar(&help, "help", false, helpText)
-
-	var version *bool
-	version = flag.Bool("version", false, Version)
-
-	flag.Parse()
-
-	if *version {
-		fmt.Printf("Version %s\n", (flag.Lookup("version")).Usage)
-		os.Exit(0)
-	}
-	if help {
-		fmt.Printf("%s\n", flag.Lookup("help").Usage)
-		os.Exit(0)
-	}
 }
 
 // keyCheck looks for any passed arguments. If there are none, an error is
