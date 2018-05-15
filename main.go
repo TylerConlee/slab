@@ -89,11 +89,13 @@ func keyCheck() bool {
 	valid := 0
 	// Check to see that the proper flags have been passed - port and Slack key
 	k := flag.String("key", "foo", "a valid Slack API key")
-	key := *k
+
 	p := flag.Int("port", 8090, "the port Slab will listen on")
-	port := *p
+
 	flag.Parse()
 
+	key := *k
+	port := *p
 	if key != "" {
 		// Check to see if key starts with `xoxb`. All Slack keys start with
 		// `xoxb`, so it's a simple validation test
