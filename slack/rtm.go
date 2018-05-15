@@ -1,6 +1,7 @@
 package slack
 
 import (
+	"os"
 	"strings"
 	"time"
 
@@ -27,7 +28,7 @@ func StartSlack(v string) {
 	uptime = time.Now()
 	// start a connection to Slack using the Slack Bot token
 
-	api = slack.New(c.Slack.APIKey)
+	api = slack.New(os.Args[1])
 
 	// retrieve the team info for the newly connected Slack team
 	d, err := api.GetTeamInfo()
