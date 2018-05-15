@@ -41,7 +41,7 @@ func (s *Server) StartServer() {
 	log.Info("HTTP Server Ready.", map[string]interface{}{
 		"module": "server",
 	})
-	go sl.StartSlack(s.Info.Version)
+	go sl.StartSlack(s.Info.Version, slackKey)
 	port := fmt.Sprintf(":%d", s.Info.Port)
 	http.ListenAndServe(port, s.Router)
 

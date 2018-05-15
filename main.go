@@ -15,10 +15,11 @@ import (
 
 // VERSION lists the version number. On build, uses the git hash as a version ID
 var (
-	Version  = "undefined"
-	log      = l.Log
-	c        config.Config
-	slackKey string
+	Version    = "undefined"
+	log        = l.Log
+	c          config.Config
+	slackKey   string
+	serverPort int
 )
 
 func main() {
@@ -54,7 +55,7 @@ func startServer() *Server {
 		Info: &ServerInfo{
 			Server:  c.Metadata.Server,
 			Version: Version,
-			Port:    c.Port,
+			Port:    serverPort,
 		},
 		Uptime: time.Now(),
 	}
@@ -95,22 +96,23 @@ func keyCheck() bool {
 		// Check to see if key starts with `xoxb`. All Slack keys start with
 		// `xoxb`, so it's a simple validation test
 		if strings.HasPrefix(*key, "xoxb") {
-			slackKey = os.Args[1]
+			slackKey = *key
 			valid++
 		}
 		log.Fatal(map[string]interface{}{
 			"module": "main",
 			"error":  "Key provided does not appear to be a valid Slack API key",
-			"key":    os.Args[1][0:5],
+			"key":    *key,
 		})
 	} else {
 		log.Fatal(map[string]interface{}{
 			"module": "main",
 			"error":  "Slack key not provided. Slack key must be present to run Slab",
-			"key":    os.Args[1][0:5],
+			"key":    *key,
 		})
 	}
 	if *port < 65534 && *port > 1 {
+		serverPort = *port
 		valid++
 	}
 	if valid == 2 {

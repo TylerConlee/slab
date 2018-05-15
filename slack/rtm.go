@@ -1,7 +1,6 @@
 package slack
 
 import (
-	"os"
 	"strings"
 	"time"
 
@@ -20,7 +19,7 @@ var (
 // StartSlack initializes a connection with the given slack instance, gets
 // team information, and starts a Go channel with the Real Time Messaging
 // API watcher.
-func StartSlack(v string) {
+func StartSlack(v string, key string) {
 	log.Info("Starting connection to Slack", map[string]interface{}{
 		"module": "slack",
 	})
@@ -28,7 +27,7 @@ func StartSlack(v string) {
 	uptime = time.Now()
 	// start a connection to Slack using the Slack Bot token
 
-	api = slack.New(os.Args[1])
+	api = slack.New(key)
 
 	// retrieve the team info for the newly connected Slack team
 	d, err := api.GetTeamInfo()
