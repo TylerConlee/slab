@@ -25,12 +25,12 @@ var (
 func main() {
 	flagCheck()
 	keyCheck()
-	// Start up the logging system
-	c = config.LoadConfig()
-	log.SetLogLevel(c.LogLevel)
 	log.Info("SLABot by Tyler Conlee", map[string]interface{}{
 		"module": "main",
 	})
+
+	// Start up the logging system
+	c = config.LoadConfig()
 
 	// Start timer process. Takes an int as the number of minutes to loop
 
@@ -122,12 +122,14 @@ func keyCheck() bool {
 		log.Fatal(map[string]interface{}{
 			"module": "main",
 			"error":  "Key provided does not appear to be a valid Slack API key",
+			"key":    os.Args[1][0:5],
 		})
 		return false
 	}
 	log.Fatal(map[string]interface{}{
 		"module": "main",
 		"error":  "Slack key not provided. Slack key must be present to run Slab",
+		"key":    os.Args[1][0:5],
 	})
 	return false
 }
