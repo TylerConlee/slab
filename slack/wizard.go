@@ -1,8 +1,9 @@
 package slack
 
 import (
-	"strconv"
+	"time"
 
+	"github.com/tylerconlee/slab/config"
 	"github.com/tylerconlee/slack"
 )
 
@@ -11,6 +12,9 @@ var (
 	activeUser        configUser
 	ChannelsRemaining int
 	ChannelSelect     bool
+	ZenAPI            string
+	ZenUser           string
+	ZenURL            string
 )
 
 type configUser struct {
@@ -60,68 +64,37 @@ func ConfirmWizard() {
 			// TODO: Add in button for diagnostic info
 		},
 	}
+	activeUser.step = 1
 	SendDirectMessage(message, attachment, activeUser.user)
 }
 
-// ConfigSetupMessage sends the first message to the specified user to start
-// the configuration setup wizard process.
-func ConfigSetupMessage() {
-	activeUser.step = 1
-	message := "To start, how many channels need Slab alerts?"
-	attachment := slack.Attachment{
-		Title: "Number of Channels",
-
-		CallbackID: "cfgwiz",
-		Actions: []slack.AttachmentAction{
-			slack.AttachmentAction{
-				Name: "channels_list",
-				Text: "Channel for Slab",
-				Type: "select",
-				Options: []slack.AttachmentActionOption{
-					slack.AttachmentActionOption{
-						Text:  "1",
-						Value: "1",
-					},
-					slack.AttachmentActionOption{
-						Text:  "2",
-						Value: "2",
-					},
-					slack.AttachmentActionOption{
-						Text:  "3",
-						Value: "3",
-					},
-				},
-			},
-		},
-	}
+func ViewConfig() {
+	message := "Here's the current configuration for Slab:"
+	attachment := prepConfigLoad()
 	SendDirectMessage(message, attachment, activeUser.user)
 }
 
 // ChannelSelectMessage takes a user string and sends that user a direct message
 // asking for a channel to be selected that Slab will monitor/send alerts to.
 func ChannelSelectMessage() {
-	if ChannelsRemaining > 0 {
-		attachment := slack.Attachment{
-			Title:      "Channels",
-			CallbackID: "cfgwiz",
-			Actions: []slack.AttachmentAction{
-				slack.AttachmentAction{
-					Name:       "channels_list",
-					Text:       "Channel for Slab",
-					Type:       "select",
-					DataSource: "channels",
-				},
+	attachment := slack.Attachment{
+		Title:      "Channels",
+		CallbackID: "cfgwiz",
+		Actions: []slack.AttachmentAction{
+			slack.AttachmentAction{
+				Name:       "channels_list",
+				Text:       "Channel for Slab",
+				Type:       "select",
+				DataSource: "channels",
 			},
-		}
-		ChannelSelect = true
-		SendDirectMessage("Select a channel", attachment, activeUser.user)
-		ChannelsRemaining--
-	} else {
-		ChannelSelect = false
-		activeUser.step = 2
+		},
 	}
+	SendDirectMessage("Select a channel", attachment, activeUser.user)
+
 }
 
+// GetZendeskURL is a step in the configuration wizard that asks the user to
+// provide a URL to their Zendesk instance.
 func GetZendeskURL() {
 	activeUser.step = 3
 	message := "Please enter your Zendesk URL"
@@ -129,6 +102,8 @@ func GetZendeskURL() {
 	SendDirectMessage(message, attachment, activeUser.user)
 }
 
+// GetZendeskUser is a step in the configuration wizard that asks the user to
+// provide the username to access Zendesk with.
 func GetZendeskUser() {
 	activeUser.step = 4
 	message := "Please enter your Zendesk username"
@@ -136,15 +111,11 @@ func GetZendeskUser() {
 	SendDirectMessage(message, attachment, activeUser.user)
 }
 
+// GetZendeskAPIKey is a step in the configuration wizard that asks the user to
+// provide the API key to access Zendesk with.
 func GetZendeskAPIKey() {
 	activeUser.step = 5
 	message := "Please enter your Zendesk API Key"
-	attachment := slack.Attachment{}
-	SendDirectMessage(message, attachment, activeUser.user)
-}
-
-func ViewConfig() {
-	message := "Current configuration found."
 	attachment := slack.Attachment{}
 	SendDirectMessage(message, attachment, activeUser.user)
 }
@@ -156,20 +127,7 @@ func NextStep(msg string) {
 		"step":    activeUser.step,
 	})
 	switch activeUser.step {
-	case 0:
-		ConfigSetupMessage()
-		// set ChannelsRemaining, have the callback check ChannelsRemaining and subtract one until all channels are taken care of
 	case 1:
-		if ChannelsRemaining == 0 {
-			var err error
-			ChannelsRemaining, err = strconv.Atoi(msg)
-			if err != nil {
-				log.Error("error parsing channels remaining value", map[string]interface{}{
-					"error": err,
-				})
-			}
-		}
-		ChannelSelect = true
 		ChannelSelectMessage()
 	case 2:
 		GetZendeskURL()
@@ -192,4 +150,73 @@ func NextStep(msg string) {
 		})
 	}
 
+}
+
+func prepConfigLoad() (attachment slack.Attachment) {
+	con := config.LoadConfig()
+
+	attachment = slack.Attachment{
+		Title: "Current Configuration",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Zendesk URL",
+				Value: con.Zendesk.URL,
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Zendesk User",
+				Value: con.Zendesk.User,
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Zendesk API Key",
+				Value: con.Zendesk.APIKey[len(con.Zendesk.APIKey)-5:],
+			},
+			slack.AttachmentField{
+				Title: "Update Frequency",
+				Value: con.UpdateFreq.Duration.String(),
+			},
+		},
+	}
+	return attachment
+}
+
+func prepConfigSave() {
+	freq, err := time.ParseDuration("10m")
+	if err != nil {
+		log.Fatal(map[string]interface{}{
+			"module": "slack",
+			"error":  err,
+		})
+	}
+	c := config.Config{
+		Zendesk: config.Zendesk{
+			APIKey: ZenAPI,
+			User:   ZenUser,
+			URL:    ZenURL,
+		},
+		SLA: config.SLA{
+			LevelOne: config.Level{
+				Tag: "platinum",
+			},
+			LevelTwo: config.Level{
+				Tag: "gold",
+			},
+			LevelThree: config.Level{
+				Tag: "silver",
+			},
+			LevelFour: config.Level{
+				Tag: "bronze",
+			},
+		},
+		UpdateFreq: config.Duration{
+			Duration: freq,
+		},
+		Metadata:      config.Metadata{},
+		TriageEnabled: true,
+		Slack: config.Slack{
+			ChannelID: ChannelList[0].ID,
+		},
+	}
+	config.SaveConfig(c)
 }
