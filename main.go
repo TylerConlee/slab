@@ -7,6 +7,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/tylerconlee/slab/config"
@@ -15,13 +16,15 @@ import (
 
 // VERSION lists the version number. On build, uses the git hash as a version ID
 var (
-	Version = "undefined"
-	log     = l.Log
-	c       config.Config
+	Version  = "undefined"
+	log      = l.Log
+	c        config.Config
+	slackKey string
 )
 
 func main() {
 	flagCheck()
+	keyCheck()
 	// Start up the logging system
 	c = config.LoadConfig()
 	log.SetLogLevel(c.LogLevel)
@@ -102,4 +105,29 @@ func flagCheck() {
 		fmt.Printf("%s\n", flag.Lookup("help").Usage)
 		os.Exit(0)
 	}
+}
+
+// keyCheck looks for any passed arguments. If there are none, an error is
+// displayed and the app exits.
+func keyCheck() bool {
+	// Check to see if there are a sufficient number of arguments passed
+	if len(os.Args) > 1 {
+		// Check to see if key starts with `xoxb`. All Slack keys start with
+		// `xoxb`, so it's a simple validation test
+		if strings.HasPrefix(os.Args[1], "xoxb") {
+			slackKey = os.Args[1]
+			return true
+		}
+
+		log.Fatal(map[string]interface{}{
+			"module": "main",
+			"error":  "Key provided does not appear to be a valid Slack API key",
+		})
+		return false
+	}
+	log.Fatal(map[string]interface{}{
+		"module": "main",
+		"error":  "Slack key not provided. Slack key must be present to run Slab",
+	})
+	return false
 }
