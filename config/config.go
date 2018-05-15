@@ -1,7 +1,6 @@
 package config
 
 import (
-	"os"
 	"time"
 
 	l "github.com/tylerconlee/slab/log"
@@ -77,23 +76,19 @@ func (d *Duration) UnmarshalText(text []byte) error {
 // LoadConfig grabs the command line argument for where the configuration file
 // is located and loads that into memory.
 func LoadConfig() (config Config) {
-	if len(os.Args) > 1 {
-		if _, err := toml.DecodeFile(os.Args[1], &config); err != nil {
-			log.Error("Configuration file not found.", map[string]interface{}{
-				"module": "main",
-				"error":  err,
-			})
-			config = defaultConfig()
-			return
-		}
-		log.Info("Configuration loaded successfully", map[string]interface{}{
+	if _, err := toml.DecodeFile("config.toml", &config); err != nil {
+		log.Error("Configuration file not found.", map[string]interface{}{
 			"module": "main",
-			"file":   os.Args[1],
+			"error":  err,
 		})
-		return config
+		config = defaultConfig()
+		return
 	}
-	config = defaultConfig()
-	return
+	log.Info("Configuration loaded successfully", map[string]interface{}{
+		"module": "main",
+		"file":   "config.toml",
+	})
+	return config
 
 }
 
