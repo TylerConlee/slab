@@ -1,6 +1,8 @@
 package config
 
 import (
+	"bytes"
+	"os"
 	"time"
 
 	l "github.com/tylerconlee/slab/log"
@@ -76,43 +78,57 @@ func (d *Duration) UnmarshalText(text []byte) error {
 // LoadConfig grabs the command line argument for where the configuration file
 // is located and loads that into memory.
 func LoadConfig() (config Config) {
-	if _, err := toml.DecodeFile("config.toml", &config); err != nil {
-		log.Error("Configuration file not found.", map[string]interface{}{
-			"module": "main",
-			"error":  err,
+	if _, err := os.Stat("config.toml"); err == nil {
+		if _, err := toml.DecodeFile("config.toml", &config); err != nil {
+			log.Error("Configuration file not found.", map[string]interface{}{
+				"module": "config",
+				"error":  err,
+			})
+			config = defaultConfig()
+			return
+		}
+		log.Info("Configuration loaded successfully", map[string]interface{}{
+			"module": "config",
+			"file":   "config.toml",
 		})
-		config = defaultConfig()
 		return
 	}
-	log.Info("Configuration loaded successfully", map[string]interface{}{
-		"module": "main",
-		"file":   "config.toml",
-	})
-	return config
+	config = defaultConfig()
+	return
+}
+
+// SaveConfig takes a config and saves it to the local file, config.toml.
+func SaveConfig(config Config) {
+	buf := new(bytes.Buffer)
+	if err := toml.NewEncoder(buf).Encode(config); err != nil {
+		f, err := os.Create("/tmp/dat2")
+		if nil != err {
+			log.Error("error saving file", map[string]interface{}{
+				"module": "config",
+			})
+		}
+		defer f.Close()
+		n, err := f.WriteString(buf.String())
+		if nil != err {
+			log.Error("error saving file", map[string]interface{}{
+				"module": "config",
+			})
+		}
+		log.Debug("Saved configuration file", map[string]interface{}{
+			"module": "config",
+			"output": n,
+		})
+	}
 
 }
 
 func defaultConfig() (config Config) {
-	freq, err := time.ParseDuration("10m")
 
-	if err != nil {
-		log.Fatal(map[string]interface{}{
-			"module": "main",
-			"error":  err,
-		})
-	}
 	config = Config{
 		Zendesk: Zendesk{
 			APIKey: "",
 			User:   "",
 			URL:    "",
-		},
-		Slack: Slack{
-			APIKey:    "",
-			ChannelID: "",
-		},
-		UpdateFreq: Duration{
-			freq,
 		},
 		SLA: SLA{
 			LevelOne: Level{
@@ -130,7 +146,6 @@ func defaultConfig() (config Config) {
 		},
 		Metadata:      Metadata{},
 		TriageEnabled: true,
-		Port:          8080,
 	}
 	return
 }
