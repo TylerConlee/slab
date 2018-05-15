@@ -4,6 +4,7 @@
 package main
 
 import (
+	"flag"
 	"os"
 	"strings"
 	"time"
@@ -83,26 +84,37 @@ func shutdown(ticker *time.Ticker, s *Server) {
 // keyCheck looks for any passed arguments. If there are none, an error is
 // displayed and the app exits.
 func keyCheck() bool {
-	// Check to see if there are a sufficient number of arguments passed
-	if len(os.Args) > 1 {
+	// use an int to check if both port and key are valid
+	valid := 0
+	// Check to see that the proper flags have been passed - port and Slack key
+	key := flag.String("key", "foo", "a valid Slack API key")
+	port := flag.Int("port", 8090, "the port Slab will listen on")
+	flag.Parse()
+
+	if *key != "" {
 		// Check to see if key starts with `xoxb`. All Slack keys start with
 		// `xoxb`, so it's a simple validation test
-		if strings.HasPrefix(os.Args[1], "xoxb") {
+		if strings.HasPrefix(*key, "xoxb") {
 			slackKey = os.Args[1]
-			return true
+			valid++
 		}
-
 		log.Fatal(map[string]interface{}{
 			"module": "main",
 			"error":  "Key provided does not appear to be a valid Slack API key",
 			"key":    os.Args[1][0:5],
 		})
-		return false
+	} else {
+		log.Fatal(map[string]interface{}{
+			"module": "main",
+			"error":  "Slack key not provided. Slack key must be present to run Slab",
+			"key":    os.Args[1][0:5],
+		})
 	}
-	log.Fatal(map[string]interface{}{
-		"module": "main",
-		"error":  "Slack key not provided. Slack key must be present to run Slab",
-		"key":    os.Args[1][0:5],
-	})
+	if *port < 65534 && *port > 1 {
+		valid++
+	}
+	if valid == 2 {
+		return true
+	}
 	return false
 }
