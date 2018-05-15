@@ -1,4 +1,4 @@
-package server
+package main
 
 import (
 	"encoding/json"
@@ -7,13 +7,9 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	l "github.com/tylerconlee/slab/log"
 	sl "github.com/tylerconlee/slab/slack"
 	"github.com/tylerconlee/slack"
 )
-
-// log adds a logger for the `api` package
-var log = l.Log
 
 // NewRouter builds a new mux Router instance with the routes that
 // Slack uses to handle callbacks, and the index status page
@@ -64,6 +60,8 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case payload.Actions[0].Value == "start":
 			sl.NextStep("start")
+		case payload.Actions[0].Value == "view":
+			sl.ViewConfig()
 		case strings.Contains(payload.Actions[0].Value, "channel"):
 			sl.NextStep(strings.Trim(payload.Actions[0].Value, "channel"))
 		default:

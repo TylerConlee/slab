@@ -143,6 +143,12 @@ func GetZendeskAPIKey() {
 	SendDirectMessage(message, attachment, activeUser.user)
 }
 
+func ViewConfig() {
+	message := "Current configuration found."
+	attachment := slack.Attachment{}
+	SendDirectMessage(message, attachment, activeUser.user)
+}
+
 func NextStep(msg string) {
 	log.Info("Processing next step", map[string]interface{}{
 		"module":  "slack",
