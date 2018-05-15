@@ -11,7 +11,6 @@ import (
 
 	"github.com/tylerconlee/slab/config"
 	l "github.com/tylerconlee/slab/log"
-	"github.com/tylerconlee/slab/server"
 )
 
 // VERSION lists the version number. On build, uses the git hash as a version ID
@@ -49,9 +48,9 @@ func main() {
 // startServer initializes the metadata for the status page, starts the timer
 // for the SLA breach monitor loop, and starts an HTTP server for running Slacks
 // real time messaging monitoring API.
-func startServer() *server.Server {
-	s := &server.Server{
-		Info: &server.ServerInfo{
+func startServer() *Server {
+	s := &Server{
+		Info: &ServerInfo{
 			Server:  c.Metadata.Server,
 			Version: Version,
 			Port:    c.Port,
@@ -69,7 +68,7 @@ func startServer() *server.Server {
 }
 
 // shutdown stops the ticker and gracefully shuts down the server.
-func shutdown(ticker *time.Ticker, s *server.Server) {
+func shutdown(ticker *time.Ticker, s *Server) {
 
 	if ticker != nil {
 		ticker.Stop()

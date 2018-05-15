@@ -1,4 +1,4 @@
-package server
+package main
 
 import (
 	"encoding/json"
@@ -7,13 +7,9 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
-	l "github.com/tylerconlee/slab/log"
 	sl "github.com/tylerconlee/slab/slack"
 	"github.com/tylerconlee/slack"
 )
-
-// log adds a logger for the `api` package
-var log = l.Log
 
 // NewRouter builds a new mux Router instance with the routes that
 // Slack uses to handle callbacks, and the index status page
