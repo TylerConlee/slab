@@ -88,31 +88,33 @@ func keyCheck() bool {
 	// use an int to check if both port and key are valid
 	valid := 0
 	// Check to see that the proper flags have been passed - port and Slack key
-	key := flag.String("key", "foo", "a valid Slack API key")
-	port := flag.Int("port", 8090, "the port Slab will listen on")
+	k := flag.String("key", "foo", "a valid Slack API key")
+	key := *k
+	p := flag.Int("port", 8090, "the port Slab will listen on")
+	port := *p
 	flag.Parse()
 
-	if *key != "" {
+	if key != "" {
 		// Check to see if key starts with `xoxb`. All Slack keys start with
 		// `xoxb`, so it's a simple validation test
-		if strings.HasPrefix(*key, "xoxb") {
-			slackKey = *key
+		if strings.HasPrefix(key, "xoxb") {
+			slackKey = key
 			valid++
 		}
 		log.Fatal(map[string]interface{}{
 			"module": "main",
 			"error":  "Key provided does not appear to be a valid Slack API key",
-			"key":    *key,
+			"key":    key,
 		})
 	} else {
 		log.Fatal(map[string]interface{}{
 			"module": "main",
 			"error":  "Slack key not provided. Slack key must be present to run Slab",
-			"key":    *key,
+			"key":    key,
 		})
 	}
-	if *port < 65534 && *port > 1 {
-		serverPort = *port
+	if port < 65534 && port > 1 {
+		serverPort = port
 		valid++
 	}
 	if valid == 2 {
