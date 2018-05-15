@@ -96,22 +96,15 @@ func keyCheck() bool {
 
 	key := *k
 	port := *p
-	if key != "" {
-		// Check to see if key starts with `xoxb`. All Slack keys start with
-		// `xoxb`, so it's a simple validation test
-		if strings.HasPrefix(key, "xoxb") {
-			slackKey = key
-			valid++
-		}
-		log.Fatal(map[string]interface{}{
-			"module": "main",
-			"error":  "Key provided does not appear to be a valid Slack API key",
-			"key":    key,
-		})
+	// Check to see if key starts with `xoxb`. All Slack keys start with
+	// `xoxb`, so it's a simple validation test
+	if strings.HasPrefix(key, "xoxb") {
+		slackKey = key
+		valid++
 	} else {
 		log.Fatal(map[string]interface{}{
 			"module": "main",
-			"error":  "Slack key not provided. Slack key must be present to run Slab",
+			"error":  "Key provided does not appear to be a valid Slack API key",
 			"key":    key,
 		})
 	}
