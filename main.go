@@ -4,6 +4,7 @@
 package main
 
 import (
+	"flag"
 	"os"
 	"strings"
 	"time"
@@ -14,10 +15,11 @@ import (
 
 // VERSION lists the version number. On build, uses the git hash as a version ID
 var (
-	Version  = "undefined"
-	log      = l.Log
-	c        config.Config
-	slackKey string
+	Version    = "undefined"
+	log        = l.Log
+	c          config.Config
+	slackKey   string
+	serverPort int
 )
 
 func main() {
@@ -53,7 +55,7 @@ func startServer() *Server {
 		Info: &ServerInfo{
 			Server:  c.Metadata.Server,
 			Version: Version,
-			Port:    c.Port,
+			Port:    serverPort,
 		},
 		Uptime: time.Now(),
 	}
@@ -83,26 +85,38 @@ func shutdown(ticker *time.Ticker, s *Server) {
 // keyCheck looks for any passed arguments. If there are none, an error is
 // displayed and the app exits.
 func keyCheck() bool {
-	// Check to see if there are a sufficient number of arguments passed
-	if len(os.Args) > 1 {
+	// use an int to check if both port and key are valid
+	valid := 0
+	// Check to see that the proper flags have been passed - port and Slack key
+	key := flag.String("key", "foo", "a valid Slack API key")
+	port := flag.Int("port", 8090, "the port Slab will listen on")
+	flag.Parse()
+
+	if *key != "" {
 		// Check to see if key starts with `xoxb`. All Slack keys start with
 		// `xoxb`, so it's a simple validation test
-		if strings.HasPrefix(os.Args[1], "xoxb") {
-			slackKey = os.Args[1]
-			return true
+		if strings.HasPrefix(*key, "xoxb") {
+			slackKey = *key
+			valid++
 		}
-
 		log.Fatal(map[string]interface{}{
 			"module": "main",
 			"error":  "Key provided does not appear to be a valid Slack API key",
-			"key":    os.Args[1][0:5],
+			"key":    *key,
 		})
-		return false
+	} else {
+		log.Fatal(map[string]interface{}{
+			"module": "main",
+			"error":  "Slack key not provided. Slack key must be present to run Slab",
+			"key":    *key,
+		})
 	}
-	log.Fatal(map[string]interface{}{
-		"module": "main",
-		"error":  "Slack key not provided. Slack key must be present to run Slab",
-		"key":    os.Args[1][0:5],
-	})
+	if *port < 65534 && *port > 1 {
+		serverPort = *port
+		valid++
+	}
+	if valid == 2 {
+		return true
+	}
 	return false
 }
