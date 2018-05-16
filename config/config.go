@@ -120,8 +120,12 @@ func SaveConfig(config Config) {
 			"module": "config",
 			"output": n,
 		})
+	} else {
+		log.Error("Error creating new buffer for config", map[string]interface{}{
+			"module": "config",
+			"config": config,
+		})
 	}
-
 }
 
 func defaultConfig() (config Config) {
