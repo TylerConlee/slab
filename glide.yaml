@@ -5,7 +5,11 @@ import:
 - package: github.com/op/go-logging
 - package: github.com/tylerconlee/slack
 - package: github.com/sirupsen/logrus
-  version: ~1.0.4
+  version: master
+- package: github.com/Sirupsen/logrus
+  repo: git@github.com:/sirupsen/logrus
+  vcs: git
+  version: master
 - package: golang.org/x/crypto
   subpackages:
   - ssh/terminal
