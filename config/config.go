@@ -115,6 +115,7 @@ func SaveConfig(config Config) {
 				"module": "config",
 			})
 		}
+		f.Sync()
 		log.Debug("Saved configuration file", map[string]interface{}{
 			"module": "config",
 			"output": n,
