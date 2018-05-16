@@ -190,6 +190,8 @@ func prepConfigLoad() (attachment slack.Attachment) {
 
 func prepConfigSave() {
 	activeUser.step = 0
+	activeUser.user = ""
+	activeWizard = false
 	freq, err := time.ParseDuration("10m")
 	if err != nil {
 		log.Fatal(map[string]interface{}{
