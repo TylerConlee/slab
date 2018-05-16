@@ -3,8 +3,8 @@ package log
 import (
 	"os"
 
-	"github.com/Sirupsen/logrus"
 	"github.com/doublefree/sumorus"
+	"github.com/sirupsen/logrus"
 )
 
 type Logger struct{ e *logrus.Logger }
