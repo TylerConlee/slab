@@ -151,6 +151,7 @@ func NextStep(msg string) {
 			"module":  "slack",
 			"message": msg,
 		})
+		prepConfigSave()
 	}
 
 }

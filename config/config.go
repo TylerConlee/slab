@@ -101,10 +101,11 @@ func LoadConfig() (config Config) {
 func SaveConfig(config Config) {
 	buf := new(bytes.Buffer)
 	if err := toml.NewEncoder(buf).Encode(config); err != nil {
-		f, err := os.Create("/tmp/dat2")
+		f, err := os.Create("config.toml")
 		if nil != err {
 			log.Error("error saving file", map[string]interface{}{
 				"module": "config",
+				"error":  err,
 			})
 		}
 		defer f.Close()
