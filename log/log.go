@@ -3,15 +3,22 @@ package log
 import (
 	"os"
 
-	"github.com/sirupsen/logrus"
+	"github.com/Sirupsen/logrus"
+	"github.com/doublefree/sumorus"
 )
 
 type Logger struct{ e *logrus.Logger }
 
 var Log *Logger
+var endpoint string = os.Getenv("SLAB_SUMO_URL")
+var host = os.Getenv("SLAB_SUMO_HOST")
 
 func init() {
 	Log = &Logger{logrus.New()}
+	if endpoint != "" {
+		sumoLogicHook := sumorus.NewSumoLogicHook(endpoint, host, logrus.InfoLevel, "tag1", "tag2")
+		Log.e.Hooks.Add(sumoLogicHook)
+	}
 }
 
 func (s *Logger) Fatal(c map[string]interface{}) {
