@@ -157,7 +157,9 @@ func NextStep(msg string) {
 }
 
 func prepConfigLoad() (attachment slack.Attachment) {
-
+	log.Info("Loading current configuration", map[string]interface{}{
+		"module": "slack",
+	})
 	con := config.LoadConfig()
 
 	attachment = slack.Attachment{
@@ -224,5 +226,9 @@ func prepConfigSave() {
 			ChannelID: ChannelList[0].ID,
 		},
 	}
+	log.Info("Saving current configuration", map[string]interface{}{
+		"module": "slack",
+		"config": c,
+	})
 	config.SaveConfig(c)
 }
