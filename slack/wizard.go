@@ -199,7 +199,7 @@ func prepConfigSave() {
 			"error":  err,
 		})
 	}
-	c := config.Config{
+	con := config.Config{
 		Zendesk: config.Zendesk{
 			APIKey: ZenAPI,
 			User:   ZenUser,
@@ -230,7 +230,7 @@ func prepConfigSave() {
 	}
 	log.Info("Saving current configuration", map[string]interface{}{
 		"module": "slack",
-		"config": c,
+		"config": con,
 	})
-	config.SaveConfig(c)
+	config.SaveConfig(con)
 }
