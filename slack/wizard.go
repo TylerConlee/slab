@@ -157,6 +157,7 @@ func NextStep(msg string) {
 }
 
 func prepConfigLoad() (attachment slack.Attachment) {
+
 	con := config.LoadConfig()
 
 	attachment = slack.Attachment{
@@ -186,6 +187,7 @@ func prepConfigLoad() (attachment slack.Attachment) {
 }
 
 func prepConfigSave() {
+	activeUser.step = 0
 	freq, err := time.ParseDuration("10m")
 	if err != nil {
 		log.Fatal(map[string]interface{}{
