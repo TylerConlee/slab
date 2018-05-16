@@ -1,5 +1,5 @@
-hash: e9f51e764dcd94c56315ff209e99423ab76fdb8e1ae436c14784c81099f6b6ba
-updated: 2018-05-16T10:15:29.872162-07:00
+hash: 862d3866c8823ca0ac7c6fe1ec68faacd926694f1657e01f6e1d11eb5c5ffa8c
+updated: 2018-05-16T10:34:58.018823-07:00
 imports:
 - name: github.com/BurntSushi/toml
   version: a368813c5e648fee92e5f6c30e3944ff9d5e8895
@@ -12,7 +12,11 @@ imports:
 - name: github.com/op/go-logging
   version: 970db520ece77730c7e4724c61121037378659d9
 - name: github.com/sirupsen/logrus
-  version: c155da19408a8799da419ed3eeb0cb5db0ad5dbc
+  version: 0dad3b6953e73d351ec8ebfd8a8c6b088d320381
+- name: github.com/Sirupsen/logrus
+  version: 0dad3b6953e73d351ec8ebfd8a8c6b088d320381
+  repo: git@github.com:/sirupsen/logrus
+  vcs: git
 - name: github.com/tylerconlee/slack
   version: 1bf41f4946f8f48d01f4fff42b371cac6c1d2627
 - name: golang.org/x/crypto
