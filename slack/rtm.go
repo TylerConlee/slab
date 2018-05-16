@@ -127,7 +127,12 @@ func startRTM() {
 						// Otherwise, parse DM command, such as twilio, so that
 						// phone numbers aren't shared in public channels
 						// Leave open for future expansion
-						parseDMCommand(ev.Msg.Text, ev.User)
+						t := strings.TrimPrefix(ev.Msg.Text, "<@"+user.ID+"> ")
+						log.Info("DM recognized", map[string]interface{}{
+							"command": t,
+							"user":    user.ID,
+						})
+						parseDMCommand(t, ev.User)
 					}
 
 				} else if c == 2 {
