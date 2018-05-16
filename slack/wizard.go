@@ -139,19 +139,24 @@ func NextStep(msg string) {
 			"module":  "slack",
 			"message": msg,
 		})
+		ZenURL = msg
 		GetZendeskUser()
 	case 4:
 		log.Info("Zendesk username received.", map[string]interface{}{
 			"module":  "slack",
 			"message": msg,
 		})
+		ZenUser = msg
 		GetZendeskAPIKey()
 	case 5:
 		log.Info("Zendesk API key received.", map[string]interface{}{
 			"module":  "slack",
 			"message": msg,
 		})
+		ZenAPI = msg
+
 		prepConfigSave()
+
 	}
 
 }
@@ -189,9 +194,7 @@ func prepConfigLoad() (attachment slack.Attachment) {
 }
 
 func prepConfigSave() {
-	activeUser.step = 0
-	activeUser.user = ""
-	activeWizard = false
+
 	freq, err := time.ParseDuration("10m")
 	if err != nil {
 		log.Fatal(map[string]interface{}{
@@ -233,4 +236,9 @@ func prepConfigSave() {
 		"config": con,
 	})
 	config.SaveConfig(con)
+	attachment := slack.Attachment{}
+	SendDirectMessage("Configuration successfully saved", attachment, activeUser.user)
+	activeUser.step = 0
+	activeUser.user = ""
+	activeWizard = false
 }
