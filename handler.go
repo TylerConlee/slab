@@ -55,7 +55,6 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 		sl.AddChannel(payload.Channel.ID, 1)
 		if sl.ChannelSelect {
 			sl.AddChannel(payload.Actions[0].SelectedOptions[0].Value, 2)
-			sl.ChannelSelectMessage()
 		}
 		switch {
 		case payload.Actions[0].Value == "start":

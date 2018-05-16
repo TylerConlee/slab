@@ -89,7 +89,9 @@ func ChannelSelectMessage() {
 			},
 		},
 	}
-	SendDirectMessage("Select a channel", attachment, activeUser.user)
+	ChannelSelect = true
+	activeUser.step = 2
+	SendDirectMessage("Select a channel for Slab to report in.", attachment, activeUser.user)
 
 }
 
@@ -97,6 +99,7 @@ func ChannelSelectMessage() {
 // provide a URL to their Zendesk instance.
 func GetZendeskURL() {
 	activeUser.step = 3
+	ChannelSelect = false
 	message := "Please enter your Zendesk URL"
 	attachment := slack.Attachment{}
 	SendDirectMessage(message, attachment, activeUser.user)
