@@ -98,7 +98,7 @@ func LoadConfig() (config Config) {
 }
 
 // SaveConfig takes a config and saves it to the local file, config.toml.
-func SaveConfig(config Config) {
+func SaveConfig(config Config) bool {
 	buf := new(bytes.Buffer)
 	if err := toml.NewEncoder(buf).Encode(config); err != nil {
 		f, err := os.Create("config.toml")
@@ -120,11 +120,14 @@ func SaveConfig(config Config) {
 			"module": "config",
 			"output": n,
 		})
+		return true
 	} else {
 		log.Error("Error creating new buffer for config", map[string]interface{}{
 			"module": "config",
 			"config": config,
+			"error":  err,
 		})
+		return false
 	}
 }
 

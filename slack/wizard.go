@@ -235,9 +235,14 @@ func prepConfigSave() {
 		"module": "slack",
 		"config": con,
 	})
-	config.SaveConfig(con)
+	success := config.SaveConfig(con)
 	attachment := slack.Attachment{}
-	SendDirectMessage("Configuration successfully saved", attachment, activeUser.user)
+	if success {
+
+		SendDirectMessage("Configuration successfully saved", attachment, activeUser.user)
+	} else {
+		SendDirectMessage("An error occurred when attempting to save the configuration.", attachment, activeUser.user)
+	}
 	activeUser.step = 0
 	activeUser.user = ""
 	activeWizard = false
