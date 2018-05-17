@@ -163,7 +163,7 @@ func NextStep(msg string) {
 }
 
 func parseInput(input string) (output string) {
-	r := strings.NewReplacer("<", "&lt;", ">", "&gt;")
+	r := strings.NewReplacer("<", "", ">", "")
 	output = r.Replace(input)
 	output = strings.TrimLeft(output, "|")
 	return
@@ -218,19 +218,67 @@ func prepConfigSave() {
 		SLA: config.SLA{
 			LevelOne: config.Level{
 				Tag: "platinum",
+				Low: config.Duration{
+					time.Duration(180 * time.Minute),
+				},
+				Normal: config.Duration{
+					time.Duration(120 * time.Minute),
+				},
+				High: config.Duration{
+					time.Duration(60 * time.Minute),
+				},
+				Urgent: config.Duration{
+					time.Duration(59 * time.Minute),
+				},
 			},
 			LevelTwo: config.Level{
 				Tag: "gold",
+				Low: config.Duration{
+					time.Duration(6 * time.Hour),
+				},
+				Normal: config.Duration{
+					time.Duration(3 * time.Hour),
+				},
+				High: config.Duration{
+					time.Duration(2 * time.Hour),
+				},
+				Urgent: config.Duration{
+					time.Duration(1 * time.Hour),
+				},
 			},
 			LevelThree: config.Level{
 				Tag: "silver",
+				Low: config.Duration{
+					time.Duration(12 * time.Hour),
+				},
+				Normal: config.Duration{
+					time.Duration(6 * time.Hour),
+				},
+				High: config.Duration{
+					time.Duration(3 * time.Hour),
+				},
+				Urgent: config.Duration{
+					time.Duration(2 * time.Hour),
+				},
 			},
 			LevelFour: config.Level{
 				Tag: "bronze",
+				Low: config.Duration{
+					time.Duration(48 * time.Hour),
+				},
+				Normal: config.Duration{
+					time.Duration(24 * time.Hour),
+				},
+				High: config.Duration{
+					time.Duration(8 * time.Hour),
+				},
+				Urgent: config.Duration{
+					time.Duration(3 * time.Hour),
+				},
 			},
 		},
 		UpdateFreq: config.Duration{
-			Duration: freq,
+			freq,
 		},
 		Metadata:      config.Metadata{},
 		TriageEnabled: true,
