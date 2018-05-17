@@ -67,14 +67,6 @@ type Duration struct {
 	time.Duration
 }
 
-// UnmarshalText takes the Duration and returns a time.Duration in place of the
-// string.
-func (d *Duration) UnmarshalText(text []byte) error {
-	var err error
-	d.Duration, err = time.ParseDuration(string(text))
-	return err
-}
-
 // LoadConfig grabs the command line argument for where the configuration file
 // is located and loads that into memory.
 func LoadConfig() (config Config) {
