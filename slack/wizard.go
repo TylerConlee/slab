@@ -230,6 +230,7 @@ func prepConfigSave() {
 				Urgent: config.Duration{
 					time.Duration(59 * time.Minute),
 				},
+				Notify: true,
 			},
 			LevelTwo: config.Level{
 				Tag: "gold",
@@ -245,6 +246,7 @@ func prepConfigSave() {
 				Urgent: config.Duration{
 					time.Duration(1 * time.Hour),
 				},
+				Notify: true,
 			},
 			LevelThree: config.Level{
 				Tag: "silver",
@@ -260,6 +262,7 @@ func prepConfigSave() {
 				Urgent: config.Duration{
 					time.Duration(2 * time.Hour),
 				},
+				Notify: true,
 			},
 			LevelFour: config.Level{
 				Tag: "bronze",
@@ -275,6 +278,7 @@ func prepConfigSave() {
 				Urgent: config.Duration{
 					time.Duration(3 * time.Hour),
 				},
+				Notify: true,
 			},
 		},
 		UpdateFreq: config.Duration{
