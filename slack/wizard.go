@@ -1,6 +1,7 @@
 package slack
 
 import (
+	"strings"
 	"time"
 
 	"github.com/tylerconlee/slab/config"
@@ -139,14 +140,14 @@ func NextStep(msg string) {
 			"module":  "slack",
 			"message": msg,
 		})
-		ZenURL = msg
+		ZenURL = parseInput(msg)
 		GetZendeskUser()
 	case 4:
 		log.Info("Zendesk username received.", map[string]interface{}{
 			"module":  "slack",
 			"message": msg,
 		})
-		ZenUser = msg
+		ZenUser = parseInput(msg)
 		GetZendeskAPIKey()
 	case 5:
 		log.Info("Zendesk API key received.", map[string]interface{}{
@@ -161,6 +162,12 @@ func NextStep(msg string) {
 
 }
 
+func parseInput(input string) (output string) {
+	r := strings.NewReplacer("<", "&lt;", ">", "&gt;")
+	output = r.Replace(input)
+	output = strings.TrimLeft(output, "|")
+	return
+}
 func prepConfigLoad() (attachment slack.Attachment) {
 	log.Info("Loading current configuration", map[string]interface{}{
 		"module": "slack",

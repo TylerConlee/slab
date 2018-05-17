@@ -3,6 +3,7 @@ package main
 import (
 	"time"
 
+	"github.com/tylerconlee/slab/config"
 	"github.com/tylerconlee/slab/plugins"
 	"github.com/tylerconlee/slab/slack"
 	"github.com/tylerconlee/slab/zendesk"
@@ -17,12 +18,18 @@ func RunTimer(interval time.Duration) {
 		"interval": interval,
 	})
 	t := time.NewTicker(interval)
-	p := plugins.LoadPlugins(c)
-	log.Info("Loaded plugins.", map[string]interface{}{
-		"module":  "main",
-		"plugins": p,
-	})
+
 	for {
+		// reload the config on each pass to allow for changes to the config to
+		// be recognized
+		// TODO: Update this to only update when the file is modified, rather
+		// than every pass
+		c = config.LoadConfig()
+		p := plugins.LoadPlugins(c)
+		log.Info("Loaded plugins.", map[string]interface{}{
+			"module":  "main",
+			"plugins": p,
+		})
 		tick := zendesk.GetAllTickets()
 
 		log.Info("Successfully grabbed and parsed tickets from Zendesk", map[string]interface{}{
