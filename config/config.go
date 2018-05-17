@@ -101,6 +101,13 @@ func LoadConfig() (config Config) {
 func SaveConfig(config Config) bool {
 	buf := new(bytes.Buffer)
 	if err := toml.NewEncoder(buf).Encode(config); err != nil {
+		log.Error("Error creating new buffer for config", map[string]interface{}{
+			"module": "config",
+			"config": config,
+			"error":  err,
+		})
+		return false
+	} else {
 		f, err := os.Create("config.toml")
 		if nil != err {
 			log.Error("error saving file", map[string]interface{}{
@@ -121,13 +128,7 @@ func SaveConfig(config Config) bool {
 			"output": n,
 		})
 		return true
-	} else {
-		log.Error("Error creating new buffer for config", map[string]interface{}{
-			"module": "config",
-			"config": config,
-			"error":  err,
-		})
-		return false
+
 	}
 }
 
