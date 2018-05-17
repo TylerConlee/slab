@@ -107,29 +107,29 @@ func SaveConfig(config Config) bool {
 			"error":  err,
 		})
 		return false
-	} else {
-		f, err := os.Create("config.toml")
-		if nil != err {
-			log.Error("error saving file", map[string]interface{}{
-				"module": "config",
-				"error":  err,
-			})
-		}
-		defer f.Close()
-		n, err := f.WriteString(buf.String())
-		if nil != err {
-			log.Error("error saving file", map[string]interface{}{
-				"module": "config",
-			})
-		}
-		f.Sync()
-		log.Debug("Saved configuration file", map[string]interface{}{
-			"module": "config",
-			"output": n,
-		})
-		return true
-
 	}
+
+	f, err := os.Create("config.toml")
+	if nil != err {
+		log.Error("error saving file", map[string]interface{}{
+			"module": "config",
+			"error":  err,
+		})
+	}
+	defer f.Close()
+	n, err := f.WriteString(buf.String())
+	if nil != err {
+		log.Error("error saving file", map[string]interface{}{
+			"module": "config",
+		})
+	}
+	f.Sync()
+	log.Debug("Saved configuration file", map[string]interface{}{
+		"module": "config",
+		"output": n,
+	})
+	return true
+
 }
 
 func defaultConfig() (config Config) {
