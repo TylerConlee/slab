@@ -18,7 +18,7 @@ var (
 // GetChannel takes the event from RTM and determines if the channel is
 // part of a DM with a user that just initiated Slab, or if it's in a Slab
 // monitored channel.
-func getChannel(channel string) (chantype int) {
+func GetChannel(channel string) (chantype int) {
 	for _, c := range DMChannelList {
 		if channel == c.ID {
 			return 1
