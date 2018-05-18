@@ -106,7 +106,7 @@ func startRTM() {
 				// or regular channel. If DM, identify the user and if they're
 				// in the middle of the configuration routine. Then identify
 				// the configuration step the user is currently in.
-				c := getChannel(ev.Channel)
+				c := GetChannel(ev.Channel)
 				if c == 1 {
 
 					// Run check to see if user is in configuration wizard
