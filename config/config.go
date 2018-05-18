@@ -1,6 +1,7 @@
 package config
 
 import (
+	"bytes"
 	"os"
 	"time"
 
@@ -66,58 +67,70 @@ type Duration struct {
 	time.Duration
 }
 
-// UnmarshalText takes the Duration and returns a time.Duration in place of the
-// string.
-func (d *Duration) UnmarshalText(text []byte) error {
-	var err error
-	d.Duration, err = time.ParseDuration(string(text))
-	return err
-}
-
 // LoadConfig grabs the command line argument for where the configuration file
 // is located and loads that into memory.
 func LoadConfig() (config Config) {
-	if len(os.Args) > 1 {
-		if _, err := toml.DecodeFile(os.Args[1], &config); err != nil {
+	if _, err := os.Stat("config.toml"); err == nil {
+		if _, err := toml.DecodeFile("config.toml", &config); err != nil {
 			log.Error("Configuration file not found.", map[string]interface{}{
-				"module": "main",
+				"module": "config",
 				"error":  err,
 			})
 			config = defaultConfig()
 			return
 		}
 		log.Info("Configuration loaded successfully", map[string]interface{}{
-			"module": "main",
-			"file":   os.Args[1],
+			"module": "config",
+			"file":   "config.toml",
 		})
-		return config
+		return
 	}
 	config = defaultConfig()
 	return
+}
+
+// SaveConfig takes a config and saves it to the local file, config.toml.
+func SaveConfig(config Config) bool {
+	buf := new(bytes.Buffer)
+	if err := toml.NewEncoder(buf).Encode(config); err != nil {
+		log.Error("Error creating new buffer for config", map[string]interface{}{
+			"module": "config",
+			"config": config,
+			"error":  err,
+		})
+		return false
+	}
+
+	f, err := os.Create("config.toml")
+	if nil != err {
+		log.Error("error saving file", map[string]interface{}{
+			"module": "config",
+			"error":  err,
+		})
+	}
+	defer f.Close()
+	n, err := f.WriteString(buf.String())
+	if nil != err {
+		log.Error("error saving file", map[string]interface{}{
+			"module": "config",
+		})
+	}
+	f.Sync()
+	log.Debug("Saved configuration file", map[string]interface{}{
+		"module": "config",
+		"output": n,
+	})
+	return true
 
 }
 
 func defaultConfig() (config Config) {
-	freq, err := time.ParseDuration("10m")
 
-	if err != nil {
-		log.Fatal(map[string]interface{}{
-			"module": "main",
-			"error":  err,
-		})
-	}
 	config = Config{
 		Zendesk: Zendesk{
 			APIKey: "",
 			User:   "",
 			URL:    "",
-		},
-		Slack: Slack{
-			APIKey:    "",
-			ChannelID: "",
-		},
-		UpdateFreq: Duration{
-			freq,
 		},
 		SLA: SLA{
 			LevelOne: Level{
@@ -135,7 +148,6 @@ func defaultConfig() (config Config) {
 		},
 		Metadata:      Metadata{},
 		TriageEnabled: true,
-		Port:          8080,
 	}
 	return
 }

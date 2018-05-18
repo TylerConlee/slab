@@ -40,50 +40,6 @@ type NotifySent struct {
 	Expire time.Time
 }
 
-// SendMessage takes an attachment and message and composes a message to be
-// sent to the configured Slack channel ID
-func SendMessage(message string, attachment slack.Attachment) {
-	params := slack.PostMessageParameters{}
-	params.Attachments = []slack.Attachment{attachment}
-	params.LinkNames = 1
-	// Send a message to the given channel with pretext and the parameters
-	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, message, params)
-	if err != nil {
-		fmt.Printf("%s\n", err)
-		return
-	}
-	// Log message if succesfully sent.
-	log.Debug("Message sent successfully.", map[string]interface{}{
-		"module":    "slack",
-		"channel":   channelID,
-		"timestamp": timestamp,
-		"message":   message,
-	})
-}
-
-// SendEphemeralMessage takes a message, attachment and a user ID and sends a
-// message to that user ID.
-func SendEphemeralMessage(message string, attachment slack.Attachment, user string) {
-	params := slack.PostMessageParameters{}
-	params.Attachments = []slack.Attachment{attachment}
-	params.LinkNames = 1
-
-	// Send a message to the given channel with pretext and the parameters
-	timestamp, err := api.PostEphemeral(c.Slack.ChannelID, user, slack.MsgOptionText(message, params.EscapeText),
-		slack.MsgOptionAttachments(params.Attachments...),
-		slack.MsgOptionPostMessageParameters(params))
-	if err != nil {
-		fmt.Printf("%s\n", err)
-		return
-	}
-	// Log message if succesfully sent.
-	log.Debug("Message sent successfully.", map[string]interface{}{
-		"module":    "slack",
-		"timestamp": timestamp,
-		"message":   message,
-	})
-}
-
 // SetMessage creates and sends a message to Slack with a menu attachment,
 // allowing users to set the triager staff member.
 func SetMessage() {
@@ -407,6 +363,25 @@ func HelpMessage() {
 	message := "..."
 	api.PostMessage(c.Slack.ChannelID, message, params)
 
+}
+
+// ShowConfigMessage takes a user string and sends that user the value of the
+// config.toml configuration file. Used for identifying configuration issues.
+func ShowConfigMessage(user string) {
+	attachment := slack.Attachment{
+		Title: "Config",
+	}
+	message := "Test direct message for config."
+	SendDirectMessage(message, attachment, user)
+
+}
+
+// UnknownCommandMessage sends a direct message to the user provided indicating
+// that the command that they attempted is not a valid command.
+func UnknownCommandMessage(text string, user string) {
+	message := fmt.Sprintf("Sorry, the command `%s` is an invalid command. Please type `help` for a list of all available DM commands", text)
+	attachment := slack.Attachment{}
+	SendDirectMessage(message, attachment, user)
 }
 
 // ChatUpdate takes a channel ID, a timestamp and message text

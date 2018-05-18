@@ -76,7 +76,7 @@ Tyler Conlee – [@TylerConlee](https://twitter.com/tylerconlee) – tyler@circl
 
 Distributed under the MIT license. See ``LICENSE`` for more information.
 
-[https://github.com/tylerconlee/](https://github.com/dbader/)
+[https://github.com/tylerconlee/](https://github.com/tylerconlee/)
 
 ## Contributing
 
