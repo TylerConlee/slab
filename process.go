@@ -19,7 +19,6 @@ func RunTimer(interval time.Duration) {
 	})
 	t := time.NewTicker(interval)
 
-
 	for {
 		// reload the config on each pass to allow for changes to the config to
 		// be recognized
@@ -27,6 +26,12 @@ func RunTimer(interval time.Duration) {
 		// than every pass
 		c = config.LoadConfig()
 		p := plugins.LoadPlugins(c)
+		if c.Slack.ChannelID != "" {
+			channel := slack.GetChannel(c.Slack.ChannelID)
+			if channel == 0 {
+				slack.AddChannel(c.Slack.ChannelID, 2)
+			}
+		}
 		log.Info("Loaded plugins.", map[string]interface{}{
 			"module":  "main",
 			"plugins": p,
@@ -65,33 +70,31 @@ func RunTimer(interval time.Duration) {
 
 			slack.Sent = zendesk.Sent
 
-		
+			// Returns a list of all new tickets within the last loop
+			new := zendesk.CheckNewTicket(tick, interval)
+			if new != nil {
 
-		// Returns a list of all new tickets within the last loop
-		new := zendesk.CheckNewTicket(tick, interval)
-		if new != nil {
+				var newTickets []slack.Ticket
+				// Loop through all tickets and add to Slack package friendly slice
+				for _, ticket := range new {
+					m := slack.Ticket(ticket)
+					log.Info("Adding new ticket to notification", map[string]interface{}{
+						"module": "main",
+						"ticket": m.ID,
+					})
+					log.Debug("Ticket information", map[string]interface{}{
+						"module": "main",
+						"ticket": m,
+					})
+					newTickets = append(newTickets, m)
+				}
+				slack.NewTicketMessage(newTickets)
 
-			var newTickets []slack.Ticket
-			// Loop through all tickets and add to Slack package friendly slice
-			for _, ticket := range new {
-				m := slack.Ticket(ticket)
-				log.Info("Adding new ticket to notification", map[string]interface{}{
+				log.Info("Ticket notifications sent. Returning to idle state.", map[string]interface{}{
+
 					"module": "main",
-					"ticket": m.ID,
 				})
-				log.Debug("Ticket information", map[string]interface{}{
-					"module": "main",
-					"ticket": m,
-				})
-				newTickets = append(newTickets, m)
 			}
-			slack.NewTicketMessage(newTickets)
-
-			log.Info("Ticket notifications sent. Returning to idle state.", map[string]interface{}{
-
-				"module": "main",
-			})
-    }
 		} else {
 			log.Info("Zendesk authorization required. Please run @slab start config to begin.", map[string]interface{}{
 
