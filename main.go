@@ -20,6 +20,7 @@ var (
 	c          config.Config
 	slackKey   string
 	serverPort int
+	freq       time.Duration
 )
 
 func main() {
@@ -60,7 +61,7 @@ func startServer() *Server {
 		Uptime: time.Now(),
 	}
 	go func() {
-		RunTimer(c.UpdateFreq.Duration)
+		RunTimer(freq)
 	}()
 	go func() {
 		s.StartServer()
@@ -88,8 +89,8 @@ func keyCheck() bool {
 	// use an int to check if both port and key are valid
 	valid := 0
 	// Check to see that the proper flags have been passed - port and Slack key
-	k := flag.String("key", "foo", "a valid Slack API key")
-
+	k := flag.String("key", "APIKey", "a valid Slack API key")
+	t := flag.String("time", "10m", "the amount of time between Zendesk checks")
 	p := flag.Int("port", 8090, "the port Slab will listen on")
 
 	flag.Parse()
@@ -108,6 +109,18 @@ func keyCheck() bool {
 			"key":    key,
 		})
 	}
+	loop, err := time.ParseDuration(*t)
+	if err != nil {
+		log.Error("Invalid loop time provided", map[string]interface{}{
+			"module": "main",
+			"error":  err,
+			"time":   *t,
+		})
+		freq = time.Duration(10 * time.Minute)
+	} else {
+		freq = loop
+	}
+
 	if port < 65534 && port > 1 {
 		serverPort = port
 		valid++

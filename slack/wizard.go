@@ -201,14 +201,6 @@ func prepConfigLoad() (attachment slack.Attachment) {
 }
 
 func prepConfigSave() {
-
-	freq, err := time.ParseDuration("10m")
-	if err != nil {
-		log.Fatal(map[string]interface{}{
-			"module": "slack",
-			"error":  err,
-		})
-	}
 	con := config.Config{
 		Zendesk: config.Zendesk{
 			APIKey: ZenAPI,
@@ -280,9 +272,6 @@ func prepConfigSave() {
 				},
 				Notify: true,
 			},
-		},
-		UpdateFreq: config.Duration{
-			freq,
 		},
 		Metadata:      config.Metadata{},
 		TriageEnabled: true,
