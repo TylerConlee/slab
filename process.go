@@ -3,6 +3,7 @@ package main
 import (
 	"time"
 
+	"github.com/tylerconlee/slab/config"
 	"github.com/tylerconlee/slab/plugins"
 	"github.com/tylerconlee/slab/slack"
 	"github.com/tylerconlee/slab/zendesk"
@@ -17,14 +18,22 @@ func RunTimer(interval time.Duration) {
 		"interval": interval,
 	})
 	t := time.NewTicker(interval)
-	p := plugins.LoadPlugins(c)
-	log.Info("Loaded plugins.", map[string]interface{}{
-		"module":  "main",
-		"plugins": p,
-	})
+
+
 	for {
-		tick := zendesk.GetAllTickets()
-		if tick.Tickets != nil {
+		// reload the config on each pass to allow for changes to the config to
+		// be recognized
+		// TODO: Update this to only update when the file is modified, rather
+		// than every pass
+		c = config.LoadConfig()
+		p := plugins.LoadPlugins(c)
+		log.Info("Loaded plugins.", map[string]interface{}{
+			"module":  "main",
+			"plugins": p,
+		})
+		if c.Zendesk.URL != "" && c.Zendesk.APIKey != "" {
+			tick := zendesk.GetAllTickets()
+
 			log.Info("Successfully grabbed and parsed tickets from Zendesk", map[string]interface{}{
 				"module": "main",
 			})
@@ -55,11 +64,13 @@ func RunTimer(interval time.Duration) {
 			}
 
 			slack.Sent = zendesk.Sent
-		}
+
+		
 
 		// Returns a list of all new tickets within the last loop
 		new := zendesk.CheckNewTicket(tick, interval)
 		if new != nil {
+
 			var newTickets []slack.Ticket
 			// Loop through all tickets and add to Slack package friendly slice
 			for _, ticket := range new {
@@ -77,6 +88,13 @@ func RunTimer(interval time.Duration) {
 			slack.NewTicketMessage(newTickets)
 
 			log.Info("Ticket notifications sent. Returning to idle state.", map[string]interface{}{
+
+				"module": "main",
+			})
+    }
+		} else {
+			log.Info("Zendesk authorization required. Please run @slab start config to begin.", map[string]interface{}{
+
 				"module": "main",
 			})
 		}

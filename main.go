@@ -5,30 +5,32 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/tylerconlee/slab/config"
 	l "github.com/tylerconlee/slab/log"
-	"github.com/tylerconlee/slab/server"
 )
 
 // VERSION lists the version number. On build, uses the git hash as a version ID
 var (
-	Version = "undefined"
-	log     = l.Log
-	c       config.Config
+	Version    = "undefined"
+	log        = l.Log
+	c          config.Config
+	slackKey   string
+	serverPort int
+	freq       time.Duration
 )
 
 func main() {
-	flagCheck()
-	// Start up the logging system
-	c = config.LoadConfig()
-	log.SetLogLevel(c.LogLevel)
+	keyCheck()
 	log.Info("SLABot by Tyler Conlee", map[string]interface{}{
 		"module": "main",
 	})
+
+	// Start up the logging system
+	c = config.LoadConfig()
 
 	// Start timer process. Takes an int as the number of minutes to loop
 
@@ -49,17 +51,17 @@ func main() {
 // startServer initializes the metadata for the status page, starts the timer
 // for the SLA breach monitor loop, and starts an HTTP server for running Slacks
 // real time messaging monitoring API.
-func startServer() *server.Server {
-	s := &server.Server{
-		Info: &server.ServerInfo{
+func startServer() *Server {
+	s := &Server{
+		Info: &ServerInfo{
 			Server:  c.Metadata.Server,
 			Version: Version,
-			Port:    c.Port,
+			Port:    serverPort,
 		},
 		Uptime: time.Now(),
 	}
 	go func() {
-		RunTimer(c.UpdateFreq.Duration)
+		RunTimer(freq)
 	}()
 	go func() {
 		s.StartServer()
@@ -69,7 +71,7 @@ func startServer() *server.Server {
 }
 
 // shutdown stops the ticker and gracefully shuts down the server.
-func shutdown(ticker *time.Ticker, s *server.Server) {
+func shutdown(ticker *time.Ticker, s *Server) {
 
 	if ticker != nil {
 		ticker.Stop()
@@ -81,26 +83,50 @@ func shutdown(ticker *time.Ticker, s *server.Server) {
 	os.Exit(0)
 }
 
-// flagCheck parses any flags that are passed when calling SLAB on the
-// command line.
-func flagCheck() {
-	var help bool
-
-	var helpText = "SLAB is a utility designed to integrate Zendesk SLAs with Slack notifications.\nUsage: ./slab [configuration-file-path]"
-
-	flag.BoolVar(&help, "help", false, helpText)
-
-	var version *bool
-	version = flag.Bool("version", false, Version)
+// keyCheck looks for any passed arguments. If there are none, an error is
+// displayed and the app exits.
+func keyCheck() bool {
+	// use an int to check if both port and key are valid
+	valid := 0
+	// Check to see that the proper flags have been passed - port and Slack key
+	k := flag.String("key", "APIKey", "a valid Slack API key")
+	t := flag.String("time", "10m", "the amount of time between Zendesk checks")
+	p := flag.Int("port", 8090, "the port Slab will listen on")
 
 	flag.Parse()
 
-	if *version {
-		fmt.Printf("Version %s\n", (flag.Lookup("version")).Usage)
-		os.Exit(0)
+	key := *k
+	port := *p
+	// Check to see if key starts with `xoxb`. All Slack keys start with
+	// `xoxb`, so it's a simple validation test
+	if strings.HasPrefix(key, "xoxb") {
+		slackKey = key
+		valid++
+	} else {
+		log.Fatal(map[string]interface{}{
+			"module": "main",
+			"error":  "Key provided does not appear to be a valid Slack API key",
+			"key":    key,
+		})
 	}
-	if help {
-		fmt.Printf("%s\n", flag.Lookup("help").Usage)
-		os.Exit(0)
+	loop, err := time.ParseDuration(*t)
+	if err != nil {
+		log.Error("Invalid loop time provided", map[string]interface{}{
+			"module": "main",
+			"error":  err,
+			"time":   *t,
+		})
+		freq = time.Duration(10 * time.Minute)
+	} else {
+		freq = loop
 	}
+
+	if port < 65534 && port > 1 {
+		serverPort = port
+		valid++
+	}
+	if valid == 2 {
+		return true
+	}
+	return false
 }

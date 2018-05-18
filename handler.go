@@ -1,18 +1,15 @@
-package server
+package main
 
 import (
 	"encoding/json"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/gorilla/mux"
-	l "github.com/tylerconlee/slab/log"
 	sl "github.com/tylerconlee/slab/slack"
 	"github.com/tylerconlee/slack"
 )
-
-// log adds a logger for the `api` package
-var log = l.Log
 
 // NewRouter builds a new mux Router instance with the routes that
 // Slack uses to handle callbacks, and the index status page
@@ -50,6 +47,25 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 
 	case "triage_set":
 		sl.SetTriager(payload)
+	case "cfgwiz":
+		log.Info("Config wizard step detected", map[string]interface{}{
+			"module": "server",
+			"step":   payload.Actions[0].Value,
+		})
+		sl.AddChannel(payload.Channel.ID, 1)
+		if sl.ChannelSelect {
+			sl.AddChannel(payload.Actions[0].SelectedOptions[0].Value, 2)
+		}
+		switch {
+		case payload.Actions[0].Value == "start":
+			sl.NextStep("start")
+		case payload.Actions[0].Value == "view":
+			sl.ViewConfig()
+		case strings.Contains(payload.Actions[0].Value, "channel"):
+			sl.NextStep(strings.Trim(payload.Actions[0].Value, "channel"))
+		default:
+			sl.NextStep(payload.Actions[0].SelectedOptions[0].Value)
+		}
 	}
 	return
 }
