@@ -19,6 +19,7 @@ func RunTimer(interval time.Duration) {
 	})
 	t := time.NewTicker(interval)
 
+
 	for {
 		// reload the config on each pass to allow for changes to the config to
 		// be recognized
@@ -64,8 +65,12 @@ func RunTimer(interval time.Duration) {
 
 			slack.Sent = zendesk.Sent
 
-			// Returns a list of all new tickets within the last loop
-			new := zendesk.CheckNewTicket(tick, interval)
+		
+
+		// Returns a list of all new tickets within the last loop
+		new := zendesk.CheckNewTicket(tick, interval)
+		if new != nil {
+
 			var newTickets []slack.Ticket
 			// Loop through all tickets and add to Slack package friendly slice
 			for _, ticket := range new {
@@ -83,10 +88,13 @@ func RunTimer(interval time.Duration) {
 			slack.NewTicketMessage(newTickets)
 
 			log.Info("Ticket notifications sent. Returning to idle state.", map[string]interface{}{
+
 				"module": "main",
 			})
+    }
 		} else {
 			log.Info("Zendesk authorization required. Please run @slab start config to begin.", map[string]interface{}{
+
 				"module": "main",
 			})
 		}
