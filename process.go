@@ -30,60 +30,66 @@ func RunTimer(interval time.Duration) {
 			"module":  "main",
 			"plugins": p,
 		})
-		tick := zendesk.GetAllTickets()
+		if c.Zendesk.URL != "" && c.Zendesk.APIKey != "" {
+			tick := zendesk.GetAllTickets()
 
-		log.Info("Successfully grabbed and parsed tickets from Zendesk", map[string]interface{}{
-			"module": "main",
-		})
-		log.Info("Checking ticket notifications...", map[string]interface{}{
-			"module": "main",
-		})
-		// Returns a list of all upcoming SLA breaches
-		active := zendesk.CheckSLA(tick)
+			log.Info("Successfully grabbed and parsed tickets from Zendesk", map[string]interface{}{
+				"module": "main",
+			})
+			log.Info("Checking ticket notifications...", map[string]interface{}{
+				"module": "main",
+			})
+			// Returns a list of all upcoming SLA breaches
+			active := zendesk.CheckSLA(tick)
 
-		// Loop through all active SLA tickets and prepare SLA notification
-		// for each.
-		for _, ticket := range active {
+			// Loop through all active SLA tickets and prepare SLA notification
+			// for each.
+			for _, ticket := range active {
 
-			if ticket.Priority != nil {
-				send, notify := zendesk.UpdateCache(ticket)
-				if send {
-					log.Info("Preparing SLA notification for ticket", map[string]interface{}{
-						"module": "main",
-						"ticket": ticket.ID,
-					})
-					m := slack.Ticket(ticket)
-					n, c := slack.PrepSLANotification(m, notify)
-					p.SendDispatcher(n)
-					user := zendesk.GetTicketRequester(int(ticket.Requester))
-					slack.SLAMessage(n, m, c, user.Name, user.ID)
+				if ticket.Priority != nil {
+					send, notify := zendesk.UpdateCache(ticket)
+					if send {
+						log.Info("Preparing SLA notification for ticket", map[string]interface{}{
+							"module": "main",
+							"ticket": ticket.ID,
+						})
+						m := slack.Ticket(ticket)
+						n, c := slack.PrepSLANotification(m, notify)
+						p.SendDispatcher(n)
+						user := zendesk.GetTicketRequester(int(ticket.Requester))
+						slack.SLAMessage(n, m, c, user.Name, user.ID)
+					}
 				}
 			}
-		}
 
-		slack.Sent = zendesk.Sent
+			slack.Sent = zendesk.Sent
 
-		// Returns a list of all new tickets within the last loop
-		new := zendesk.CheckNewTicket(tick, interval)
-		var newTickets []slack.Ticket
-		// Loop through all tickets and add to Slack package friendly slice
-		for _, ticket := range new {
-			m := slack.Ticket(ticket)
-			log.Info("Adding new ticket to notification", map[string]interface{}{
+			// Returns a list of all new tickets within the last loop
+			new := zendesk.CheckNewTicket(tick, interval)
+			var newTickets []slack.Ticket
+			// Loop through all tickets and add to Slack package friendly slice
+			for _, ticket := range new {
+				m := slack.Ticket(ticket)
+				log.Info("Adding new ticket to notification", map[string]interface{}{
+					"module": "main",
+					"ticket": m.ID,
+				})
+				log.Debug("Ticket information", map[string]interface{}{
+					"module": "main",
+					"ticket": m,
+				})
+				newTickets = append(newTickets, m)
+			}
+			slack.NewTicketMessage(newTickets)
+
+			log.Info("Ticket notifications sent. Returning to idle state.", map[string]interface{}{
 				"module": "main",
-				"ticket": m.ID,
 			})
-			log.Debug("Ticket information", map[string]interface{}{
+		} else {
+			log.Info("Zendesk authorization required. Please run @slab start config to begin.", map[string]interface{}{
 				"module": "main",
-				"ticket": m,
 			})
-			newTickets = append(newTickets, m)
 		}
-		slack.NewTicketMessage(newTickets)
-
-		log.Info("Ticket notifications sent. Returning to idle state.", map[string]interface{}{
-			"module": "main",
-		})
 		<-t.C
 	}
 }
