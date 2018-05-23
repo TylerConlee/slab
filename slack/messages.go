@@ -487,3 +487,61 @@ func PrepSLANotification(ticket Ticket, notify int64) (notification string, colo
 	return n, c
 
 }
+
+func UpdateMessage(ticket Ticket, user string, uid int64) {
+	description := ticket.Description
+	if len(ticket.Description) > 100 {
+		description = description[0:100] + "..."
+	}
+	url := fmt.Sprintf("%s/agent/tickets/%d", c.Zendesk.URL, ticket.ID)
+	link := fmt.Sprintf("%s/agent/users/%d", c.Zendesk.URL, uid)
+	attachment := slack.Attachment{
+		// Uncomment the following part to send a field too
+		Title:      ticket.Subject,
+		TitleLink:  url,
+		AuthorName: user,
+		AuthorLink: link,
+		AuthorIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/google/119/bust-in-silhouette_1f464.png",
+		CallbackID: "sla",
+		Color:      "primary",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Description",
+				Value: description,
+			},
+			slack.AttachmentField{
+				Title: "Priority",
+				Value: strings.Title(ticket.Priority.(string)),
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Created At",
+				Value: ticket.CreatedAt.String(),
+				Short: true,
+			},
+		},
+		Actions: []slack.AttachmentAction{
+			slack.AttachmentAction{
+				Name:  "ack_sla",
+				Text:  ":white_check_mark: Acknowledge",
+				Type:  "button",
+				Value: "ack",
+				Style: "primary",
+				Confirm: &slack.ConfirmationField{
+					Text:        "Are you sure?",
+					OkText:      "Take it",
+					DismissText: "Leave it",
+				},
+			},
+			slack.AttachmentAction{
+				Name:  "more_info_sla",
+				Value: strconv.FormatInt(ticket.Requester, 10),
+				Text:  ":mag: More Info",
+				Type:  "button",
+				Style: "default",
+			},
+		},
+	}
+	n := "@here - Premium ticket updated"
+	SendMessage(n, attachment)
+}
