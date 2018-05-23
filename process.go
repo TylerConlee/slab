@@ -47,6 +47,7 @@ func RunTimer(interval time.Duration) {
 			})
 			// Returns a list of all upcoming SLA breaches
 			active := zendesk.CheckSLA(tick)
+			updated := zendesk.CheckUpdatedTicket(tick, interval)
 
 			// Loop through all active SLA tickets and prepare SLA notification
 			// for each.
@@ -66,6 +67,11 @@ func RunTimer(interval time.Duration) {
 						slack.SLAMessage(n, m, c, user.Name, user.ID)
 					}
 				}
+			}
+			for _, ticket := range updated {
+				m := slack.Ticket(ticket)
+				user := zendesk.GetTicketRequester(int(ticket.Requester))
+				slack.UpdateMessage(m, user.Name, user.ID)
 			}
 
 			slack.Sent = zendesk.Sent

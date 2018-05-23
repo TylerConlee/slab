@@ -73,6 +73,31 @@ func CheckNewTicket(tick ZenOutput, interval time.Duration) (new []ActiveTicket)
 	return new
 }
 
+// CheckUpdatedTicket loops over the Zendesk output from GetAllTickets
+func CheckUpdatedTicket(tick ZenOutput, interval time.Duration) (new []ActiveTicket) {
+	previousLoop := time.Now().Add(-interval)
+	nowLoop := time.Now()
+	for _, ticket := range tick.Tickets {
+		if ticket.UpdatedAt.After(previousLoop) && ticket.UpdatedAt.Before(nowLoop) {
+			priority := getPriorityLevel(ticket.Tags)
+
+			if priority != "" {
+				t := ActiveTicket{
+					ID:          ticket.ID,
+					SLA:         ticket.Slas.PolicyMetrics,
+					Tags:        ticket.Tags,
+					Subject:     ticket.Subject,
+					Priority:    ticket.Priority,
+					CreatedAt:   ticket.CreatedAt,
+					Description: ticket.Description,
+				}
+				new = append(new, t)
+			}
+		}
+	}
+	return new
+}
+
 // getPriorityLevel takes an individual ticket row from the Zendesk output and
 // returns a string of what priority level the ticket is tagged with
 func getPriorityLevel(tags []string) (priLvl string) {
