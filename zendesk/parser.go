@@ -78,7 +78,7 @@ func CheckUpdatedTicket(tick ZenOutput, interval time.Duration) (new []ActiveTic
 	previousLoop := time.Now().Add(-interval)
 	nowLoop := time.Now()
 	for _, ticket := range tick.Tickets {
-		if ticket.UpdatedAt.After(previousLoop) && ticket.UpdatedAt.Before(nowLoop) {
+		if ticket.UpdatedAt.After(previousLoop) && ticket.UpdatedAt.Before(nowLoop) && ticket.Status == "open" {
 			priority := getPriorityLevel(ticket.Tags)
 
 			if priority != "" {
