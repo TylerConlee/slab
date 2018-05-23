@@ -90,7 +90,7 @@ func keyCheck() bool {
 	valid := 0
 	// Check to see that the proper flags have been passed - port and Slack key
 	k := flag.String("key", "APIKey", "a valid Slack API key")
-	t := flag.String("time", "10m", "the amount of time between Zendesk checks")
+	t := flag.String("time", "2m", "the amount of time between Zendesk checks")
 	p := flag.Int("port", 8090, "the port Slab will listen on")
 
 	flag.Parse()
