@@ -100,11 +100,11 @@ func RunTimer(interval time.Duration) {
 				}
 				slack.NewTicketMessage(newTickets)
 
-				log.Info("Ticket notifications sent. Returning to idle state.", map[string]interface{}{
-
-					"module": "main",
-				})
 			}
+			log.Info("Ticket notifications sent. Returning to idle state.", map[string]interface{}{
+
+				"module": "main",
+			})
 		} else {
 			log.Info("Zendesk authorization required. Please run @slab start config to begin.", map[string]interface{}{
 
