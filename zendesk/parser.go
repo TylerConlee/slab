@@ -76,7 +76,7 @@ func CheckNewTicket(tick ZenOutput, interval time.Duration) (new []ActiveTicket)
 
 // CheckUpdatedTicket loops over the Zendesk output from GetAllTickets
 func CheckUpdatedTicket(tick ZenOutput, interval time.Duration) (new []ActiveTicket) {
-	previousLoop := time.Now().Add(-(interval * 2))
+	previousLoop := time.Now().Add(-(interval + (time.Duration(1 * time.Minute))))
 	nowLoop := time.Now()
 	for _, ticket := range tick.Tickets {
 		if ticket.UpdatedAt.After(previousLoop) && ticket.UpdatedAt.Before(nowLoop) && (ticket.Status == "open" || ticket.Status == "new") {
