@@ -29,6 +29,7 @@ type Ticket struct {
 	Level       string
 	Priority    interface{}
 	CreatedAt   time.Time
+	UpdatedAt   time.Time
 	Description string
 }
 
@@ -515,7 +516,7 @@ func UpdateMessage(ticket Ticket, user string, uid int64) {
 				Short: true,
 			},
 			slack.AttachmentField{
-				Title: "Created At",
+				Title: "Updated At",
 				Value: ticket.UpdatedAt.String(),
 				Short: true,
 			},
