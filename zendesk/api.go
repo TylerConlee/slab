@@ -134,6 +134,10 @@ func makeRequest(user string, key string, url string) (responseData []byte) {
 	}
 
 	resp, err := netClient.Do(req)
+	log.Info("Zendesk request received", map[string]interface{}{
+		"module": "zendesk",
+		"status": resp.StatusCode,
+	})
 	if err != nil {
 		log.Error("Error reaching Zendesk", map[string]interface{}{
 			"module": "zendesk",
