@@ -39,7 +39,7 @@ func RunTimer(interval time.Duration) {
 		if c.Zendesk.URL != "" && c.Zendesk.APIKey != "" {
 			tick := zendesk.GetAllTickets()
 
-			log.Info("Successfully grabbed and parsed tickets from Zendesk", map[string]interface{}{
+			log.Info("Grabbed and parsed tickets from Zendesk", map[string]interface{}{
 				"module": "main",
 			})
 			log.Info("Checking ticket notifications...", map[string]interface{}{
@@ -47,6 +47,7 @@ func RunTimer(interval time.Duration) {
 			})
 			// Returns a list of all upcoming SLA breaches
 			active := zendesk.CheckSLA(tick)
+			updated := zendesk.CheckUpdatedTicket(tick, interval)
 
 			// Loop through all active SLA tickets and prepare SLA notification
 			// for each.
@@ -66,6 +67,15 @@ func RunTimer(interval time.Duration) {
 						slack.SLAMessage(n, m, c, user.Name, user.ID)
 					}
 				}
+			}
+			for _, ticket := range updated {
+				log.Info("Preparing update notification for ticket", map[string]interface{}{
+					"module": "main",
+					"ticket": ticket.ID,
+				})
+				m := slack.Ticket(ticket)
+				user := zendesk.GetTicketRequester(int(ticket.Requester))
+				slack.UpdateMessage(m, user.Name, user.ID)
 			}
 
 			slack.Sent = zendesk.Sent

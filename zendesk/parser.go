@@ -23,6 +23,7 @@ type ActiveTicket struct {
 	Level       string
 	Priority    interface{}
 	CreatedAt   time.Time
+	UpdatedAt   time.Time
 	Description string
 }
 
@@ -68,6 +69,32 @@ func CheckNewTicket(tick ZenOutput, interval time.Duration) (new []ActiveTicket)
 				Description: ticket.Description,
 			}
 			new = append(new, t)
+		}
+	}
+	return new
+}
+
+// CheckUpdatedTicket loops over the Zendesk output from GetAllTickets
+func CheckUpdatedTicket(tick ZenOutput, interval time.Duration) (new []ActiveTicket) {
+	previousLoop := time.Now().Add(-interval)
+	nowLoop := time.Now()
+	for _, ticket := range tick.Tickets {
+		if ticket.UpdatedAt.After(previousLoop) && ticket.UpdatedAt.Before(nowLoop) && ticket.Status == "open" {
+			priority := getPriorityLevel(ticket.Tags)
+
+			if priority != "" && priority != "LevelFour" {
+				t := ActiveTicket{
+					ID:          ticket.ID,
+					SLA:         ticket.Slas.PolicyMetrics,
+					Tags:        ticket.Tags,
+					Subject:     ticket.Subject,
+					Priority:    ticket.Priority,
+					CreatedAt:   ticket.CreatedAt,
+					UpdatedAt:   ticket.UpdatedAt,
+					Description: ticket.Description,
+				}
+				new = append(new, t)
+			}
 		}
 	}
 	return new
