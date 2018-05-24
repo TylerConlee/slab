@@ -516,7 +516,7 @@ func UpdateMessage(ticket Ticket, user string, uid int64) {
 			},
 			slack.AttachmentField{
 				Title: "Created At",
-				Value: ticket.CreatedAt.String(),
+				Value: ticket.UpdatedAt.String(),
 				Short: true,
 			},
 		},

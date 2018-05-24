@@ -23,6 +23,7 @@ type ActiveTicket struct {
 	Level       string
 	Priority    interface{}
 	CreatedAt   time.Time
+	UpdatedAt   time.Time
 	Description string
 }
 
@@ -89,6 +90,7 @@ func CheckUpdatedTicket(tick ZenOutput, interval time.Duration) (new []ActiveTic
 					Subject:     ticket.Subject,
 					Priority:    ticket.Priority,
 					CreatedAt:   ticket.CreatedAt,
+					UpdatedAt:   ticket.UpdatedAt,
 					Description: ticket.Description,
 				}
 				new = append(new, t)
