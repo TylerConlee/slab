@@ -61,7 +61,8 @@ func GetTicket(id int) (ticket Ticket) {
 	zen := c.Zendesk.URL + "/api/v2/tickets/" + strconv.Itoa(id) + ".json"
 	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 	bytes := json.RawMessage(resp)
-	err := json.Unmarshal(bytes, &ticket)
+	tick := TicketGroup{}
+	err := json.Unmarshal(bytes, &tick)
 	if err != nil {
 		log.Error("Error parsing Zendesk JSON", map[string]interface{}{
 			"module": "zendesk",
@@ -70,10 +71,8 @@ func GetTicket(id int) (ticket Ticket) {
 	}
 	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
 		"module": "zendesk",
-		"bytes":  bytes,
-		"ticket": ticket,
 	})
-	return ticket
+	return tick.Ticket
 }
 
 // GetTicketRequester takes the requester ID from the tickets grabbed in
