@@ -111,9 +111,6 @@ func CheckUpdatedTicket(interval time.Duration) (new []ActiveTicket) {
 
 		}
 	}
-	log.Info("ticket event output", map[string]interface{}{
-		"output": tick,
-	})
 	return new
 }
 
