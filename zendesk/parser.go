@@ -86,19 +86,24 @@ func CheckUpdatedTicket(tick ZenOutput, interval time.Duration) (new []ActiveTic
 				"priority": priority,
 				"ticket":   ticket.ID,
 			})
-			if priority != "" && priority != "LevelFour" {
-				t := ActiveTicket{
-					ID:          ticket.ID,
-					SLA:         ticket.Slas.PolicyMetrics,
-					Tags:        ticket.Tags,
-					Subject:     ticket.Subject,
-					Priority:    ticket.Priority,
-					CreatedAt:   ticket.CreatedAt,
-					UpdatedAt:   ticket.UpdatedAt,
-					Description: ticket.Description,
+			for _, reply := range ticket.MetricEvents.ReplyTime {
+				if reply.Time.After(previousLoop) && reply.Time.Before(nowLoop) && reply.Type == "activate" {
+					if priority != "" && priority != "LevelFour" {
+						t := ActiveTicket{
+							ID:          ticket.ID,
+							SLA:         ticket.Slas.PolicyMetrics,
+							Tags:        ticket.Tags,
+							Subject:     ticket.Subject,
+							Priority:    ticket.Priority,
+							CreatedAt:   ticket.CreatedAt,
+							UpdatedAt:   ticket.UpdatedAt,
+							Description: ticket.Description,
+						}
+						new = append(new, t)
+					}
 				}
-				new = append(new, t)
 			}
+
 		}
 	}
 	return new
