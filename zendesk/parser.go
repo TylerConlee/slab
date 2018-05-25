@@ -86,6 +86,10 @@ func CheckUpdatedTicket(tick ZenOutput, interval time.Duration) (new []ActiveTic
 				"priority": priority,
 				"ticket":   ticket.ID,
 			})
+			log.Info("Metrics", map[string]interface{}{
+				"module":  "zendesk",
+				"metrics": ticket.MetricEvents,
+			})
 			for _, reply := range ticket.MetricEvents.ReplyTime {
 				log.Info("Ticket reply parsed", map[string]interface{}{
 					"module":    "zendesk",
