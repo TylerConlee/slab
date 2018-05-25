@@ -89,7 +89,8 @@ func CheckUpdatedTicket(interval time.Duration) (new []ActiveTicket) {
 				log.Info("Parsing updated ticket", map[string]interface{}{
 					"module":   "zendesk",
 					"priority": priority,
-					"ticket":   ticket.ID,
+					"ticketID": ticket.ID,
+					"ticket":   ticket,
 				})
 				if priority != "" && priority != "LevelFour" {
 					t := ActiveTicket{
