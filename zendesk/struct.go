@@ -156,6 +156,10 @@ type Tickets []struct {
 	AllowChannelback bool `json:"allow_channelback"`
 }
 
+type TicketGroup struct {
+	Ticket `json:"ticket"`
+}
+
 type Ticket struct {
 	URL        string      `json:"url"`
 	ID         int         `json:"id"`
