@@ -75,33 +75,52 @@ func CheckNewTicket(tick ZenOutput, interval time.Duration) (new []ActiveTicket)
 }
 
 // CheckUpdatedTicket loops over the Zendesk output from GetAllTickets
-func CheckUpdatedTicket(tick ZenOutput, interval time.Duration) (new []ActiveTicket) {
-	previousLoop := time.Now().Add(-(interval + (time.Duration(1 * time.Minute))))
+func CheckUpdatedTicket(interval time.Duration) (new []ActiveTicket) {
+	previousLoop := time.Now().Add(-interval)
 	nowLoop := time.Now()
-	for _, ticket := range tick.Tickets {
-		if ticket.UpdatedAt.After(previousLoop) && ticket.UpdatedAt.Before(nowLoop) && (ticket.Status == "open" || ticket.Status == "new") {
-			priority := getPriorityLevel(ticket.Tags)
-			log.Info("Parsing updated ticket", map[string]interface{}{
-				"module":   "zendesk",
-				"priority": priority,
-				"ticket":   ticket.ID,
-			})
-			if priority != "" && priority != "LevelFour" {
-				t := ActiveTicket{
-					ID:          ticket.ID,
-					SLA:         ticket.Slas.PolicyMetrics,
-					Tags:        ticket.Tags,
-					Subject:     ticket.Subject,
-					Priority:    ticket.Priority,
-					CreatedAt:   ticket.CreatedAt,
-					UpdatedAt:   ticket.UpdatedAt,
-					Description: ticket.Description,
+	tick := GetTicketEvents()
+	var ids []int64
+	for _, event := range tick.Event {
+
+		if event.CreatedAt.After(previousLoop) && event.CreatedAt.Before(nowLoop) && !eventExists(event.ID, ids) {
+
+			user := GetTicketRequester(int(event.UpdaterID))
+			if user.Role == "end-user" {
+				ticket := GetTicket(event.TicketID)
+				priority := getPriorityLevel(ticket.Tags)
+				log.Info("Parsing updated ticket", map[string]interface{}{
+					"module":   "zendesk",
+					"priority": priority,
+					"ticketID": ticket.ID,
+				})
+				if priority != "" && priority != "LevelFour" {
+					t := ActiveTicket{
+						ID:          ticket.ID,
+						Tags:        ticket.Tags,
+						Subject:     ticket.Subject,
+						Priority:    ticket.Priority,
+						CreatedAt:   ticket.CreatedAt,
+						UpdatedAt:   ticket.UpdatedAt,
+						Description: ticket.Description,
+					}
+					new = append(new, t)
 				}
-				new = append(new, t)
 			}
+
+			ids = append(ids, event.ID)
+
 		}
 	}
 	return new
+}
+
+func eventExists(a int64, list []int64) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
 }
 
 // getPriorityLevel takes an individual ticket row from the Zendesk output and
