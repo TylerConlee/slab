@@ -58,7 +58,7 @@ func GetTicket(id int) (ticket Ticket) {
 		"module": "zendesk",
 		"ticket": id,
 	})
-	zen := c.Zendesk.URL + "/api/v2/tickets/" + string(id) + ".json"
+	zen := c.Zendesk.URL + "/api/v2/tickets/" + strconv.Itoa(id) + ".json"
 	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 	bytes := json.RawMessage(resp)
 	err := json.Unmarshal(bytes, &ticket)
