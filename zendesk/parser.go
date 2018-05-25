@@ -80,8 +80,10 @@ func CheckUpdatedTicket(interval time.Duration) (new []ActiveTicket) {
 	nowLoop := time.Now()
 	tick := GetTicketEvents()
 	for _, event := range tick.Event {
+		var ids []int64
 
-		if event.CreatedAt.After(previousLoop) && event.CreatedAt.Before(nowLoop) {
+		if event.CreatedAt.After(previousLoop) && event.CreatedAt.Before(nowLoop) && !eventExists(event.ID, ids) {
+
 			user := GetTicketRequester(int(event.UpdaterID))
 			if user.Role == "end-user" {
 				ticket := GetTicket(event.TicketID)
@@ -105,12 +107,23 @@ func CheckUpdatedTicket(interval time.Duration) (new []ActiveTicket) {
 				}
 			}
 
+			ids = append(ids, event.ID)
+
 		}
 	}
 	log.Info("ticket event output", map[string]interface{}{
 		"output": tick,
 	})
 	return new
+}
+
+func eventExists(a int64, list []int64) bool {
+	for _, b := range list {
+		if b == a {
+			return true
+		}
+	}
+	return false
 }
 
 // getPriorityLevel takes an individual ticket row from the Zendesk output and
