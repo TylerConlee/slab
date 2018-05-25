@@ -75,44 +75,33 @@ func CheckNewTicket(tick ZenOutput, interval time.Duration) (new []ActiveTicket)
 }
 
 // CheckUpdatedTicket loops over the Zendesk output from GetAllTickets
-func CheckUpdatedTicket(tick ZenOutput, interval time.Duration) (new []ActiveTicket) {
+func CheckUpdatedTicket(interval time.Duration) (new []ActiveTicket) {
 	previousLoop := time.Now().Add(-(interval + (time.Duration(1 * time.Minute))))
 	nowLoop := time.Now()
-	for _, ticket := range tick.Tickets {
-		if ticket.UpdatedAt.After(previousLoop) && ticket.UpdatedAt.Before(nowLoop) {
-			priority := getPriorityLevel(ticket.Tags)
-			log.Info("Parsing updated ticket", map[string]interface{}{
-				"module":   "zendesk",
-				"priority": priority,
-				"ticket":   ticket.ID,
-			})
-			log.Info("Metrics", map[string]interface{}{
-				"module":  "zendesk",
-				"metrics": ticket.MetricEvents,
-			})
-			for _, reply := range ticket.MetricEvents.ReplyTime {
-				log.Info("Ticket reply parsed", map[string]interface{}{
-					"module":    "zendesk",
-					"priority":  priority,
-					"ticket":    ticket.ID,
-					"replytime": reply.Time.String(),
-					"before":    nowLoop.String(),
-					"after":     previousLoop.String(),
+	tick := GetTicketEvents()
+	for _, event := range tick.Event {
+
+		if event.CreatedAt.After(previousLoop) && event.CreatedAt.Before(nowLoop) {
+			user := GetTicketRequester(int(event.UpdaterID))
+			if user.Role == "end-user" {
+				ticket := GetTicket(event.TicketID)
+				priority := getPriorityLevel(ticket.Tags)
+				log.Info("Parsing updated ticket", map[string]interface{}{
+					"module":   "zendesk",
+					"priority": priority,
+					"ticket":   ticket.ID,
 				})
-				if reply.Time.After(previousLoop) && reply.Time.Before(nowLoop) && reply.Type == "activate" {
-					if priority != "" && priority != "LevelFour" {
-						t := ActiveTicket{
-							ID:          ticket.ID,
-							SLA:         ticket.Slas.PolicyMetrics,
-							Tags:        ticket.Tags,
-							Subject:     ticket.Subject,
-							Priority:    ticket.Priority,
-							CreatedAt:   ticket.CreatedAt,
-							UpdatedAt:   ticket.UpdatedAt,
-							Description: ticket.Description,
-						}
-						new = append(new, t)
+				if priority != "" && priority != "LevelFour" {
+					t := ActiveTicket{
+						ID:          ticket.ID,
+						Tags:        ticket.Tags,
+						Subject:     ticket.Subject,
+						Priority:    ticket.Priority,
+						CreatedAt:   ticket.CreatedAt,
+						UpdatedAt:   ticket.UpdatedAt,
+						Description: ticket.Description,
 					}
+					new = append(new, t)
 				}
 			}
 
