@@ -79,8 +79,8 @@ func CheckUpdatedTicket(interval time.Duration) (new []ActiveTicket) {
 	previousLoop := time.Now().Add(-interval)
 	nowLoop := time.Now()
 	tick := GetTicketEvents()
+	var ids []int64
 	for _, event := range tick.Event {
-		var ids []int64
 
 		if event.CreatedAt.After(previousLoop) && event.CreatedAt.Before(nowLoop) && !eventExists(event.ID, ids) {
 
