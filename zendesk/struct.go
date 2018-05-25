@@ -72,6 +72,78 @@ type Tickets []struct {
 	Slas                    struct {
 		PolicyMetrics []interface{} `json:"policy_metrics"`
 	} `json:"slas"`
+	MetricEvents struct {
+		PeriodicUpdateTime []struct {
+			ID         int64     `json:"id"`
+			TicketID   int       `json:"ticket_id"`
+			Metric     string    `json:"metric"`
+			InstanceID int       `json:"instance_id"`
+			Type       string    `json:"type"`
+			Time       time.Time `json:"time"`
+			Status     struct {
+				Calendar int `json:"calendar"`
+				Business int `json:"business"`
+			} `json:"status,omitempty"`
+		} `json:"periodic_update_time"`
+		RequesterWaitTime []struct {
+			ID         int64     `json:"id"`
+			TicketID   int       `json:"ticket_id"`
+			Metric     string    `json:"metric"`
+			InstanceID int       `json:"instance_id"`
+			Type       string    `json:"type"`
+			Time       time.Time `json:"time"`
+		} `json:"requester_wait_time"`
+		ResolutionTime []struct {
+			ID         int64     `json:"id"`
+			TicketID   int       `json:"ticket_id"`
+			Metric     string    `json:"metric"`
+			InstanceID int       `json:"instance_id"`
+			Type       string    `json:"type"`
+			Time       time.Time `json:"time"`
+		} `json:"resolution_time"`
+		PausableUpdateTime []struct {
+			ID         int64     `json:"id"`
+			TicketID   int       `json:"ticket_id"`
+			Metric     string    `json:"metric"`
+			InstanceID int       `json:"instance_id"`
+			Type       string    `json:"type"`
+			Time       time.Time `json:"time"`
+			Status     struct {
+				Calendar int `json:"calendar"`
+				Business int `json:"business"`
+			} `json:"status,omitempty"`
+		} `json:"pausable_update_time"`
+		AgentWorkTime []struct {
+			ID         int64     `json:"id"`
+			TicketID   int       `json:"ticket_id"`
+			Metric     string    `json:"metric"`
+			InstanceID int       `json:"instance_id"`
+			Type       string    `json:"type"`
+			Time       time.Time `json:"time"`
+		} `json:"agent_work_time"`
+		ReplyTime []struct {
+			ID         int64     `json:"id"`
+			TicketID   int       `json:"ticket_id"`
+			Metric     string    `json:"metric"`
+			InstanceID int       `json:"instance_id"`
+			Type       string    `json:"type"`
+			Time       time.Time `json:"time"`
+			SLA        struct {
+				Target        int  `json:"target"`
+				BusinessHours bool `json:"business_hours"`
+				Policy        struct {
+					ID          int         `json:"id"`
+					Title       string      `json:"title"`
+					Description interface{} `json:"description"`
+				} `json:"policy"`
+			} `json:"sla,omitempty"`
+			Deleted bool `json:"deleted,omitempty"`
+			Status  struct {
+				Calendar int `json:"calendar"`
+				Business int `json:"business"`
+			} `json:"status,omitempty"`
+		} `json:"reply_time"`
+	} `json:"metric_events"`
 	AllowChannelback bool `json:"allow_channelback"`
 }
 
