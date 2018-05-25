@@ -79,7 +79,7 @@ func CheckUpdatedTicket(tick ZenOutput, interval time.Duration) (new []ActiveTic
 	previousLoop := time.Now().Add(-(interval + (time.Duration(1 * time.Minute))))
 	nowLoop := time.Now()
 	for _, ticket := range tick.Tickets {
-		if ticket.UpdatedAt.After(previousLoop) && ticket.UpdatedAt.Before(nowLoop) && (ticket.Status == "open" || ticket.Status == "new") {
+		if ticket.UpdatedAt.After(previousLoop) && ticket.UpdatedAt.Before(nowLoop) {
 			priority := getPriorityLevel(ticket.Tags)
 			log.Info("Parsing updated ticket", map[string]interface{}{
 				"module":   "zendesk",
@@ -87,6 +87,14 @@ func CheckUpdatedTicket(tick ZenOutput, interval time.Duration) (new []ActiveTic
 				"ticket":   ticket.ID,
 			})
 			for _, reply := range ticket.MetricEvents.ReplyTime {
+				log.Info("Ticket reply parsed", map[string]interface{}{
+					"module":    "zendesk",
+					"priority":  priority,
+					"ticket":    ticket.ID,
+					"replytime": reply.Time.String(),
+					"before":    nowLoop.String(),
+					"after":     previousLoop.String(),
+				})
 				if reply.Time.After(previousLoop) && reply.Time.Before(nowLoop) && reply.Type == "activate" {
 					if priority != "" && priority != "LevelFour" {
 						t := ActiveTicket{
