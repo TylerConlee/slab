@@ -16,20 +16,63 @@ var log = l.Log
 // Zendesk Endpoint: /incremental/tickets.json?include=slas
 // TODO: Handle paging from the Incremental API
 func GetAllTickets() (tickets ZenOutput) {
-	log.Info("Starting request to Zendesk for tickets", map[string]interface{}{
+	log.Info("Requesting all tickets from Zendesk for SLA", map[string]interface{}{
 		"module": "zendesk",
 	})
 
 	t := time.Now().AddDate(0, 0, -5).Unix()
-	zen := c.Zendesk.URL + "/api/v2/incremental/tickets.json?include=slas&start_time=" + strconv.FormatInt(t, 10)
+	zen := c.Zendesk.URL + "/api/v2/incremental/tickets.json?include=slas,metric_events&start_time=" + strconv.FormatInt(t, 10)
 	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 
-	tickets = parseJSON(resp)
+	tickets = parseTicketJSON(resp)
 	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
 		"module":      "zendesk",
 		"num_tickets": len(tickets.Tickets),
 	})
 	return tickets
+}
+
+// GetTicketEvents grabs the latest ticket events from Zendesk and returns the
+// JSON
+// Zendesk Endpoint: /api/v2/incremental/ticket_events.json
+func GetTicketEvents() (tickets EventOutput) {
+	log.Info("Requesting latest ticket events for updates", map[string]interface{}{
+		"module": "zendesk",
+	})
+
+	t := time.Now().AddDate(0, 0, -5).Unix()
+	zen := c.Zendesk.URL + "/api/v2/incremental/ticket_events.json?start_time=" + strconv.FormatInt(t, 10)
+	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
+
+	tickets = parseEventJSON(resp)
+	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
+		"module":      "zendesk",
+		"num_tickets": len(tickets.Event),
+	})
+	return tickets
+}
+
+// GetTicket gets the details about an individual ticket from Zendesk
+func GetTicket(id int) (ticket Ticket) {
+	log.Info("Requesting data on individual ticket", map[string]interface{}{
+		"module": "zendesk",
+		"ticket": id,
+	})
+	zen := c.Zendesk.URL + "/api/v2/tickets/" + strconv.Itoa(id) + ".json"
+	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
+	bytes := json.RawMessage(resp)
+	tick := TicketGroup{}
+	err := json.Unmarshal(bytes, &tick)
+	if err != nil {
+		log.Error("Error parsing Zendesk JSON", map[string]interface{}{
+			"module": "zendesk",
+			"error":  err,
+		})
+	}
+	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
+		"module": "zendesk",
+	})
+	return tick.Ticket
 }
 
 // GetTicketRequester takes the requester ID from the tickets grabbed in
@@ -159,7 +202,22 @@ func makeRequest(user string, key string, url string) (responseData []byte) {
 
 // parseJSON takes the JSON from makeRequest and unmarshals it into the
 // ZenOutput struct, allowing the data to be accessed
-func parseJSON(data []byte) (output ZenOutput) {
+func parseTicketJSON(data []byte) (output ZenOutput) {
+	// Read response from HTTP client
+	bytes := json.RawMessage(data)
+	err := json.Unmarshal(bytes, &output)
+	if err != nil {
+		log.Error("Error parsing Zendesk JSON", map[string]interface{}{
+			"module": "zendesk",
+			"error":  err,
+		})
+	}
+	return output
+}
+
+// parseJSON takes the JSON from makeRequest and unmarshals it into the
+// ZenOutput struct, allowing the data to be accessed
+func parseEventJSON(data []byte) (output EventOutput) {
 	// Read response from HTTP client
 	bytes := json.RawMessage(data)
 	err := json.Unmarshal(bytes, &output)

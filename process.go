@@ -47,7 +47,7 @@ func RunTimer(interval time.Duration) {
 			})
 			// Returns a list of all upcoming SLA breaches
 			active := zendesk.CheckSLA(tick)
-			updated := zendesk.CheckUpdatedTicket(tick, interval)
+			updated := zendesk.CheckUpdatedTicket(interval)
 
 			// Loop through all active SLA tickets and prepare SLA notification
 			// for each.
