@@ -40,7 +40,7 @@ func GetTicketEvents() (tickets EventOutput) {
 		"module": "zendesk",
 	})
 
-	t := time.Now().AddDate(0, 0, -5).Unix()
+	t := time.Now().AddDate(0, 0, -1).Unix()
 	zen := c.Zendesk.URL + "/api/v2/incremental/ticket_events.json?start_time=" + strconv.FormatInt(t, 10)
 	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 
