@@ -39,9 +39,9 @@ func GetTicketEvents() (tickets EventOutput) {
 	log.Info("Requesting latest ticket events for updates", map[string]interface{}{
 		"module": "zendesk",
 	})
-
-	t := time.Now().AddDate(0, 0, -1).Unix()
-	zen := c.Zendesk.URL + "/api/v2/incremental/ticket_events.json?start_time=" + strconv.FormatInt(t, 10)
+	hour := time.Duration(1 * time.Hour)
+	t := time.Now().Add(-hour)
+	zen := c.Zendesk.URL + "/api/v2/incremental/ticket_events.json?start_time=" + strconv.FormatInt(t.Unix(), 10)
 	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 
 	tickets = parseEventJSON(resp)
@@ -177,10 +177,7 @@ func makeRequest(user string, key string, url string) (responseData []byte) {
 	}
 
 	resp, err := netClient.Do(req)
-	log.Info("Zendesk request received", map[string]interface{}{
-		"module": "zendesk",
-		"status": resp.StatusCode,
-	})
+
 	if err != nil {
 		log.Error("Error reaching Zendesk", map[string]interface{}{
 			"module": "zendesk",
@@ -188,6 +185,10 @@ func makeRequest(user string, key string, url string) (responseData []byte) {
 		})
 		return
 	}
+	log.Info("Zendesk request received", map[string]interface{}{
+		"module": "zendesk",
+		"status": resp.StatusCode,
+	})
 	defer resp.Body.Close()
 	responseData, err = ioutil.ReadAll(resp.Body)
 	if err != nil {
