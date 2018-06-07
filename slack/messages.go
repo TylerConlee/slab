@@ -534,13 +534,6 @@ func UpdateMessage(ticket Ticket, user string, uid int64) {
 					DismissText: "Leave it",
 				},
 			},
-			slack.AttachmentAction{
-				Name:  "more_info_sla",
-				Value: strconv.FormatInt(ticket.Requester, 10),
-				Text:  ":mag: More Info",
-				Type:  "button",
-				Style: "default",
-			},
 		},
 	}
 	n := "@here - Premium ticket updated"
