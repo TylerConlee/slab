@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/tylerconlee/slab/config"
@@ -73,8 +74,10 @@ func RunTimer(interval time.Duration) {
 					"module": "main",
 					"ticket": ticket.ID,
 				})
+				n := fmt.Sprintf("Premium ticket #%d updated. Priority: %s, SLA: %s", ticket.ID, ticket.Level, ticket.Priority)
 				m := slack.Ticket(ticket)
 				user := zendesk.GetTicketRequester(int(ticket.Requester))
+				p.SendDispatcher(n)
 				slack.UpdateMessage(m, user.Name, user.ID)
 			}
 
