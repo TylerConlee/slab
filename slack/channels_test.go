@@ -1,6 +1,8 @@
 package slack
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestGetChannel(t *testing.T) {
 	type args struct {
@@ -40,4 +42,50 @@ func TestGetChannel(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestAddChannel(t *testing.T) {
+	type args struct {
+		channel  string
+		chantype int
+	}
+	tests := []struct {
+		name         string
+		args         args
+		wantChanList []Channel
+	}{
+		{
+			name: "Test DM Channel",
+			args: args{
+				channel:  "test",
+				chantype: 1,
+			},
+			wantChanList: DMChannelList,
+		},
+		{
+			name: "Test Public Channel",
+			args: args{
+				channel:  "test",
+				chantype: 2,
+			},
+			wantChanList: ChannelList,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			AddChannel(tt.args.channel, tt.args.chantype)
+			if checkArgIn(tt.args.channel, tt.wantChanList) {
+				t.Errorf("AddChannel() = %v, want %v", false, tt.wantChanList)
+			}
+		})
+	}
+}
+
+func checkArgIn(a string, list []Channel) bool {
+	for _, b := range list {
+		if b.ID == a {
+			return true
+		}
+	}
+	return false
 }
