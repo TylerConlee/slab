@@ -33,10 +33,11 @@ jobs:
       - checkout
       - restore_cache:
           key: glide-cache-{{ .Branch }}-{{ checksum "glide.lock" }}
-      - run: go get -u github.com/jstemmer/go-junit-report  
-      - run: go test -v $(go list ./... | grep -v /vendor/) 2>&1 | go-junit-report > report.xml
+      - run: go get -u github.com/jstemmer/go-junit-report 
+      - run: mkdir go-test 
+      - run: go test -v $(go list ./... | grep -v /vendor/) 2>&1 | go-junit-report > go-test/report.xml
       - store_test_results:
-           path: report.xml
+           path: go-test/report.xml
 workflows:
   version: 2
   build_and_test:
