@@ -7,9 +7,9 @@ import:
 - package: github.com/sirupsen/logrus
   version: master
 - package: github.com/Sirupsen/logrus
+  version: master
   repo: git@github.com:/sirupsen/logrus
   vcs: git
-  version: master
 - package: golang.org/x/crypto
   subpackages:
   - ssh/terminal
@@ -17,3 +17,4 @@ import:
   subpackages:
   - unix
 - package: github.com/doublefree/sumorus
+- package: github.com/jstemmer/go-junit-report
