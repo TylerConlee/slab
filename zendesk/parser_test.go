@@ -11,22 +11,22 @@ func Test_getPriorityLevel(t *testing.T) {
 		wantPriLvl string
 	}{
 		{
-			name:       "LevelOne",
+			name:       "Check for Level One",
 			args:       []string{"platinum"},
 			wantPriLvl: "LevelOne",
 		},
 		{
-			name:       "LevelTwo",
+			name:       "Check for Level Two",
 			args:       []string{"gold"},
 			wantPriLvl: "LevelTwo",
 		},
 		{
-			name:       "LevelThree",
+			name:       "Check for Level Three",
 			args:       []string{"silver"},
 			wantPriLvl: "LevelThree",
 		},
 		{
-			name:       "LevelFour",
+			name:       "Check for Level Four",
 			args:       []string{"bronze"},
 			wantPriLvl: "LevelFour",
 		},
