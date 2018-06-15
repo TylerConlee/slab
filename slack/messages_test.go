@@ -10,7 +10,7 @@ func TestSetMessage(t *testing.T) {
 	}{
 		// TODO: Add test cases.
 	}
-	for range tests {
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			SetMessage()
 		})
@@ -23,7 +23,7 @@ func TestUnsetMessage(t *testing.T) {
 	}{
 		// TODO: Add test cases.
 	}
-	for range tests {
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			UnsetMessage()
 		})
@@ -36,7 +36,7 @@ func TestWhoIsMessage(t *testing.T) {
 	}{
 		// TODO: Add test cases.
 	}
-	for range tests {
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			WhoIsMessage()
 		})
@@ -104,7 +104,7 @@ func TestStatusMessage(t *testing.T) {
 	}{
 		// TODO: Add test cases.
 	}
-	for range tests {
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			StatusMessage()
 		})
@@ -134,7 +134,7 @@ func TestHelpMessage(t *testing.T) {
 	}{
 		// TODO: Add test cases.
 	}
-	for range tests {
+	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			HelpMessage()
 		})
