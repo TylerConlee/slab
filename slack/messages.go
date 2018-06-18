@@ -489,6 +489,9 @@ func PrepSLANotification(ticket Ticket, notify int64) (notification string, colo
 
 }
 
+// UpdateMessage sends a message to the channel indicating a ticket with a
+// premium SLA tag associated with it has received an update. This functionality
+// is a mirror of the official Zendesk > Slack integration.
 func UpdateMessage(ticket Ticket, user string, uid int64) {
 	description := ticket.Description
 	if len(ticket.Description) > 100 {

@@ -211,64 +211,64 @@ func prepConfigSave() {
 			LevelOne: config.Level{
 				Tag: "platinum",
 				Low: config.Duration{
-					time.Duration(180 * time.Minute),
+					Duration: time.Duration(180 * time.Minute),
 				},
 				Normal: config.Duration{
-					time.Duration(120 * time.Minute),
+					Duration: time.Duration(120 * time.Minute),
 				},
 				High: config.Duration{
-					time.Duration(60 * time.Minute),
+					Duration: time.Duration(60 * time.Minute),
 				},
 				Urgent: config.Duration{
-					time.Duration(59 * time.Minute),
+					Duration: time.Duration(59 * time.Minute),
 				},
 				Notify: true,
 			},
 			LevelTwo: config.Level{
 				Tag: "gold",
 				Low: config.Duration{
-					time.Duration(6 * time.Hour),
+					Duration: time.Duration(6 * time.Hour),
 				},
 				Normal: config.Duration{
-					time.Duration(3 * time.Hour),
+					Duration: time.Duration(3 * time.Hour),
 				},
 				High: config.Duration{
-					time.Duration(2 * time.Hour),
+					Duration: time.Duration(2 * time.Hour),
 				},
 				Urgent: config.Duration{
-					time.Duration(1 * time.Hour),
+					Duration: time.Duration(1 * time.Hour),
 				},
 				Notify: true,
 			},
 			LevelThree: config.Level{
 				Tag: "silver",
 				Low: config.Duration{
-					time.Duration(12 * time.Hour),
+					Duration: time.Duration(12 * time.Hour),
 				},
 				Normal: config.Duration{
-					time.Duration(6 * time.Hour),
+					Duration: time.Duration(6 * time.Hour),
 				},
 				High: config.Duration{
-					time.Duration(3 * time.Hour),
+					Duration: time.Duration(3 * time.Hour),
 				},
 				Urgent: config.Duration{
-					time.Duration(2 * time.Hour),
+					Duration: time.Duration(2 * time.Hour),
 				},
 				Notify: true,
 			},
 			LevelFour: config.Level{
 				Tag: "bronze",
 				Low: config.Duration{
-					time.Duration(48 * time.Hour),
+					Duration: time.Duration(48 * time.Hour),
 				},
 				Normal: config.Duration{
-					time.Duration(24 * time.Hour),
+					Duration: time.Duration(24 * time.Hour),
 				},
 				High: config.Duration{
-					time.Duration(8 * time.Hour),
+					Duration: time.Duration(8 * time.Hour),
 				},
 				Urgent: config.Duration{
-					time.Duration(3 * time.Hour),
+					Duration: time.Duration(3 * time.Hour),
 				},
 				Notify: true,
 			},
