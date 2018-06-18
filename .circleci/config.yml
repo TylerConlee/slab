@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /go/src/github.com/tylerconlee/slab
     docker:
-      - image: circleci/golang:1.8.1
+      - image: circleci/golang:1.10.3
       
     steps:
       - checkout
@@ -27,7 +27,7 @@ jobs:
   test:
     working_directory: /go/src/github.com/tylerconlee/slab
     docker:
-      - image: circleci/golang:1.8.1
+      - image: circleci/golang:1.10.3
     parallelism: 2
     steps:
       - checkout
