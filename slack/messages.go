@@ -43,8 +43,8 @@ type NotifySent struct {
 
 // SetMessage creates and sends a message to Slack with a menu attachment,
 // allowing users to set the triager staff member.
-func SetMessage() {
-	attachment := slack.Attachment{
+func SetMessage() (attachment slack.Attachment) {
+	attachment = slack.Attachment{
 		Fallback:   "You would be able to select the triager here.",
 		CallbackID: "triage_set",
 		// Show the current triager
@@ -71,7 +71,7 @@ func SetMessage() {
 			},
 		},
 	}
-	SendMessage("...", attachment)
+	return attachment
 }
 
 // UnsetMessage resets the Triager role to the slab bot.

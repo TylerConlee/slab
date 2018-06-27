@@ -1,21 +1,11 @@
 package slack
 
 import (
+	"reflect"
 	"testing"
-)
 
-func TestSetMessage(t *testing.T) {
-	tests := []struct {
-		name string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			SetMessage()
-		})
-	}
-}
+	"github.com/tylerconlee/slack"
+)
 
 func TestUnsetMessage(t *testing.T) {
 	tests := []struct {
@@ -155,6 +145,22 @@ func TestUnknownCommandMessage(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			UnknownCommandMessage(tt.args.text, tt.args.user)
+		})
+	}
+}
+
+func TestSetMessage(t *testing.T) {
+	tests := []struct {
+		name           string
+		wantAttachment slack.Attachment
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotAttachment := SetMessage(); !reflect.DeepEqual(gotAttachment, tt.wantAttachment) {
+				t.Errorf("SetMessage() = %v, want %v", gotAttachment, tt.wantAttachment)
+			}
 		})
 	}
 }
