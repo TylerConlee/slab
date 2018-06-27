@@ -7,19 +7,6 @@ import (
 	"github.com/tylerconlee/slack"
 )
 
-func TestUnsetMessage(t *testing.T) {
-	tests := []struct {
-		name string
-	}{
-		// TODO: Add test cases.
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			UnsetMessage()
-		})
-	}
-}
-
 func TestWhoIsMessage(t *testing.T) {
 	tests := []struct {
 		name string
@@ -160,6 +147,22 @@ func TestSetMessage(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotAttachment := SetMessage(); !reflect.DeepEqual(gotAttachment, tt.wantAttachment) {
 				t.Errorf("SetMessage() = %v, want %v", gotAttachment, tt.wantAttachment)
+			}
+		})
+	}
+}
+
+func TestUnsetMessage(t *testing.T) {
+	tests := []struct {
+		name           string
+		wantAttachment slack.Attachment
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotAttachment := UnsetMessage(); !reflect.DeepEqual(gotAttachment, tt.wantAttachment) {
+				t.Errorf("UnsetMessage() = %v, want %v", gotAttachment, tt.wantAttachment)
 			}
 		})
 	}

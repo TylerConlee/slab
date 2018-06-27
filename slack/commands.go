@@ -11,12 +11,14 @@ import (
 // what the user is asking for.
 func parseCommand(text string, user string) {
 	var attachment slack.Attachment
+	message := "..."
 	t := strings.Fields(text)
 	if len(t) > 1 {
 		switch t[1] {
 		case "set":
 			attachment = SetMessage()
 		case "diag":
+			message = "Triager has been reset. Please use `@slab set` to set Triager."
 			DiagMessage(user)
 		case "whois":
 			WhoIsMessage()
@@ -69,7 +71,7 @@ func parseCommand(text string, user string) {
 			}
 
 		}
-		SendMessage("...", attachment)
+		SendMessage(message, attachment)
 	}
 
 }
