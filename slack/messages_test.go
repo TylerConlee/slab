@@ -2,7 +2,9 @@ package slack
 
 import (
 	"reflect"
+	"strconv"
 	"testing"
+	"time"
 
 	"github.com/tylerconlee/slack"
 )
@@ -108,18 +110,87 @@ func TestWhoIsMessage(t *testing.T) {
 }
 
 func TestSLAMessage(t *testing.T) {
+	type Zendesk struct {
+		URL string
+	}
+	type config struct {
+		Zendesk Zendesk
+	}
+
 	type args struct {
 		ticket Ticket
 		color  string
 		user   string
 		uid    int64
 	}
+
 	tests := []struct {
 		name           string
 		args           args
 		wantAttachment slack.Attachment
 	}{
-		// TODO: Add test cases.
+		{
+			name: "SLA Ticket Message",
+			args: args{
+				ticket: Ticket{
+					Description: "This is a test ticket description",
+					Priority:    "High",
+					CreatedAt:   time.Now().Round(time.Second),
+					Subject:     "Test Ticket",
+					Requester:   123456,
+					ID:          1,
+				},
+				color: "danger",
+				user:  "test test",
+				uid:   123456,
+			},
+			wantAttachment: slack.Attachment{
+				Title:      "Test Ticket",
+				TitleLink:  "/agent/tickets/1",
+				AuthorName: "test test",
+				AuthorLink: "/agent/users/123456",
+				AuthorIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/google/119/bust-in-silhouette_1f464.png",
+				CallbackID: "sla",
+				Color:      "danger",
+				Fields: []slack.AttachmentField{
+					slack.AttachmentField{
+						Title: "Description",
+						Value: "This is a test ticket description",
+					},
+					slack.AttachmentField{
+						Title: "Priority",
+						Value: "High",
+						Short: true,
+					},
+					slack.AttachmentField{
+						Title: "Created At",
+						Value: time.Now().Round(time.Second).String(),
+						Short: true,
+					},
+				},
+				Actions: []slack.AttachmentAction{
+					slack.AttachmentAction{
+						Name:  "ack_sla",
+						Text:  ":white_check_mark: Acknowledge",
+						Type:  "button",
+						Value: "ack",
+						Style: "primary",
+						Confirm: &slack.ConfirmationField{
+							Text:        "Are you sure?",
+							OkText:      "Take it",
+							DismissText: "Leave it",
+						},
+					},
+					slack.AttachmentAction{
+						Name:  "more_info_sla",
+						Value: strconv.FormatInt(123456, 10),
+						Text:  ":mag: More Info",
+						Type:  "button",
+						Style: "default",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
