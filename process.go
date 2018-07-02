@@ -65,7 +65,8 @@ func RunTimer(interval time.Duration) {
 						n, c := slack.PrepSLANotification(m, notify)
 						p.SendDispatcher(n)
 						user := zendesk.GetTicketRequester(int(ticket.Requester))
-						slack.SLAMessage(n, m, c, user.Name, user.ID)
+						attach := slack.SLAMessage(n, m, c, user.Name, user.ID)
+						slack.SendMessage(n, attach)
 					}
 				}
 			}
