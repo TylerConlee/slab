@@ -106,3 +106,26 @@ func TestWhoIsMessage(t *testing.T) {
 		})
 	}
 }
+
+func TestSLAMessage(t *testing.T) {
+	type args struct {
+		ticket Ticket
+		color  string
+		user   string
+		uid    int64
+	}
+	tests := []struct {
+		name           string
+		args           args
+		wantAttachment slack.Attachment
+	}{
+		// TODO: Add test cases.
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if gotAttachment := SLAMessage(tt.args.ticket, tt.args.color, tt.args.user, tt.args.uid); !reflect.DeepEqual(gotAttachment, tt.wantAttachment) {
+				t.Errorf("SLAMessage() = %v, want %v", gotAttachment, tt.wantAttachment)
+			}
+		})
+	}
+}
