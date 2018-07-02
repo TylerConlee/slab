@@ -81,6 +81,7 @@ func parseDMCommand(text string, user string) {
 	switch t {
 	case "start config":
 		StartWizard(user)
+		ConfirmWizard()
 	default:
 		UnknownCommandMessage(text, user)
 	}
