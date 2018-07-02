@@ -89,8 +89,8 @@ func UnsetMessage() (attachment slack.Attachment) {
 
 // WhoIsMessage creates and sends a Slack message that sends out the value of
 // Triager.
-func WhoIsMessage() {
-	attachment := slack.Attachment{
+func WhoIsMessage() (attachment slack.Attachment) {
+	attachment = slack.Attachment{
 		Fallback:   "You would be able to select the triager here.",
 		CallbackID: "triage_whois",
 		// Show the current Triager member
@@ -101,7 +101,7 @@ func WhoIsMessage() {
 			},
 		},
 	}
-	SendMessage("...", attachment)
+	return attachment
 }
 
 // SLAMessage sends off the SLA notification to Slack using the configured API key

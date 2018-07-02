@@ -21,13 +21,13 @@ func parseCommand(text string, user string) {
 			message = "Triager has been reset. Please use `@slab set` to set Triager."
 			DiagMessage(user)
 		case "whois":
-			WhoIsMessage()
+			attachment = WhoIsMessage()
 		case "status":
 			StatusMessage()
 		case "help":
 			HelpMessage()
 		case "unset":
-			UnsetMessage()
+			attachment = UnsetMessage()
 		case "twilio":
 			p := plugins.LoadPlugins(c)
 			switch t[2] {
