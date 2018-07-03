@@ -48,7 +48,7 @@ func TestCheckSLA(t *testing.T) {
 	tests := []struct {
 		name    string
 		args    args
-		wantSla []ActiveTicket
+		wantSLA []ActiveTicket
 	}{
 		{
 			name: "Check for No SLA - Single Ticket",
@@ -65,7 +65,7 @@ func TestCheckSLA(t *testing.T) {
 					},
 				},
 			},
-			wantSla: []ActiveTicket{
+			wantSLA: []ActiveTicket{
 				{
 					ID:          123,
 					Requester:   12345,
@@ -98,7 +98,7 @@ func TestCheckSLA(t *testing.T) {
 					},
 				},
 			},
-			wantSla: []ActiveTicket{
+			wantSLA: []ActiveTicket{
 				{
 					ID:          123,
 					Requester:   12345,
@@ -120,8 +120,8 @@ func TestCheckSLA(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotSla := CheckSLA(tt.args.tick); !reflect.DeepEqual(gotSla, tt.wantSla) {
-				t.Errorf("CheckSLA() = %v, want %v", gotSla, tt.wantSla)
+			if gotSLA := CheckSLA(tt.args.tick); !reflect.DeepEqual(gotSLA, tt.wantSLA) {
+				t.Errorf("CheckSLA() = %v, want %v", gotSLA, tt.wantSLA)
 			}
 		})
 	}
