@@ -51,22 +51,69 @@ func TestCheckSLA(t *testing.T) {
 		wantSla []ActiveTicket
 	}{
 		{
-			name: "Check for No SLA",
+			name: "Check for No SLA - Single Ticket",
 			args: args{
 				tick: ZenOutput{
 					Tickets: Tickets{
 						{
-							ID:   123,
-							Tags: []string{"bronze"},
+							ID:          123,
+							Tags:        []string{"bronze"},
+							RequesterID: 12345,
+							Subject:     "Test Subject",
+							Description: "Test ticket",
 						},
 					},
 				},
 			},
 			wantSla: []ActiveTicket{
 				{
-					ID:    123,
-					Level: "LevelFour",
-					Tags:  []string{"bronze"},
+					ID:          123,
+					Requester:   12345,
+					Level:       "LevelFour",
+					Tags:        []string{"bronze"},
+					Subject:     "Test Subject",
+					Description: "Test ticket",
+				},
+			},
+		},
+		{
+			name: "Check for No SLA - Multiple Ticket",
+			args: args{
+				tick: ZenOutput{
+					Tickets: Tickets{
+						{
+							ID:          123,
+							Tags:        []string{"bronze"},
+							RequesterID: 12345,
+							Subject:     "Test Subject",
+							Description: "Test ticket",
+						},
+						{
+							ID:          234,
+							Tags:        []string{"gold"},
+							RequesterID: 23456,
+							Subject:     "Second Subject",
+							Description: "Second ticket",
+						},
+					},
+				},
+			},
+			wantSla: []ActiveTicket{
+				{
+					ID:          123,
+					Requester:   12345,
+					Level:       "LevelFour",
+					Tags:        []string{"bronze"},
+					Subject:     "Test Subject",
+					Description: "Test ticket",
+				},
+				{
+					ID:          234,
+					Requester:   23456,
+					Level:       "LevelTwo",
+					Tags:        []string{"gold"},
+					Subject:     "Second Subject",
+					Description: "Second ticket",
 				},
 			},
 		},
