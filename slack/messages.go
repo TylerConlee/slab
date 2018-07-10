@@ -43,8 +43,8 @@ type NotifySent struct {
 
 // SetMessage creates and sends a message to Slack with a menu attachment,
 // allowing users to set the triager staff member.
-func SetMessage() {
-	attachment := slack.Attachment{
+func SetMessage() (attachment slack.Attachment) {
+	attachment = slack.Attachment{
 		Fallback:   "You would be able to select the triager here.",
 		CallbackID: "triage_set",
 		// Show the current triager
@@ -71,28 +71,26 @@ func SetMessage() {
 			},
 		},
 	}
-	SendMessage("...", attachment)
+	return attachment
 }
 
 // UnsetMessage resets the Triager role to the slab bot.
-func UnsetMessage() {
-	message := "Triager has been reset. Please use `@slab set` to set Triager."
-
+func UnsetMessage() (attachment slack.Attachment) {
 	Triager = "None"
 	t := fmt.Sprintf("Triager has been reset to %s", Triager)
-	attachment := slack.Attachment{
+	attachment = slack.Attachment{
 		Fallback:   "You would be able to select the triager here.",
 		CallbackID: "triager_dropdown",
 		Footer:     t,
 		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
 	}
-	SendMessage(message, attachment)
+	return attachment
 }
 
 // WhoIsMessage creates and sends a Slack message that sends out the value of
 // Triager.
-func WhoIsMessage() {
-	attachment := slack.Attachment{
+func WhoIsMessage() (attachment slack.Attachment) {
+	attachment = slack.Attachment{
 		Fallback:   "You would be able to select the triager here.",
 		CallbackID: "triage_whois",
 		// Show the current Triager member
@@ -103,18 +101,18 @@ func WhoIsMessage() {
 			},
 		},
 	}
-	SendMessage("...", attachment)
+	return attachment
 }
 
 // SLAMessage sends off the SLA notification to Slack using the configured API key
-func SLAMessage(n string, ticket Ticket, color string, user string, uid int64) {
+func SLAMessage(ticket Ticket, color string, user string, uid int64) (attachment slack.Attachment) {
 	description := ticket.Description
 	if len(ticket.Description) > 100 {
 		description = description[0:100] + "..."
 	}
 	url := fmt.Sprintf("%s/agent/tickets/%d", c.Zendesk.URL, ticket.ID)
 	link := fmt.Sprintf("%s/agent/users/%d", c.Zendesk.URL, uid)
-	attachment := slack.Attachment{
+	attachment = slack.Attachment{
 		// Uncomment the following part to send a field too
 		Title:      ticket.Subject,
 		TitleLink:  url,
@@ -161,7 +159,7 @@ func SLAMessage(n string, ticket Ticket, color string, user string, uid int64) {
 			},
 		},
 	}
-	SendMessage(n, attachment)
+	return attachment
 }
 
 // DiagMessage sends a DM to requestor with the current state of SLA
@@ -489,6 +487,9 @@ func PrepSLANotification(ticket Ticket, notify int64) (notification string, colo
 
 }
 
+// UpdateMessage sends a message to the channel indicating a ticket with a
+// premium SLA tag associated with it has received an update. This functionality
+// is a mirror of the official Zendesk > Slack integration.
 func UpdateMessage(ticket Ticket, user string, uid int64) {
 	description := ticket.Description
 	if len(ticket.Description) > 100 {

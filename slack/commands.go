@@ -10,21 +10,24 @@ import (
 // parseCommand takes the message that mentions the bot user and identifies
 // what the user is asking for.
 func parseCommand(text string, user string) {
+	var attachment slack.Attachment
+	message := "..."
 	t := strings.Fields(text)
 	if len(t) > 1 {
 		switch t[1] {
 		case "set":
-			SetMessage()
+			attachment = SetMessage()
 		case "diag":
+			message = "Triager has been reset. Please use `@slab set` to set Triager."
 			DiagMessage(user)
 		case "whois":
-			WhoIsMessage()
+			attachment = WhoIsMessage()
 		case "status":
 			StatusMessage()
 		case "help":
 			HelpMessage()
 		case "unset":
-			UnsetMessage()
+			attachment = UnsetMessage()
 		case "twilio":
 			p := plugins.LoadPlugins(c)
 			switch t[2] {
@@ -68,6 +71,7 @@ func parseCommand(text string, user string) {
 			}
 
 		}
+		SendMessage(message, attachment)
 	}
 
 }
@@ -77,6 +81,7 @@ func parseDMCommand(text string, user string) {
 	switch t {
 	case "start config":
 		StartWizard(user)
+		ConfirmWizard()
 	default:
 		UnknownCommandMessage(text, user)
 	}
