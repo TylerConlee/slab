@@ -138,7 +138,7 @@ func TestSLAMessage(t *testing.T) {
 					CreatedAt:   time.Now().Round(time.Second),
 					Subject:     "Test Ticket",
 					Requester:   123456,
-					ID:          1,
+					ID:          123,
 				},
 				color: "danger",
 				user:  "test test",
