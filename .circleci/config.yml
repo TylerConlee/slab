@@ -3,7 +3,7 @@ jobs:
   build:
     working_directory: /go/src/github.com/tylerconlee/slab
     docker:
-      - image: circleci/golang:1.8.1
+      - image: circleci/golang:1.10.3
       
     steps:
       - checkout
@@ -27,7 +27,7 @@ jobs:
   test:
     working_directory: /go/src/github.com/tylerconlee/slab
     docker:
-      - image: circleci/golang:1.8.1
+      - image: circleci/golang:1.10.3
     steps:
       - checkout
       - restore_cache:
@@ -36,7 +36,7 @@ jobs:
   dev-deploy:
     working_directory: /go/src/github.com/tylerconlee/slab
     docker:
-      - image: circleci/golang:1.8.1
+      - image: circleci/golang:1.10.3
     steps:
       - checkout
       - restore_cache:
@@ -46,7 +46,7 @@ jobs:
   deploy:
     working_directory: /go/src/github.com/tylerconlee/slab
     docker:
-      - image: circleci/golang:1.8.1
+      - image: circleci/golang:1.10.3
     steps:
       - checkout
       - restore_cache:

@@ -9,13 +9,19 @@ import (
 )
 
 var (
-	activeWizard      bool
-	activeUser        configUser
-	ChannelsRemaining int
-	ChannelSelect     bool
-	ZenAPI            string
-	ZenUser           string
-	ZenURL            string
+	activeWizard bool
+	activeUser   configUser
+	// ChannelSelect represents if the configuration wizard user is currently
+	// selecting a channel
+	ChannelSelect bool
+	// ZenAPI is the Zendesk API key received in the configuration wizard
+	ZenAPI string
+	// ZenUser is the Zendesk Username used to access the Zendesk API in the
+	// configuration wizard
+	ZenUser string
+	// ZenURL is the Zendesk URL used to access the Zendesk API in the
+	// configuration wizard
+	ZenURL string
 )
 
 type configUser struct {
@@ -29,8 +35,6 @@ func StartWizard(user string) {
 	activeUser.user = user
 	activeUser.step = 0
 	activeWizard = true
-	ConfirmWizard()
-
 }
 
 // ConfigInProgressMessage takes a user ID string and sends a message to that
@@ -69,6 +73,8 @@ func ConfirmWizard() {
 	SendDirectMessage(message, attachment, activeUser.user)
 }
 
+// ViewConfig returns a direct message with the current configuration of Slab
+// to the current active user.
 func ViewConfig() {
 	message := "Here's the current configuration for Slab:"
 	attachment := prepConfigLoad()
@@ -124,6 +130,8 @@ func GetZendeskAPIKey() {
 	SendDirectMessage(message, attachment, activeUser.user)
 }
 
+// NextStep processes the current configuration wizard step and prepares the
+// actions for the next step in the wizard.
 func NextStep(msg string) {
 	log.Info("Processing next step", map[string]interface{}{
 		"module":  "slack",
@@ -211,64 +219,64 @@ func prepConfigSave() {
 			LevelOne: config.Level{
 				Tag: "platinum",
 				Low: config.Duration{
-					time.Duration(180 * time.Minute),
+					Duration: time.Duration(180 * time.Minute),
 				},
 				Normal: config.Duration{
-					time.Duration(120 * time.Minute),
+					Duration: time.Duration(120 * time.Minute),
 				},
 				High: config.Duration{
-					time.Duration(60 * time.Minute),
+					Duration: time.Duration(60 * time.Minute),
 				},
 				Urgent: config.Duration{
-					time.Duration(59 * time.Minute),
+					Duration: time.Duration(59 * time.Minute),
 				},
 				Notify: true,
 			},
 			LevelTwo: config.Level{
 				Tag: "gold",
 				Low: config.Duration{
-					time.Duration(6 * time.Hour),
+					Duration: time.Duration(6 * time.Hour),
 				},
 				Normal: config.Duration{
-					time.Duration(3 * time.Hour),
+					Duration: time.Duration(3 * time.Hour),
 				},
 				High: config.Duration{
-					time.Duration(2 * time.Hour),
+					Duration: time.Duration(2 * time.Hour),
 				},
 				Urgent: config.Duration{
-					time.Duration(1 * time.Hour),
+					Duration: time.Duration(1 * time.Hour),
 				},
 				Notify: true,
 			},
 			LevelThree: config.Level{
 				Tag: "silver",
 				Low: config.Duration{
-					time.Duration(12 * time.Hour),
+					Duration: time.Duration(12 * time.Hour),
 				},
 				Normal: config.Duration{
-					time.Duration(6 * time.Hour),
+					Duration: time.Duration(6 * time.Hour),
 				},
 				High: config.Duration{
-					time.Duration(3 * time.Hour),
+					Duration: time.Duration(3 * time.Hour),
 				},
 				Urgent: config.Duration{
-					time.Duration(2 * time.Hour),
+					Duration: time.Duration(2 * time.Hour),
 				},
 				Notify: true,
 			},
 			LevelFour: config.Level{
 				Tag: "bronze",
 				Low: config.Duration{
-					time.Duration(48 * time.Hour),
+					Duration: time.Duration(48 * time.Hour),
 				},
 				Normal: config.Duration{
-					time.Duration(24 * time.Hour),
+					Duration: time.Duration(24 * time.Hour),
 				},
 				High: config.Duration{
-					time.Duration(8 * time.Hour),
+					Duration: time.Duration(8 * time.Hour),
 				},
 				Urgent: config.Duration{
-					time.Duration(3 * time.Hour),
+					Duration: time.Duration(3 * time.Hour),
 				},
 				Notify: true,
 			},
