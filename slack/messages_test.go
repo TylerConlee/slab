@@ -146,7 +146,7 @@ func TestSLAMessage(t *testing.T) {
 			},
 			wantAttachment: slack.Attachment{
 				Title:      "Test Ticket",
-				TitleLink:  "/agent/tickets/1",
+				TitleLink:  "/agent/tickets/123",
 				AuthorName: "test test",
 				AuthorLink: "/agent/users/123456",
 				AuthorIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/google/119/bust-in-silhouette_1f464.png",
