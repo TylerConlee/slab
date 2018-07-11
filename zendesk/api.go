@@ -12,6 +12,12 @@ import (
 
 var log = l.Log
 
+// NumTickets is the number of tickets processed on the last loop
+var NumTickets int
+
+// LastProcessed is a timestamp of when the last loop was ran
+var LastProcessed time.Time
+
 // GetAllTickets grabs the latest tickets from Zendesk and returns the JSON
 // Zendesk Endpoint: /incremental/tickets.json?include=slas
 // TODO: Handle paging from the Incremental API
@@ -25,9 +31,11 @@ func GetAllTickets() (tickets ZenOutput) {
 	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 
 	tickets = parseTicketJSON(resp)
+	NumTickets = len(tickets.Tickets)
+	LastProcessed = time.Now()
 	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
 		"module":      "zendesk",
-		"num_tickets": len(tickets.Tickets),
+		"num_tickets": NumTickets,
 	})
 	return tickets
 }

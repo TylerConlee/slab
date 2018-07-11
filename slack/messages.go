@@ -17,6 +17,10 @@ var (
 	version string
 	// Sent represents the NotifySent from the zendesk package
 	Sent interface{}
+	// NumTickets is the number of tickets processed on the last loop
+	NumTickets int
+	// LastProcessed is a timestamp of when the last loop was ran
+	LastProcessed time.Time
 )
 
 // Ticket represents an individual ticket to be used in SLAMessage and
@@ -173,13 +177,25 @@ func DiagMessage(user string) {
 		Title: "Slab Diagnostic Tool",
 		Fields: []slack.AttachmentField{
 			slack.AttachmentField{
+				Title: "Number of Ticket Notifications",
+				Value: fmt.Sprintf("%v", len(s)),
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Number of Tickets Processed",
+				Value: fmt.Sprintf("%v", len(s)),
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Last Process Loop Ran",
+				Value: fmt.Sprintf("%v", LastProcessed),
+			},
+
+			slack.AttachmentField{
 				Title: "Current Notification Status",
 				Value: fmt.Sprintf("%v", s),
 			},
-			slack.AttachmentField{
-				Title: "Number of Ticket Notifications",
-				Value: fmt.Sprintf("%v", len(s)),
-			},
+
 			slack.AttachmentField{
 				Title: "Uptime",
 				Value: time.Now().Sub(uptime).String(),
