@@ -166,12 +166,14 @@ func SLAMessage(ticket Ticket, color string, user string, uid int64) (attachment
 // notifications for tickets
 func DiagMessage(user string) {
 	params := slack.PostMessageParameters{}
+	s := Sent.([]NotifySent)
 	attachment := slack.Attachment{
+
 		Title: "Slab Diagnostic Tool",
 		Fields: []slack.AttachmentField{
 			slack.AttachmentField{
 				Title: "Current Notification Status",
-				Value: fmt.Sprintf("%x", Sent),
+				Value: fmt.Sprintf("%v", s),
 			},
 			slack.AttachmentField{
 				Title: "Uptime",
