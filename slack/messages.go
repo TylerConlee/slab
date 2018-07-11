@@ -177,6 +177,10 @@ func DiagMessage(user string) {
 				Value: fmt.Sprintf("%v", s),
 			},
 			slack.AttachmentField{
+				Title: "Number of Ticket Notifications",
+				Value: fmt.Sprintf("%v", len(s)),
+			},
+			slack.AttachmentField{
 				Title: "Uptime",
 				Value: time.Now().Sub(uptime).String(),
 				Short: true,
