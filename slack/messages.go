@@ -188,7 +188,7 @@ func DiagMessage(user string) {
 			},
 			slack.AttachmentField{
 				Title: "Last Process Loop Ran",
-				Value: fmt.Sprintf("%v", LastProcessed),
+				Value: fmt.Sprintf("%v", LastProcessed.Format("Mon Jan 2 15:04:05 MST")),
 			},
 
 			slack.AttachmentField{
