@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/tylerconlee/slab/config"
+	"github.com/tylerconlee/slab/zendesk"
 	"github.com/tylerconlee/slack"
 )
 
@@ -166,7 +167,7 @@ func SLAMessage(ticket Ticket, color string, user string, uid int64) (attachment
 // notifications for tickets
 func DiagMessage(user string) {
 	params := slack.PostMessageParameters{}
-	s := Sent.([]NotifySent)
+	s := Sent.([]zendesk.NotifySent)
 	attachment := slack.Attachment{
 
 		Title: "Slab Diagnostic Tool",

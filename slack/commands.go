@@ -16,9 +16,10 @@ func parseCommand(text string, user string) {
 	if len(t) > 1 {
 		switch t[1] {
 		case "set":
+
 			attachment = SetMessage()
 		case "diag":
-			message = "Triager has been reset. Please use `@slab set` to set Triager."
+
 			DiagMessage(user)
 		case "whois":
 			attachment = WhoIsMessage()
@@ -27,6 +28,7 @@ func parseCommand(text string, user string) {
 		case "help":
 			HelpMessage()
 		case "unset":
+			message = "Triager has been reset. Please use `@slab set` to set Triager."
 			attachment = UnsetMessage()
 		case "twilio":
 			p := plugins.LoadPlugins(c)
