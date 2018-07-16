@@ -83,6 +83,8 @@ func RunTimer(interval time.Duration) {
 			}
 
 			slack.Sent = zendesk.Sent
+			slack.NumTickets = zendesk.NumTickets
+			slack.LastProcessed = zendesk.LastProcessed
 
 			// Returns a list of all new tickets within the last loop
 			new := zendesk.CheckNewTicket(tick, interval)
