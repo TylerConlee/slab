@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/tylerconlee/slab/config"
+	"github.com/tylerconlee/slab/datastore"
 	l "github.com/tylerconlee/slab/log"
 )
 
@@ -33,7 +34,8 @@ func main() {
 	c = config.LoadConfig()
 
 	// Start timer process. Takes an int as the number of minutes to loop
-
+	datastore.RedisConnect()
+	datastore.ExampleClient()
 	termChan := make(chan os.Signal, 1)
 	s := startServer()
 	ticker := time.NewTicker(time.Minute)
