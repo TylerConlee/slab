@@ -35,7 +35,6 @@ func main() {
 
 	// Start timer process. Takes an int as the number of minutes to loop
 	datastore.RedisConnect()
-	datastore.ExampleClient()
 	termChan := make(chan os.Signal, 1)
 	s := startServer()
 	ticker := time.NewTicker(time.Minute)

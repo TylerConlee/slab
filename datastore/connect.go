@@ -1,13 +1,14 @@
 package datastore
 
 import (
-	"fmt"
-
 	"github.com/go-redis/redis"
+	l "github.com/tylerconlee/slab/log"
 )
 
+var log = l.Log
 var client *redis.Client
 
+// RedisConnect establishes a connection to the localhost Redis instance.
 func RedisConnect() {
 	client = redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
@@ -16,30 +17,37 @@ func RedisConnect() {
 	})
 
 	pong, err := client.Ping().Result()
-	fmt.Println(pong, err)
-	// Output: PONG <nil>
+	if err != nil {
+		log.Error("Error encountered attempting to connect to Redis.", map[string]interface{}{
+			"error": err,
+		})
+	}
+	log.Info("Redis connected at localhost:6379.", map[string]interface{}{
+		"result": pong,
+	})
+
 }
 
-func ExampleClient() {
-	err := client.Set("key", "value", 0).Err()
+// Save takes a key and value pair and saves it to the Redis instance.
+func Save(key string, value string) (result bool) {
+	err := client.Set(key, value, 0).Err()
 	if err != nil {
-		panic(err)
+		log.Error("Error attempting to save to Redis.", map[string]interface{}{
+			"error": err,
+		})
+		return false
 	}
+	return true
+}
 
+// Load takes a key and returns the result of the lookup in Redis.
+func Load(key string) (result string) {
 	val, err := client.Get("key").Result()
 	if err != nil {
-		panic(err)
+		log.Error("Error attempting to save to Redis.", map[string]interface{}{
+			"error": err,
+		})
+		return
 	}
-	fmt.Println("key", val)
-
-	val2, err := client.Get("key2").Result()
-	if err == redis.Nil {
-		fmt.Println("key2 does not exist")
-	} else if err != nil {
-		panic(err)
-	} else {
-		fmt.Println("key2", val2)
-	}
-	// Output: key value
-	// key2 does not exist
+	return val
 }
