@@ -43,7 +43,13 @@ func TestLoad(t *testing.T) {
 		args       args
 		wantResult string
 	}{
-		// TODO: Add test cases.
+		{
+			name: "Load string",
+			args: args{
+				key: "key",
+			},
+			wantResult: "value",
+		},
 	}
 	RedisConnect()
 	s := Save("key2", "value2")
