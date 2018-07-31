@@ -21,6 +21,8 @@ func TestSave(t *testing.T) {
 			wantResult: true,
 		},
 	}
+	// start Redis client
+	RedisConnect()
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if gotResult := Save(tt.args.key, tt.args.value); gotResult != tt.wantResult {
