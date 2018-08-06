@@ -25,6 +25,7 @@ var (
 )
 
 func main() {
+	serverPort = 8080
 	keyCheck()
 	log.Info("SLABot by Tyler Conlee", map[string]interface{}{
 		"module": "main",
@@ -34,6 +35,7 @@ func main() {
 	c = config.LoadConfig()
 
 	// Start timer process. Takes an int as the number of minutes to loop
+
 	datastore.RedisConnect(serverPort)
 	termChan := make(chan os.Signal, 1)
 	s := startServer()
