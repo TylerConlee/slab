@@ -34,7 +34,7 @@ func main() {
 	c = config.LoadConfig()
 
 	// Start timer process. Takes an int as the number of minutes to loop
-	datastore.RedisConnect()
+	datastore.RedisConnect(serverPort)
 	termChan := make(chan os.Signal, 1)
 	s := startServer()
 	ticker := time.NewTicker(time.Minute)
