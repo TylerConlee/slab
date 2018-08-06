@@ -25,7 +25,6 @@ var (
 )
 
 func main() {
-	serverPort = 8080
 	keyCheck()
 	log.Info("SLABot by Tyler Conlee", map[string]interface{}{
 		"module": "main",
