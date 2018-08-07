@@ -9,11 +9,11 @@ var log = l.Log
 var client *redis.Client
 
 // RedisConnect establishes a connection to the localhost Redis instance.
-func RedisConnect() {
+func RedisConnect(db int) {
 	client = redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
 		Password: "", // no password set
-		DB:       0,  // use default DB
+		DB:       db, // use default DB
 	})
 
 	pong, err := client.Ping().Result()
