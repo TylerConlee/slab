@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/tylerconlee/slab/datastore"
 	"github.com/tylerconlee/slab/zendesk"
 	"github.com/tylerconlee/slack"
 )
@@ -18,6 +19,7 @@ func SetTriager(payload *slack.AttachmentActionCallback) {
 
 	if VerifyUser(payload.User.ID) {
 		Triager = payload.User.ID
+		datastore.Save("triager", payload.User.ID)
 		t := fmt.Sprintf("<@%s> is now set as Triager", Triager)
 		log.Info("Triager set.", map[string]interface{}{
 			"module":  "slack",
