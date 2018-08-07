@@ -123,6 +123,7 @@ func TestSetTriager(t *testing.T) {
 			wantTriager: "test",
 		},
 	}
+	datastore.RedisConnect(0)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			SetTriager(tt.args.payload)
