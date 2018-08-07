@@ -2,6 +2,8 @@ package slack
 
 import (
 	"testing"
+
+	"github.com/tylerconlee/slack"
 )
 
 func Test_statusDecode(t *testing.T) {
@@ -94,6 +96,33 @@ func Test_satisfactionDecode(t *testing.T) {
 			if gotS := satisfactionDecode(tt.args.sat); gotS != tt.wantS {
 				t.Errorf("satisfactionDecode() = %v, want %v", gotS, tt.wantS)
 			}
+		})
+	}
+}
+
+func TestSetTriager(t *testing.T) {
+	type args struct {
+		payload *slack.AttachmentActionCallback
+	}
+	p := slack.AttachmentActionCallback{
+		User: slack.User{
+			ID: "test",
+		},
+	}
+	tests := []struct {
+		name string
+		args args
+	}{
+		{
+			name: "Save triager",
+			args: args{
+				payload: &p,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			SetTriager(tt.args.payload)
 		})
 	}
 }
