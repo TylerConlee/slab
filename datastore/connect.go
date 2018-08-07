@@ -16,16 +16,6 @@ func RedisConnect(db int) {
 		DB:       db, // use default DB
 	})
 
-	pong, err := client.Ping().Result()
-	if err != nil {
-		log.Error("Error encountered attempting to connect to Redis.", map[string]interface{}{
-			"error": err,
-		})
-	}
-	log.Info("Redis connected at localhost:6379.", map[string]interface{}{
-		"result": pong,
-	})
-
 }
 
 // Save takes a key and value pair and saves it to the Redis instance.
