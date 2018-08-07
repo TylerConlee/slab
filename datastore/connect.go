@@ -42,7 +42,7 @@ func Save(key string, value string) (result bool) {
 
 // Load takes a key and returns the result of the lookup in Redis.
 func Load(key string) (result string) {
-	val, err := client.Get("key").Result()
+	val, err := client.Get(key).Result()
 	if err != nil {
 		log.Error("Error attempting to save to Redis.", map[string]interface{}{
 			"error": err,
