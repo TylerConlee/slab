@@ -3,6 +3,7 @@ package slack
 import (
 	"testing"
 
+	"github.com/tylerconlee/slab/datastore"
 	"github.com/tylerconlee/slack"
 )
 
@@ -110,19 +111,28 @@ func TestSetTriager(t *testing.T) {
 		},
 	}
 	tests := []struct {
-		name string
-		args args
+		name        string
+		args        args
+		wantTriager string
 	}{
 		{
 			name: "Save triager",
 			args: args{
 				payload: &p,
 			},
+			wantTriager: "test",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			SetTriager(tt.args.payload)
+			if gotTriager := checkTriager(); gotTriager != tt.wantTriager {
+				t.Errorf("checkTriager() = %v, want %v", gotTriager, tt.wantTriager)
+			}
 		})
 	}
+}
+
+func checkTriager() (t string) {
+	return datastore.Load("triager")
 }
