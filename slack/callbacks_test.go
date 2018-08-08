@@ -136,5 +136,6 @@ func TestSetTriager(t *testing.T) {
 }
 
 func checkTriager() (t string) {
+	datastore.RedisConnect(0)
 	return datastore.Load("triager")
 }
