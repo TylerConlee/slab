@@ -27,6 +27,10 @@ func RunTimer(interval time.Duration) {
 	})
 	if triager != "" {
 		slack.Triager = triager
+		log.Info("Triager set from Redis info", map[string]interface{}{
+			"module":  "main",
+			"triager": triager,
+		})
 	}
 	for {
 		// reload the config on each pass to allow for changes to the config to
@@ -45,6 +49,7 @@ func RunTimer(interval time.Duration) {
 			"module":  "main",
 			"plugins": p,
 		})
+
 		if c.Zendesk.URL != "" && c.Zendesk.APIKey != "" {
 			tick := zendesk.GetAllTickets()
 
