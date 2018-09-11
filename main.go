@@ -22,6 +22,7 @@ var (
 	slackKey   string
 	serverPort int
 	freq       time.Duration
+	db         int
 )
 
 func main() {
@@ -34,8 +35,8 @@ func main() {
 	c = config.LoadConfig()
 
 	// Start timer process. Takes an int as the number of minutes to loop
-	datastore.RedisConnect()
-	datastore.ExampleClient()
+
+	datastore.RedisConnect(db)
 	termChan := make(chan os.Signal, 1)
 	s := startServer()
 	ticker := time.NewTicker(time.Minute)
@@ -94,9 +95,10 @@ func keyCheck() bool {
 	k := flag.String("key", "APIKey", "a valid Slack API key")
 	t := flag.String("time", "2m", "the amount of time between Zendesk checks")
 	p := flag.Int("port", 8090, "the port Slab will listen on")
+	d := flag.Int("db", 0, "the number of the redis DB that Slab uses")
 
 	flag.Parse()
-
+	db = *d
 	key := *k
 	port := *p
 	// Check to see if key starts with `xoxb`. All Slack keys start with
