@@ -39,6 +39,10 @@ func Save(key string, value string) (result bool) {
 		})
 		return false
 	}
+	log.Info("Data saved to redis", map[string]interface{}{
+		"key":   key,
+		"value": value,
+	})
 	return true
 }
 
@@ -52,5 +56,9 @@ func Load(key string) (result string) {
 		})
 		return
 	}
+	log.Info("Data loaded from redis", map[string]interface{}{
+		"key":   key,
+		"value": val,
+	})
 	return val
 }
