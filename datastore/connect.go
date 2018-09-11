@@ -46,7 +46,7 @@ func Save(key string, value string) (result bool) {
 func Load(key string) (result string) {
 	val, err := client.Get(key).Result()
 	if err != nil {
-		log.Error("Error attempting to save to Redis.", map[string]interface{}{
+		log.Error("Error attempting to load from Redis.", map[string]interface{}{
 			"error": err,
 		})
 		return
