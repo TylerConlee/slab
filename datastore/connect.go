@@ -47,7 +47,8 @@ func Load(key string) (result string) {
 	val, err := client.Get(key).Result()
 	if err != nil {
 		log.Error("Error attempting to load from Redis.", map[string]interface{}{
-			"error": err,
+			"client": client,
+			"error":  err,
 		})
 		return
 	}
