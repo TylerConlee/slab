@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/tylerconlee/slab/config"
+	"github.com/tylerconlee/slab/datastore"
 	"github.com/tylerconlee/slab/plugins"
 	"github.com/tylerconlee/slab/slack"
 	"github.com/tylerconlee/slab/zendesk"
@@ -19,7 +20,10 @@ func RunTimer(interval time.Duration) {
 		"interval": interval,
 	})
 	t := time.NewTicker(interval)
-
+	triager := datastore.Load("triager")
+	if triager != "" {
+		slack.Triager = triager
+	}
 	for {
 		// reload the config on each pass to allow for changes to the config to
 		// be recognized
