@@ -12,6 +12,10 @@ var Log *Logger
 
 func init() {
 	Log = &Logger{logrus.New()}
+	Log.e.Formatter = &logrus.TextFormatter{
+		ForceColors:   true,
+		FullTimestamp: true,
+	}
 }
 
 func (s *Logger) Fatal(c map[string]interface{}) {
