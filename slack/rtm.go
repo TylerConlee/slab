@@ -4,6 +4,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tylerconlee/slab/datastore"
 	l "github.com/tylerconlee/slab/log"
 	"github.com/tylerconlee/slack"
 )
@@ -41,9 +42,21 @@ func StartSlack(v string, key string) {
 		"module": "slack",
 		"team":   d.Domain,
 	})
-
-	// Set the initial value of Triager
-	Triager = "None"
+	t := datastore.Load("triager")
+	log.Info("Triager loaded from Redis", map[string]interface{}{
+		"module":  "main",
+		"triager": t,
+	})
+	if t != "" {
+		Triager = t
+		log.Info("Triager set from Redis info", map[string]interface{}{
+			"module":  "main",
+			"triager": t,
+		})
+	} else {
+		// Set the initial value of Triager
+		Triager = "None"
+	}
 
 	// Start monitoring Slack
 	startRTM()

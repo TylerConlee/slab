@@ -37,6 +37,7 @@ func RunTimer(interval time.Duration) {
 			"module":  "main",
 			"plugins": p,
 		})
+
 		if c.Zendesk.URL != "" && c.Zendesk.APIKey != "" {
 			tick := zendesk.GetAllTickets()
 

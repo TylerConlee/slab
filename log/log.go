@@ -12,6 +12,10 @@ var Log *Logger
 
 func init() {
 	Log = &Logger{logrus.New()}
+	Log.e.Formatter = &logrus.TextFormatter{
+		ForceColors:   true,
+		FullTimestamp: true,
+	}
 }
 
 func (s *Logger) Fatal(c map[string]interface{}) {
@@ -34,6 +38,6 @@ func (s *Logger) SetLogLevel(level string) {
 	if err != nil {
 		os.Exit(1)
 	}
-	logrus.SetLevel(lvl)
+	Log.e.SetLevel(lvl)
 
 }

@@ -28,6 +28,7 @@ jobs:
     working_directory: /go/src/github.com/tylerconlee/slab
     docker:
       - image: circleci/golang:1.10.3
+      - image: circleci/redis:4
     steps:
       - checkout
       - restore_cache:

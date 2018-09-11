@@ -18,3 +18,5 @@ import:
   - unix
 - package: github.com/doublefree/sumorus
 - package: github.com/jstemmer/go-junit-report
+- package: github.com/go-redis/redis
+  version: ^6.12.0
