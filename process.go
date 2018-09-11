@@ -21,6 +21,10 @@ func RunTimer(interval time.Duration) {
 	})
 	t := time.NewTicker(interval)
 	triager := datastore.Load("triager")
+	log.Debug("Triager loaded from Redis", map[string]interface{}{
+		"module":  "main",
+		"triager": triager,
+	})
 	if triager != "" {
 		slack.Triager = triager
 	}
