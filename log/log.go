@@ -38,6 +38,6 @@ func (s *Logger) SetLogLevel(level string) {
 	if err != nil {
 		os.Exit(1)
 	}
-	logrus.SetLevel(lvl)
+	Log.e.SetLevel(lvl)
 
 }
