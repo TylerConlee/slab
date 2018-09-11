@@ -30,6 +30,9 @@ func RedisConnect(db int) {
 
 // Save takes a key and value pair and saves it to the Redis instance.
 func Save(key string, value string) (result bool) {
+	log.Info("Client dump", map[string]interface{}{
+		"client": client,
+	})
 	err := client.Set(key, value, 0).Err()
 	if err != nil {
 		log.Error("Error attempting to save to Redis.", map[string]interface{}{
