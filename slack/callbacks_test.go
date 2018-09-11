@@ -2,9 +2,6 @@ package slack
 
 import (
 	"testing"
-
-	"github.com/tylerconlee/slab/datastore"
-	"github.com/tylerconlee/slack"
 )
 
 func Test_statusDecode(t *testing.T) {
@@ -99,42 +96,4 @@ func Test_satisfactionDecode(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestSetTriager(t *testing.T) {
-	type args struct {
-		payload *slack.AttachmentActionCallback
-	}
-	p := slack.AttachmentActionCallback{
-		User: slack.User{
-			ID: "test",
-		},
-	}
-	tests := []struct {
-		name        string
-		args        args
-		wantTriager string
-	}{
-		{
-			name: "Save triager",
-			args: args{
-				payload: &p,
-			},
-			wantTriager: "test",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			SetTriager(tt.args.payload)
-			if gotTriager := checkTriager(); gotTriager != tt.wantTriager {
-				t.Errorf("checkTriager() = %v, want %v", gotTriager, tt.wantTriager)
-			}
-		})
-	}
-}
-
-func checkTriager() (t string) {
-	datastore.RedisConnect(0)
-	return datastore.Load("triager")
 }
