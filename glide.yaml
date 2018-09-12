@@ -20,3 +20,5 @@ import:
 - package: github.com/jstemmer/go-junit-report
 - package: github.com/go-redis/redis
   version: ^6.12.0
+- package: github.com/gorilla/handlers
+  version: ^1.4.0

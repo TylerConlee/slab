@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	sl "github.com/tylerconlee/slab/slack"
 )
@@ -36,6 +37,10 @@ type ServerStatus struct {
 
 // StartServer loads a http.Server and starts the Slack monitor
 func (s *Server) StartServer() {
+	allowedHeaders := handlers.AllowedHeaders([]string{"X-Requested-With"})
+	allowedOrigins := handlers.AllowedOrigins([]string{"*"})
+	allowedMethods := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"})
+
 	s.Router = s.NewRouter()
 
 	log.Info("HTTP Server Ready.", map[string]interface{}{
@@ -43,6 +48,6 @@ func (s *Server) StartServer() {
 	})
 	go sl.StartSlack(s.Info.Version, slackKey)
 	port := fmt.Sprintf(":%d", s.Info.Port)
-	http.ListenAndServe(port, s.Router)
+	http.ListenAndServe(port, handlers.CORS(allowedHeaders, allowedOrigins, allowedMethods)(s.Router))
 
 }
