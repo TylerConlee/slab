@@ -1,38 +1,46 @@
-hash: 8aae0d237412dee730270cf0adbfe407204529dfe5a587c1fda47874b6422928
-updated: 2018-07-17T14:01:18.125086-07:00
+hash: d7343375be1b1718a4d14b0deb7538f34d371ebddbf5485bd28b81e992978665
+updated: 2018-09-12T14:30:14.326464-07:00
 imports:
 - name: github.com/BurntSushi/toml
-  version: a368813c5e648fee92e5f6c30e3944ff9d5e8895
+  version: 3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005
 - name: github.com/doublefree/sumorus
   version: ba9b9adeebc03f5de9558cfb2423be4246289a78
 - name: github.com/go-redis/redis
-  version: 83fb42932f6145ce52df09860384a4653d2d332a
-- name: github.com/gorilla/context
-  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
+  version: f3bba01df2026fc865f7782948845db9cf44cf23
+  subpackages:
+  - internal
+  - internal/consistenthash
+  - internal/hashtag
+  - internal/pool
+  - internal/proto
+  - internal/singleflight
+  - internal/util
+- name: github.com/gorilla/handlers
+  version: 7e0847f9db758cdebd26c149d0ae9d5d0b9c98ce
 - name: github.com/gorilla/mux
-  version: cb4698366aa625048f3b815af6a0dea8aef9280a
+  version: 9e1f5955c0d22b55d9e20d6faa28589f83b2faca
 - name: github.com/jstemmer/go-junit-report
   version: 385fac0ced9acaae6dc5b39144194008ded00697
 - name: github.com/op/go-logging
   version: 970db520ece77730c7e4724c61121037378659d9
 - name: github.com/sirupsen/logrus
-  version: 92052687f8ec598ff0da626d2909478cfd1e3a3c
+  version: f3df9aeffda7c12bd9f5a03f9251d75d35993165
 - name: github.com/Sirupsen/logrus
-  version: 92052687f8ec598ff0da626d2909478cfd1e3a3c
+  version: f3df9aeffda7c12bd9f5a03f9251d75d35993165
   repo: git@github.com:/sirupsen/logrus
   vcs: git
 - name: github.com/tylerconlee/slack
   version: 1bf41f4946f8f48d01f4fff42b371cac6c1d2627
 - name: golang.org/x/crypto
-  version: a49355c7e3f8fe157a85be2f77e6e269a0f89602
+  version: 0e37d006457bf46f9e6692014ba72ef82c33022c
   subpackages:
   - ssh/terminal
 - name: golang.org/x/net
-  version: d0887baf81f4598189d4e12a37c6da86f0bba4d0
+  version: 26e67e76b6c3f6ce91f7c52def5af501b4e0f3a2
   subpackages:
   - websocket
 - name: golang.org/x/sys
-  version: ac767d655b305d4e9612f5f6e33120b9176c4ad4
+  version: d0be0721c37eeb5299f245a996a483160fc36940
   subpackages:
   - unix
   - windows
