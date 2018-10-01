@@ -40,7 +40,7 @@ glide install
 
 Tyler Conlee – [@TylerConlee](https://twitter.com/tylerconlee) – tyler@circleci.com
 
-Distributed under the MIT license. See ``LICENSE`` for more information.
+Distributed under the GPU license. See ``LICENSE`` for more information.
 
 [https://github.com/tylerconlee/](https://github.com/tylerconlee/)
 
