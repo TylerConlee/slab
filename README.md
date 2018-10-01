@@ -35,40 +35,6 @@ Glide must be installed to compile Slab. Clone the repo and run `glide install` 
 glide install
 ```
 
-## Release History
-
-* v1.3
-  * **[FEATURE]** - Plugins - Third party plugins that integrate with Slab and provide additional notification functionality, such as Twilio.
-  * **[BUGFIX]** - Slab no longer crashes when the Zendesk API is unreachable
-  * **[CHANGE]** - Added timestamp to acknowledge message for further clarity
-* v1.2
-  * **[FEATURE]** - More Info - When a ticket sends an SLA notification to Slack,
-    you can now see more information about the ticket and who requested it with the new More Info button
-  * **[FEATURE]** - Colored notifications - based off of how long the ticket has left before the SLA timer expires.
-  * **[CHANGE]** - Updated logging to utilize sirupsen/logrus
-* v1.1
-  * **[FEATURE]** - Triager role - enable the notification of new tickets through direct message,
-  and stay on top of tickets as they come in to Zendesk
-  * **[FEATURE]** - Added Slack commands `@slab set`, `@slab unset`, `@slab whois`, `@slab help` `@slab status`.
-    * **@slab set** -
-    Set returns a drop down menu of all available Slack members, allowing you to select a person to take the triager role. Note that this is all employees, and not just support. For the most part, this command will be used when setting yourself as triager.
-
-    * **@slab unset** -
-    Unset returns Slab to its default state of having no triager. This means that the new ticket notifications will not be sent until a new triager is set.
-
-    * **@slab whois** -
-    Whois returns the name of the person currently set as triager. If there is not currently a triager, or if unset was recently ran, this value will be None.
-
-    * **@slab help** -
-    Help returns a list of all available Slab commands.
-
-    * **@slab status** -
-    Status returns the server's metadata, including what version of Slab is running and what the uptime is.
-  * **[BUGFIX]** - Updated fork of Slack dependency to avoid rate limiting issues
-* v1.0
-  * **[FEATURE]** - Configurable port settings
-  * **[FEATURE]** - Acknowledge button added for SLA breach messages
-  * **[BUGFIX]** - SLAB crashes when EOF reached in Zendesk API
 
 ## Meta
 
@@ -86,4 +52,3 @@ Distributed under the MIT license. See ``LICENSE`` for more information.
 4. Push to the branch (`git push origin feature/fooBar`)
 5. Create a new Pull Request
 
-[wiki](https://github.com/yourname/yourproject/wiki)
