@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	l "github.com/tylerconlee/slab/log"
@@ -32,12 +33,12 @@ func GetAllTickets() (tickets ZenOutput) {
 
 	tickets = parseTicketJSON(resp)
 	nextPage := ""
-	if tickets.NextPage.(string) != zen {
+	if tickets.NextPage.(string) != zen && strings.Contains(tickets.NextPage.(string), "page") {
 		nextPage = tickets.NextPage.(string)
 	}
 
 	// While NextPage is blank
-	for nextPage != "" {
+	for nextPage != "" && strings.Contains(nextPage, "page") {
 
 		// Run GetNextPage and store the results in output
 		output := getNextPage(nextPage)
