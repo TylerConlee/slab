@@ -43,11 +43,9 @@ func GetAllTickets() (tickets ZenOutput) {
 		// Reset next page to blank to avoid unnecessary calls
 		nextPage = ""
 		if output.NextPage != nil {
-			l.Log.Info("Next page found", map[string]interface{}{
-				"module": "zendesk",
-				"ticket": output.Tickets,
-			})
+
 			if output.NextPage.(string) != tickets.NextPage.(string) {
+
 				nextPage = output.NextPage.(string)
 			}
 		}
