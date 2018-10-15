@@ -31,9 +31,10 @@ func GetAllTickets() (tickets ZenOutput) {
 	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 
 	tickets = parseTicketJSON(resp)
-
-	nextPage := tickets.NextPage.(string)
-
+	nextPage := ""
+	if tickets.NextPage != nil {
+		nextPage = tickets.NextPage.(string)
+	}
 	for nextPage != "" {
 
 		output := getNextPage(nextPage)
@@ -43,7 +44,9 @@ func GetAllTickets() (tickets ZenOutput) {
 				"module": "zendesk",
 				"ticket": output.Tickets,
 			})
-			nextPage = output.NextPage.(string)
+			if output.NextPage.(string) != tickets.NextPage.(string) {
+				nextPage = output.NextPage.(string)
+			}
 		}
 	}
 
