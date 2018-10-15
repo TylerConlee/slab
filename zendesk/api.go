@@ -31,6 +31,11 @@ func GetAllTickets() (tickets ZenOutput) {
 	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 
 	tickets = parseTicketJSON(resp)
+	for tickets.NextPage != nil {
+		nextResp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, tickets.NextPage.(string))
+		nextPage := parseTicketJSON(nextResp)
+		tickets.Tickets = append(tickets.Tickets, nextPage.Tickets...)
+	}
 	NumTickets = len(tickets.Tickets)
 	LastProcessed = time.Now()
 	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
