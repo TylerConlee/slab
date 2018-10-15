@@ -39,9 +39,10 @@ type Slack struct {
 
 // Zendesk contains configuration values specific to the Zendesk interactions
 type Zendesk struct {
-	User   string
-	APIKey string
-	URL    string
+	User           string
+	APIKey         string
+	URL            string
+	PremiumUpdates bool
 }
 
 // SLA supports up to 4 levels of SLA in the configuration
