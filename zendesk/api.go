@@ -31,14 +31,17 @@ func GetAllTickets() (tickets ZenOutput) {
 	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 
 	tickets = parseTicketJSON(resp)
-	if tickets.NextPage != nil {
-		n, next := getNextPage(tickets.NextPage.(string))
-		tickets.Tickets = append(tickets.Tickets, n.Tickets...)
-		for next != "" {
-			n, next = getNextPage(next)
-			tickets.Tickets = append(tickets.Tickets, n.Tickets...)
+
+	nextPage := tickets.NextPage.(string)
+
+	for nextPage != "" {
+		output := getNextPage(nextPage)
+		tickets.Tickets = append(tickets.Tickets, output.Tickets...)
+		if output.NextPage != nil {
+			nextPage = output.NextPage.(string)
 		}
 	}
+
 	NumTickets = len(tickets.Tickets)
 	LastProcessed = time.Now()
 	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
@@ -46,6 +49,15 @@ func GetAllTickets() (tickets ZenOutput) {
 		"num_tickets": NumTickets,
 	})
 	return tickets
+}
+
+func getNextPage(nextURL string) (output ZenOutput) {
+	nextResp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, nextURL)
+	l.Log.Info("Requesting next page of Zendesk tickets", map[string]interface{}{
+		"module":   "zendesk",
+		"nextpage": nextURL,
+	})
+	return parseTicketJSON(nextResp)
 }
 
 // GetTicketEvents grabs the latest ticket events from Zendesk and returns the
@@ -246,14 +258,4 @@ func parseEventJSON(data []byte) (output EventOutput) {
 		})
 	}
 	return output
-}
-
-func getNextPage(nextURL string) (o ZenOutput, next string) {
-	nextResp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, nextURL)
-	l.Log.Info("Requesting next page of Zendesk tickets", map[string]interface{}{
-		"module":   "zendesk",
-		"nextpage": nextURL,
-	})
-	nextPage := parseTicketJSON(nextResp)
-	return nextPage, nextPage.NextPage.(string)
 }
