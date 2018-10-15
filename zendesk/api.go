@@ -33,6 +33,10 @@ func GetAllTickets() (tickets ZenOutput) {
 	tickets = parseTicketJSON(resp)
 	for tickets.NextPage != nil {
 		nextResp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, tickets.NextPage.(string))
+		l.Log.Info("Requesting next page of Zendesk tickets", map[string]interface{}{
+			"module":   "zendesk",
+			"nextpage": tickets.NextPage.(string),
+		})
 		nextPage := parseTicketJSON(nextResp)
 		tickets.Tickets = append(tickets.Tickets, nextPage.Tickets...)
 	}
