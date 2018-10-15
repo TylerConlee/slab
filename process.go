@@ -49,7 +49,6 @@ func RunTimer(interval time.Duration) {
 			})
 			// Returns a list of all upcoming SLA breaches
 			active := zendesk.CheckSLA(tick)
-			updated := zendesk.CheckUpdatedTicket(interval)
 
 			// Loop through all active SLA tickets and prepare SLA notification
 			// for each.
@@ -71,16 +70,19 @@ func RunTimer(interval time.Duration) {
 					}
 				}
 			}
-			for _, ticket := range updated {
-				log.Info("Preparing update notification for ticket", map[string]interface{}{
-					"module": "main",
-					"ticket": ticket.ID,
-				})
-				n := fmt.Sprintf("Premium ticket #%d updated. Priority: %s, SLA: %s", ticket.ID, ticket.Level, ticket.Priority)
-				m := slack.Ticket(ticket)
-				user := zendesk.GetTicketRequester(int(ticket.Requester))
-				p.SendDispatcher(n)
-				slack.UpdateMessage(m, user.Name, user.ID)
+			if c.Zendesk.PremiumUpdates == true {
+				updated := zendesk.CheckUpdatedTicket(interval)
+				for _, ticket := range updated {
+					log.Info("Preparing update notification for ticket", map[string]interface{}{
+						"module": "main",
+						"ticket": ticket.ID,
+					})
+					n := fmt.Sprintf("Premium ticket #%d updated. Priority: %s, SLA: %s", ticket.ID, ticket.Level, ticket.Priority)
+					m := slack.Ticket(ticket)
+					user := zendesk.GetTicketRequester(int(ticket.Requester))
+					p.SendDispatcher(n)
+					slack.UpdateMessage(m, user.Name, user.ID)
+				}
 			}
 
 			slack.Sent = zendesk.Sent
