@@ -33,35 +33,37 @@ func GetAllTickets() (tickets ZenOutput) {
 
 	tickets = parseTicketJSON(resp)
 	nextPage := ""
-	if tickets.NextPage.(string) != zen && strings.Contains(tickets.NextPage.(string), "page") {
-		nextPage = tickets.NextPage.(string)
-	}
+	if tickets.NextPage != nil {
+		if tickets.NextPage.(string) != zen && strings.Contains(tickets.NextPage.(string), "page") {
+			nextPage = tickets.NextPage.(string)
+		}
 
-	// While NextPage is blank
-	for nextPage != "" && strings.Contains(nextPage, "page") {
+		// While NextPage is blank
+		for nextPage != "" && strings.Contains(nextPage, "page") {
 
-		// Run GetNextPage and store the results in output
-		output := getNextPage(nextPage)
+			// Run GetNextPage and store the results in output
+			output := getNextPage(nextPage)
 
-		// Append the results to the main tickets list
-		tickets.Tickets = append(tickets.Tickets, output.Tickets...)
+			// Append the results to the main tickets list
+			tickets.Tickets = append(tickets.Tickets, output.Tickets...)
 
-		// Reset next page to blank to avoid unnecessary calls
-		nextPage = ""
+			// Reset next page to blank to avoid unnecessary calls
+			nextPage = ""
 
-		// Check to see if NextPage from output is blank
-		if output.NextPage != nil {
-			l.Log.Info("Ticket output contains a non-nil next page", map[string]interface{}{
-				"module": "zendesk",
-				"ticket": tickets.NextPage,
-				"output": output.NextPage,
-			})
+			// Check to see if NextPage from output is blank
+			if output.NextPage != nil {
+				l.Log.Info("Ticket output contains a non-nil next page", map[string]interface{}{
+					"module": "zendesk",
+					"ticket": tickets.NextPage,
+					"output": output.NextPage,
+				})
 
-			// If the output's next page is different from the ticket's next page
-			if output.NextPage.(string) != tickets.NextPage.(string) {
+				// If the output's next page is different from the ticket's next page
+				if output.NextPage.(string) != tickets.NextPage.(string) {
 
-				// Set the next page as the output's next page to run the loop again
-				nextPage = output.NextPage.(string)
+					// Set the next page as the output's next page to run the loop again
+					nextPage = output.NextPage.(string)
+				}
 			}
 		}
 	}
