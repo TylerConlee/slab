@@ -44,7 +44,8 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 		} else {
 			sl.MoreInfoSLA(payload)
 		}
-
+	case "newticket":
+		sl.AcknowledgeNewTicket(payload)
 	case "triage_set":
 		sl.SetTriager(payload)
 	case "cfgwiz":
