@@ -246,6 +246,20 @@ func NewTicketMessage(tickets []Ticket) {
 					Short: true,
 				},
 			},
+			Actions: []slack.AttachmentAction{
+				slack.AttachmentAction{
+					Name:  "ack_sla",
+					Text:  ":white_check_mark: Acknowledge",
+					Type:  "button",
+					Value: "ack",
+					Style: "primary",
+					Confirm: &slack.ConfirmationField{
+						Text:        "Are you sure?",
+						OkText:      "Take it",
+						DismissText: "Leave it",
+					},
+				},
+			},
 		}
 		params.Attachments = append(params.Attachments, attachment)
 
