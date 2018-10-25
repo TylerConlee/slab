@@ -264,6 +264,7 @@ func NewTicketMessage(tickets []Ticket) {
 		params.Attachments = append(params.Attachments, attachment)
 
 	}
+	message := ""
 	if Triager != "None" {
 		message := fmt.Sprintf("<@%s> The following tickets were received since the last loop:", Triager)
 	} else {
