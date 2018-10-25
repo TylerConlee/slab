@@ -57,6 +57,11 @@ func CheckSLA(tick ZenOutput) (sla []ActiveTicket) {
 func CheckNewTicket(tick ZenOutput, interval time.Duration) (new []ActiveTicket) {
 	previousLoop := time.Now().Add(-interval)
 	nowLoop := time.Now()
+	log.Info("Checking for new tickets", map[string]interface{}{
+		"module":      "zendesk",
+		"currentloop": nowLoop,
+		"prevloop":    previousLoop,
+	})
 	for _, ticket := range tick.Tickets {
 		if ticket.CreatedAt.After(previousLoop) && ticket.CreatedAt.Before(nowLoop) {
 			t := ActiveTicket{
