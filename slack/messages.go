@@ -234,6 +234,7 @@ func NewTicketMessage(tickets []Ticket) {
 				c.Zendesk.URL,
 				ticket.ID,
 			),
+			CallbackID: "newticket",
 			Fields: []slack.AttachmentField{
 				slack.AttachmentField{
 					Title: "Ticket ID",
