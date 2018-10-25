@@ -266,9 +266,9 @@ func NewTicketMessage(tickets []Ticket) {
 	}
 	message := ""
 	if Triager != "None" {
-		message := fmt.Sprintf("<@%s> The following tickets were received since the last loop:", Triager)
+		message = fmt.Sprintf("<@%s> The following tickets were received since the last loop:", Triager)
 	} else {
-		message := fmt.Sprintf("The following tickets were received since the last loop:")
+		message = fmt.Sprintf("The following tickets were received since the last loop:")
 	}
 
 	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, message, params)
