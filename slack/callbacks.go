@@ -63,6 +63,34 @@ func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
 	ChatUpdate(payload, attachment)
 }
 
+// AcknowledgeNewTicket generates a new Slack attachment to state that a user
+//has acknowledged a ticket.
+func AcknowledgeNewTicket(payload *slack.AttachmentActionCallback) {
+	f, _ := strconv.ParseFloat(payload.ActionTs, 10)
+	i := int64(f)
+	ts := time.Unix(i, 0)
+	log.Info("Ticket acknowledged.", map[string]interface{}{
+		"module":   "slack",
+		"actionts": payload.ActionTs,
+		"ts":       ts.String(),
+		"i":        i,
+	})
+	t := fmt.Sprintf("<@%s> acknowledged this ticket at %s", payload.User.Name, ts.String())
+	log.Info("New ticket acknowledged.", map[string]interface{}{
+		"module": "slack",
+		"ack":    payload.User.Name,
+	})
+	attachment := slack.Attachment{
+		Title:      payload.OriginalMessage.Attachments[0].Title,
+		TitleLink:  payload.OriginalMessage.Attachments[0].TitleLink,
+		Fallback:   "User acknowledged a ticket.",
+		CallbackID: "newticket",
+		Footer:     t,
+		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
+	}
+	ChatUpdate(payload, attachment)
+}
+
 // MoreInfoSLA grabs additional information from Zendesk using the information
 // from the More Info button. It then sends  an ephemeral message to the
 // requester with additional Zendesk information.
