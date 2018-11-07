@@ -217,7 +217,7 @@ func DiagMessage(user string) {
 		if err != nil {
 			fmt.Printf("%s\n", err)
 		}
-		api.PostMessage(channelID, message, params)
+		api.PostMessage(channelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(params.Attachments...))
 	}
 }
 
@@ -225,8 +225,13 @@ func DiagMessage(user string) {
 // loop interval and sends the IDs and links to the tickets to the user
 // currently set as triager.
 func NewTicketMessage(tickets []Ticket) {
+
 	params := slack.PostMessageParameters{}
 	for _, ticket := range tickets {
+		description := ticket.Description
+		if len(ticket.Description) > 100 {
+			description = description[0:100] + "..."
+		}
 		attachment := slack.Attachment{
 			Title: ticket.Subject,
 			TitleLink: fmt.Sprintf(
@@ -234,8 +239,13 @@ func NewTicketMessage(tickets []Ticket) {
 				c.Zendesk.URL,
 				ticket.ID,
 			),
+			ID:         ticket.ID,
 			CallbackID: "newticket",
 			Fields: []slack.AttachmentField{
+				slack.AttachmentField{
+					Title: "Description",
+					Value: description,
+				},
 				slack.AttachmentField{
 					Title: "Ticket ID",
 					Value: strconv.Itoa(ticket.ID),
@@ -272,7 +282,7 @@ func NewTicketMessage(tickets []Ticket) {
 		message = fmt.Sprintf("The following tickets were received since the last loop:")
 	}
 
-	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, message, params)
+	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(params.Attachments...))
 	if err != nil {
 		fmt.Printf("%s\n", err)
 		return
@@ -408,7 +418,7 @@ func HelpMessage() {
 	params.Attachments = attachments
 	params.LinkNames = 1
 	message := "..."
-	api.PostMessage(c.Slack.ChannelID, message, params)
+	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(params.Attachments...))
 
 }
 
@@ -440,9 +450,16 @@ func ChatUpdate(
 	attachment slack.Attachment,
 ) {
 
+	for i := range payload.OriginalMessage.Attachments {
+		id := strconv.Itoa(payload.OriginalMessage.Attachments[i].ID)
+		if id == payload.AttachmentID {
+			payload.OriginalMessage.Attachments[i] = attachment
+		}
+	}
+
 	params := slack.PostMessageParameters{}
 
-	params.Attachments = []slack.Attachment{attachment}
+	params.Attachments = payload.OriginalMessage.Attachments
 	// Send an update to the given channel with pretext and the parameters
 	channelID, timestamp, t, err := api.UpdateMessageWithParams(
 		payload.Channel.ID,

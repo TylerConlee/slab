@@ -1,12 +1,12 @@
 hash: d7343375be1b1718a4d14b0deb7538f34d371ebddbf5485bd28b81e992978665
-updated: 2018-09-12T14:30:14.326464-07:00
+updated: 2018-11-07T08:05:54.029847-08:00
 imports:
 - name: github.com/BurntSushi/toml
   version: 3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005
 - name: github.com/doublefree/sumorus
   version: ba9b9adeebc03f5de9558cfb2423be4246289a78
 - name: github.com/go-redis/redis
-  version: f3bba01df2026fc865f7782948845db9cf44cf23
+  version: b3d9bf10f6666b2ee5100a6f3f84f4caf3b4e37d
   subpackages:
   - internal
   - internal/consistenthash
@@ -18,29 +18,35 @@ imports:
 - name: github.com/gorilla/handlers
   version: 7e0847f9db758cdebd26c149d0ae9d5d0b9c98ce
 - name: github.com/gorilla/mux
-  version: 9e1f5955c0d22b55d9e20d6faa28589f83b2faca
+  version: 3d80bc801bb034e17cae38591335b3b1110f1c47
+- name: github.com/gorilla/websocket
+  version: 483fb8d7c32fcb4b5636cd293a92e3935932e2f4
 - name: github.com/jstemmer/go-junit-report
   version: 385fac0ced9acaae6dc5b39144194008ded00697
+- name: github.com/konsorten/go-windows-terminal-sequences
+  version: 5c8c8bd35d3832f5d134ae1e1e375b69a4d25242
+- name: github.com/nlopes/slack
+  version: cd759032689754457520f81827abec1a4759d093
+  subpackages:
+  - slackutilsx
 - name: github.com/op/go-logging
   version: 970db520ece77730c7e4724c61121037378659d9
-- name: github.com/sirupsen/logrus
-  version: f3df9aeffda7c12bd9f5a03f9251d75d35993165
+- name: github.com/pkg/errors
+  version: 059132a15dd08d6704c67711dae0cf35ab991756
 - name: github.com/Sirupsen/logrus
-  version: f3df9aeffda7c12bd9f5a03f9251d75d35993165
+  version: 44067abb194b1bc8b342e1f2120f8d3ea691b834
   repo: git@github.com:/sirupsen/logrus
   vcs: git
+- name: github.com/sirupsen/logrus
+  version: 44067abb194b1bc8b342e1f2120f8d3ea691b834
 - name: github.com/tylerconlee/slack
-  version: 1bf41f4946f8f48d01f4fff42b371cac6c1d2627
+  version: 7c7176fa51c9e7074abb378accbd3ecefcb9f88a
 - name: golang.org/x/crypto
-  version: 0e37d006457bf46f9e6692014ba72ef82c33022c
+  version: e4dc69e5b2fd71dcaf8bd5d054eb936deb78d1fa
   subpackages:
   - ssh/terminal
-- name: golang.org/x/net
-  version: 26e67e76b6c3f6ce91f7c52def5af501b4e0f3a2
-  subpackages:
-  - websocket
 - name: golang.org/x/sys
-  version: d0be0721c37eeb5299f245a996a483160fc36940
+  version: 3a76605856fddce5718553cbb8bd50ca492a7274
   subpackages:
   - unix
   - windows

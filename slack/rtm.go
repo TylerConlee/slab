@@ -68,10 +68,7 @@ func StartSlack(v string, key string) {
 // accordingly.
 func startRTM() {
 
-	options := slack.RTMOptions{
-		UseRTMStart: false,
-	}
-	rtm := api.NewRTMWithOptions(&options)
+	rtm := api.NewRTM()
 	chk := 0
 	var user *slack.User
 	var err error

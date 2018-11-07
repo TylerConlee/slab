@@ -13,7 +13,7 @@ func SendMessage(message string, attachment slack.Attachment) {
 	params.Attachments = []slack.Attachment{attachment}
 	params.LinkNames = 1
 	// Send a message to the given channel with pretext and the parameters
-	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, message, params)
+	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(params.Attachments...))
 	if err != nil {
 		fmt.Printf("%s\n", err)
 		return
@@ -62,5 +62,5 @@ func SendDirectMessage(message string, attachment slack.Attachment, user string)
 		fmt.Printf("%s\n", err)
 	}
 
-	api.PostMessage(channelID, message, params)
+	api.PostMessage(channelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(params.Attachments...))
 }
