@@ -441,9 +441,16 @@ func ChatUpdate(
 	attachment slack.Attachment,
 ) {
 
+	for i := range payload.OriginalMessage.Attachments {
+		id := strconv.Itoa(payload.OriginalMessage.Attachments[i].ID)
+		if id == payload.AttachmentID {
+			payload.OriginalMessage.Attachments[i] = attachment
+		}
+	}
+
 	params := slack.PostMessageParameters{}
 
-	params.Attachments = []slack.Attachment{attachment}
+	params.Attachments = payload.OriginalMessage.Attachments
 	// Send an update to the given channel with pretext and the parameters
 	channelID, timestamp, t, err := api.UpdateMessageWithParams(
 		payload.Channel.ID,

@@ -52,14 +52,21 @@ func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
 		"module": "slack",
 		"ack":    payload.User.Name,
 	})
-	attachment := slack.Attachment{
-		Title:      payload.OriginalMessage.Attachments[0].Title,
-		TitleLink:  payload.OriginalMessage.Attachments[0].TitleLink,
-		Fallback:   "User acknowledged a ticket.",
-		CallbackID: "sla",
-		Footer:     t,
-		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
+	attachment := slack.Attachment{}
+	for i := range payload.OriginalMessage.Attachments {
+		id := strconv.Itoa(payload.OriginalMessage.Attachments[i].ID)
+		if id == payload.AttachmentID {
+			attachment = slack.Attachment{
+				Title:      payload.OriginalMessage.Attachments[i].Title,
+				TitleLink:  payload.OriginalMessage.Attachments[i].TitleLink,
+				Fallback:   "User acknowledged a ticket.",
+				CallbackID: "newticket",
+				Footer:     t,
+				FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
+			}
+		}
 	}
+
 	ChatUpdate(payload, attachment)
 }
 
@@ -80,14 +87,21 @@ func AcknowledgeNewTicket(payload *slack.AttachmentActionCallback) {
 		"module": "slack",
 		"ack":    payload.User.Name,
 	})
-	attachment := slack.Attachment{
-		Title:      payload.OriginalMessage.Attachments[0].Title,
-		TitleLink:  payload.OriginalMessage.Attachments[0].TitleLink,
-		Fallback:   "User acknowledged a ticket.",
-		CallbackID: "newticket",
-		Footer:     t,
-		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
+	attachment := slack.Attachment{}
+	for i := range payload.OriginalMessage.Attachments {
+		id := strconv.Itoa(payload.OriginalMessage.Attachments[i].ID)
+		if id == payload.AttachmentID {
+			attachment = slack.Attachment{
+				Title:      payload.OriginalMessage.Attachments[i].Title,
+				TitleLink:  payload.OriginalMessage.Attachments[i].TitleLink,
+				Fallback:   "User acknowledged a ticket.",
+				CallbackID: "newticket",
+				Footer:     t,
+				FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
+			}
+		}
 	}
+
 	ChatUpdate(payload, attachment)
 }
 
