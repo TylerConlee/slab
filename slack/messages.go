@@ -225,8 +225,13 @@ func DiagMessage(user string) {
 // loop interval and sends the IDs and links to the tickets to the user
 // currently set as triager.
 func NewTicketMessage(tickets []Ticket) {
+
 	params := slack.PostMessageParameters{}
 	for _, ticket := range tickets {
+		description := ticket.Description
+		if len(ticket.Description) > 100 {
+			description = description[0:100] + "..."
+		}
 		attachment := slack.Attachment{
 			Title: ticket.Subject,
 			TitleLink: fmt.Sprintf(
@@ -237,6 +242,10 @@ func NewTicketMessage(tickets []Ticket) {
 			ID:         ticket.ID,
 			CallbackID: "newticket",
 			Fields: []slack.AttachmentField{
+				slack.AttachmentField{
+					Title: "Description",
+					Value: description,
+				},
 				slack.AttachmentField{
 					Title: "Ticket ID",
 					Value: strconv.Itoa(ticket.ID),
