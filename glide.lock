@@ -1,5 +1,5 @@
-hash: d7343375be1b1718a4d14b0deb7538f34d371ebddbf5485bd28b81e992978665
-updated: 2018-11-07T08:05:54.029847-08:00
+hash: 39b185e83643cb9ae8769b63a52d66d93041dfa4d35057d7790bfe18d17583b9
+updated: 2018-11-08T07:21:34.020909-08:00
 imports:
 - name: github.com/BurntSushi/toml
   version: 3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005
@@ -25,6 +25,8 @@ imports:
   version: 385fac0ced9acaae6dc5b39144194008ded00697
 - name: github.com/konsorten/go-windows-terminal-sequences
   version: 5c8c8bd35d3832f5d134ae1e1e375b69a4d25242
+- name: github.com/lib/pq
+  version: 4ded0e9383f75c197b3a2aaa6d590ac52df6fd79
 - name: github.com/nlopes/slack
   version: cd759032689754457520f81827abec1a4759d093
   subpackages:
@@ -33,12 +35,12 @@ imports:
   version: 970db520ece77730c7e4724c61121037378659d9
 - name: github.com/pkg/errors
   version: 059132a15dd08d6704c67711dae0cf35ab991756
+- name: github.com/sirupsen/logrus
+  version: 44067abb194b1bc8b342e1f2120f8d3ea691b834
 - name: github.com/Sirupsen/logrus
   version: 44067abb194b1bc8b342e1f2120f8d3ea691b834
   repo: git@github.com:/sirupsen/logrus
   vcs: git
-- name: github.com/sirupsen/logrus
-  version: 44067abb194b1bc8b342e1f2120f8d3ea691b834
 - name: github.com/tylerconlee/slack
   version: 7c7176fa51c9e7074abb378accbd3ecefcb9f88a
 - name: golang.org/x/crypto
@@ -46,7 +48,7 @@ imports:
   subpackages:
   - ssh/terminal
 - name: golang.org/x/sys
-  version: 3a76605856fddce5718553cbb8bd50ca492a7274
+  version: 66b7b1311ac80bbafcd2daeef9a5e6e2cd1e2399
   subpackages:
   - unix
   - windows

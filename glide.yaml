@@ -22,3 +22,5 @@ import:
   version: ^6.12.0
 - package: github.com/gorilla/handlers
   version: ^1.4.0
+- package: github.com/lib/pq
+  version: ^1.0.0
