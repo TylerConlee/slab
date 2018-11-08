@@ -23,7 +23,7 @@ func SaveActivity(user string, name string, activityType string) error {
 		}
 		return nil
 	}
-	_, err := db.Query("INSERT INTO activities(slack_id, slack_name, type, started_at, ended_at) VALUES ($1,$2,$3,$4, $5)", user, activityType, time.Now(), time.Now())
+	_, err := db.Query("INSERT INTO activities(slack_id, slack_name, type, started_at, ended_at) VALUES ($1,$2,$3,$4, $5)", user, mame, activityType, time.Now(), time.Now())
 	return err
 
 }
