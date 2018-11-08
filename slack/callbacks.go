@@ -19,7 +19,15 @@ func SetTriager(payload *slack.AttachmentActionCallback) {
 
 	if VerifyUser(payload.User.ID) {
 		Triager = payload.User.ID
-		datastore.Save("triager", payload.User.ID)
+		datastore.RSave("triager", payload.User.ID)
+		if err := datastore.SaveActivity(payload.User.ID, payload.User.Name, "set"); err != nil {
+			log.Error("Unable to save activity", map[string]interface{}{
+				"module":   "slack",
+				"activity": "set",
+				"triager":  Triager,
+				"error":    err,
+			})
+		}
 		t := fmt.Sprintf("<@%s> is now set as Triager", Triager)
 		log.Info("Triager set.", map[string]interface{}{
 			"module":  "slack",
@@ -113,6 +121,14 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 		"module": "slack",
 		"ticket": payload.Actions[0].Value,
 	})
+	if err := datastore.SaveActivity(payload.User.ID, payload.User.Name, "moreinfo"); err != nil {
+		log.Error("Unable to save activity", map[string]interface{}{
+			"module":   "slack",
+			"activity": "moreinfo",
+			"triager":  Triager,
+			"error":    err,
+		})
+	}
 	id, _ := strconv.Atoi(payload.Actions[0].Value)
 	// ORG Details
 	org := zendesk.GetOrganization(id)
