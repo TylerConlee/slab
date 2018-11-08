@@ -28,7 +28,7 @@ func TestSave(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			RedisConnect(0)
-			if gotResult := Save(tt.args.key, tt.args.value); gotResult != tt.wantResult {
+			if gotResult := RSave(tt.args.key, tt.args.value); gotResult != tt.wantResult {
 				t.Errorf("Save() = %v, want %v", gotResult, tt.wantResult)
 			}
 		})

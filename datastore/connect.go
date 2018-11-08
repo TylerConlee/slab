@@ -55,7 +55,7 @@ func PGConnect(cfg c.Config) {
 }
 
 // Save takes a key and value pair and saves it to the Redis instance.
-func Save(key string, value string) (result bool) {
+func RSave(key string, value string) (result bool) {
 
 	err := client.Set(key, value, 0).Err()
 	if err != nil {
