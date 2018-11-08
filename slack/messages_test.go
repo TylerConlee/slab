@@ -55,60 +55,6 @@ func TestSetMessage(t *testing.T) {
 	}
 }
 
-func TestUnsetMessage(t *testing.T) {
-	tests := []struct {
-		name           string
-		wantAttachment slack.Attachment
-	}{
-		{
-			name: "Unset Slab Triager",
-			wantAttachment: slack.Attachment{
-				Fallback:   "You would be able to select the triager here.",
-				CallbackID: "triager_dropdown",
-				Footer:     "Triager has been reset to None",
-				FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if gotAttachment := UnsetMessage(); !reflect.DeepEqual(gotAttachment, tt.wantAttachment) {
-				t.Errorf("UnsetMessage() = %v, want %v", gotAttachment, tt.wantAttachment)
-			}
-		})
-	}
-}
-
-func TestWhoIsMessage(t *testing.T) {
-	Triager = "test"
-	tests := []struct {
-		name           string
-		wantAttachment slack.Attachment
-	}{
-		{
-			name: "Who Is Triager Message String",
-			wantAttachment: slack.Attachment{
-				Fallback:   "You would be able to select the triager here.",
-				CallbackID: "triage_whois",
-				// Show the current Triager member
-				Fields: []slack.AttachmentField{
-					slack.AttachmentField{
-						Title: "Current Triager",
-						Value: "<@test>",
-					},
-				},
-			},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if gotAttachment := WhoIsMessage(); !reflect.DeepEqual(gotAttachment, tt.wantAttachment) {
-				t.Errorf("WhoIsMessage() = %v, want %v", gotAttachment, tt.wantAttachment)
-			}
-		})
-	}
-}
-
 func TestSLAMessage(t *testing.T) {
 	type Zendesk struct {
 		URL string

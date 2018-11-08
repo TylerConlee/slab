@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/tylerconlee/slab/config"
+	"github.com/tylerconlee/slab/datastore"
 	"github.com/tylerconlee/slab/zendesk"
 	"github.com/tylerconlee/slack"
 )
@@ -80,8 +81,15 @@ func SetMessage() (attachment slack.Attachment) {
 }
 
 // UnsetMessage resets the Triager role to the slab bot.
-func UnsetMessage() (attachment slack.Attachment) {
+func UnsetMessage(user *slack.User) (attachment slack.Attachment) {
 	Triager = "None"
+	if err := datastore.SaveActivity(user.Name, "unset"); err != nil {
+		log.Error("Unable to save activity", map[string]interface{}{
+			"module":   "slack",
+			"activity": "unset",
+			"error":    err,
+		})
+	}
 	t := fmt.Sprintf("Triager has been reset to %s", Triager)
 	attachment = slack.Attachment{
 		Fallback:   "You would be able to select the triager here.",
@@ -94,7 +102,14 @@ func UnsetMessage() (attachment slack.Attachment) {
 
 // WhoIsMessage creates and sends a Slack message that sends out the value of
 // Triager.
-func WhoIsMessage() (attachment slack.Attachment) {
+func WhoIsMessage(user *slack.User) (attachment slack.Attachment) {
+	if err := datastore.SaveActivity(user.Name, "whois"); err != nil {
+		log.Error("Unable to save activity", map[string]interface{}{
+			"module":   "slack",
+			"activity": "whois",
+			"error":    err,
+		})
+	}
 	attachment = slack.Attachment{
 		Fallback:   "You would be able to select the triager here.",
 		CallbackID: "triage_whois",
@@ -169,7 +184,7 @@ func SLAMessage(ticket Ticket, color string, user string, uid int64) (attachment
 
 // DiagMessage sends a DM to requestor with the current state of SLA
 // notifications for tickets
-func DiagMessage(user string) {
+func DiagMessage(user *slack.User) {
 	params := slack.PostMessageParameters{}
 	s := Sent.([]zendesk.NotifySent)
 	attachment := slack.Attachment{
@@ -213,7 +228,7 @@ func DiagMessage(user string) {
 	params.Attachments = append(params.Attachments, attachment)
 	message := ""
 	if len(params.Attachments) != 0 {
-		_, _, channelID, err := api.OpenIMChannel(user)
+		_, _, channelID, err := api.OpenIMChannel(user.ID)
 		if err != nil {
 			fmt.Printf("%s\n", err)
 		}
@@ -298,7 +313,7 @@ func NewTicketMessage(tickets []Ticket) {
 
 // StatusMessage responds to @slab status with the version hash and current
 // uptime for the Slab process
-func StatusMessage() {
+func StatusMessage(user *slack.User) {
 	attachment := slack.Attachment{
 		Title: "Slab Status",
 		Fields: []slack.AttachmentField{
@@ -314,13 +329,26 @@ func StatusMessage() {
 			},
 		},
 	}
+	if err := datastore.SaveActivity(user.Name, "status"); err != nil {
+		log.Error("Unable to save activity", map[string]interface{}{
+			"module":   "slack",
+			"activity": "status",
+			"error":    err,
+		})
+	}
 	SendMessage("...", attachment)
 }
 
 // HelpMessage responds to @slab help with a help message outlining all
 // available commands
-func HelpMessage() {
-
+func HelpMessage(user *slack.User) {
+	if err := datastore.SaveActivity(user.Name, "help"); err != nil {
+		log.Error("Unable to save activity", map[string]interface{}{
+			"module":   "slack",
+			"activity": "help",
+			"error":    err,
+		})
+	}
 	params := slack.PostMessageParameters{}
 
 	setCommand := slack.Attachment{
