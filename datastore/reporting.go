@@ -1,10 +1,24 @@
 package datastore
 
+import "time"
+
 // Check tables
 
 // If tables don't exist, create tables
 
 // Save activity
+func SaveActivity(user string, activityType string) error {
+	if activityType == "set" {
+		_, err := db.Query("INSERT INTO activities(slack_id, type, started_at) VALUES ($1,$2,$3)", user, activityType, time.Now())
+		return err
+	} else if activityType == "unset" {
+		_, err := db.Query("INSERT INTO activities(slack_id, type, started_at) VALUES ($1,$2,$3)", user, activityType, time.Now())
+		return err
+	}
+	_, err := db.Query("INSERT INTO activities(slack_id, type, started_at, ended_at) VALUES ($1,$2,$3,$4)", user, activityType, time.Now(), time.Now())
+	return err
+
+}
 
 // Check if open activity
 
