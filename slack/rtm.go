@@ -147,7 +147,14 @@ func startRTM() {
 
 				} else if c == 2 {
 					if strings.Contains(ev.Msg.Text, user.ID) {
-						parseCommand(ev.Msg.Text, user)
+						sender, err := api.GetUserInfo(ev.Msg.User)
+						if err != nil {
+							log.Error("Error getting user information from Slack", map[string]interface{}{
+								"module": "slack",
+								"error":  err,
+							})
+						}
+						parseCommand(ev.Msg.Text, sender)
 					}
 				} else if (c == 0) && (string(ev.Channel[0]) == "D") && (strings.Contains(ev.Msg.Text, user.ID)) {
 					t := strings.TrimPrefix(ev.Msg.Text, "<@"+user.ID+"> ")
