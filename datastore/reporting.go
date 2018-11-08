@@ -37,7 +37,7 @@ func CreateUsersTable() {
 	CREATE TABLE IF NOT EXISTS users (
 		id serial PRIMARY KEY,
 		slack_id text NOT NULL,
-		name text NOT NULL,
+		name text NOT NULL
 	)`
 
 	// Exec executes a query without returning any rows.
