@@ -13,6 +13,7 @@ import (
 var (
 	log    = l.Log
 	client *redis.Client
+	db     *sql.DB
 )
 
 // RedisConnect establishes a connection to the localhost Redis instance.
@@ -36,10 +37,10 @@ func RedisConnect(db int) {
 }
 
 func PGConnect(cfg c.Config) {
-	client := fmt.Sprintf("host=%s port=%d user=%s "+
+	conn := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		cfg.Postgres.Host, cfg.Postgres.Port, cfg.Postgres.User, cfg.Postgres.Password, cfg.Postgres.DBName)
-	db, err := sql.Open("postgres", client)
+	db, err := sql.Open("postgres", conn)
 	if err != nil {
 		log.Error("Error encountered attempting to connect to Postgres.", map[string]interface{}{
 			"error": err,
@@ -54,10 +55,12 @@ func PGConnect(cfg c.Config) {
 	log.Info("Postgres connected.", map[string]interface{}{
 		"module": "datastore",
 	})
+	CreateActivitiesTable()
+	CreateUsersTable()
 
 }
 
-// Save takes a key and value pair and saves it to the Redis instance.
+// RSave takes a key and value pair and saves it to the Redis instance.
 func RSave(key string, value string) (result bool) {
 
 	err := client.Set(key, value, 0).Err()
