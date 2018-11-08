@@ -13,7 +13,7 @@ func SaveActivity(user string, name string, activityType string) error {
 			id = 0
 			return err
 		}
-		err := db.QueryRow("INSERT INTO activities(slack_id, slack_name, type, started_at) VALUES ($1,$2,$3) RETURNING id", user, name, activityType, time.Now()).Scan(&id)
+		err := db.QueryRow("INSERT INTO activities(slack_id, slack_name, type, started_at) VALUES ($1,$2,$3, $4) RETURNING id", user, name, activityType, time.Now()).Scan(&id)
 		return err
 	} else if activityType == "unset" {
 		if id != 0 {
@@ -23,7 +23,7 @@ func SaveActivity(user string, name string, activityType string) error {
 		}
 		return nil
 	}
-	_, err := db.Query("INSERT INTO activities(slack_id, slack_name, type, started_at, ended_at) VALUES ($1,$2,$3,$4)", user, activityType, time.Now(), time.Now())
+	_, err := db.Query("INSERT INTO activities(slack_id, slack_name, type, started_at, ended_at) VALUES ($1,$2,$3,$4, $5)", user, activityType, time.Now(), time.Now())
 	return err
 
 }
