@@ -9,7 +9,11 @@ import "time"
 // Save activity
 func SaveActivity(user string, activityType string) error {
 	if activityType == "set" {
-		_, err := db.Query("INSERT INTO activities(slack_id, type, started_at) VALUES ($1,$2,$3)", user, activityType, time.Now())
+		resp, err := db.Query("INSERT INTO activities(slack_id, type, started_at) VALUES ($1,$2,$3)", user, activityType, time.Now())
+		log.Info("Slab set saved", map[string]interface{}{
+			"module": "datastore",
+			"resp":   resp,
+		})
 		return err
 	} else if activityType == "unset" {
 		_, err := db.Query("INSERT INTO activities(slack_id, type, started_at) VALUES ($1,$2,$3)", user, activityType, time.Now())
