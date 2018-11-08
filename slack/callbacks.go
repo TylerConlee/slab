@@ -20,6 +20,14 @@ func SetTriager(payload *slack.AttachmentActionCallback) {
 	if VerifyUser(payload.User.ID) {
 		Triager = payload.User.ID
 		datastore.RSave("triager", payload.User.ID)
+		if err := datastore.SaveActivity(payload.User.Name, "set"); err != nil {
+			log.Error("Unable to save activity", map[string]interface{}{
+				"module":   "slack",
+				"activity": "set",
+				"triager":  Triager,
+				"error":    err,
+			})
+		}
 		t := fmt.Sprintf("<@%s> is now set as Triager", Triager)
 		log.Info("Triager set.", map[string]interface{}{
 			"module":  "slack",
