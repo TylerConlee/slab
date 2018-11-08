@@ -20,7 +20,7 @@ func SetTriager(payload *slack.AttachmentActionCallback) {
 	if VerifyUser(payload.User.ID) {
 		Triager = payload.User.ID
 		datastore.RSave("triager", payload.User.ID)
-		if err := datastore.SaveActivity(payload.User.Name, "set"); err != nil {
+		if err := datastore.SaveActivity(payload.User.ID, payload.User.Name, "set"); err != nil {
 			log.Error("Unable to save activity", map[string]interface{}{
 				"module":   "slack",
 				"activity": "set",
@@ -121,7 +121,7 @@ func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
 		"module": "slack",
 		"ticket": payload.Actions[0].Value,
 	})
-	if err := datastore.SaveActivity(payload.User.Name, "moreinfo"); err != nil {
+	if err := datastore.SaveActivity(payload.User.ID, payload.User.Name, "moreinfo"); err != nil {
 		log.Error("Unable to save activity", map[string]interface{}{
 			"module":   "slack",
 			"activity": "moreinfo",
