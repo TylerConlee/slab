@@ -1,12 +1,19 @@
 package datastore
 
 import (
+	"database/sql"
+	"fmt"
+
 	"github.com/go-redis/redis"
+	_ "github.com/lib/pq"
+	c "github.com/tylerconlee/slab/config"
 	l "github.com/tylerconlee/slab/log"
 )
 
-var log = l.Log
-var client *redis.Client
+var (
+	log    = l.Log
+	client *redis.Client
+)
 
 // RedisConnect establishes a connection to the localhost Redis instance.
 func RedisConnect(db int) {
@@ -25,6 +32,25 @@ func RedisConnect(db int) {
 	log.Info("Redis connected at localhost:6379.", map[string]interface{}{
 		"result": pong,
 	})
+
+}
+
+func PGConnect(cfg c.Config) {
+	client := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		cfg.Postgres.Host, cfg.Postgres.Port, cfg.Postgres.User, cfg.Postgres.Password, cfg.Postgres.DBName)
+	db, err := sql.Open("postgres", client)
+	if err != nil {
+		log.Error("Error encountered attempting to connect to Postgres.", map[string]interface{}{
+			"error": err,
+		})
+	}
+	err = db.Ping()
+	if err != nil {
+		log.Error("Error encountered attempting to connect to Postgres.", map[string]interface{}{
+			"error": err,
+		})
+	}
 
 }
 
