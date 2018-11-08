@@ -16,8 +16,8 @@ func CreateActivitiesTable() {
 		id serial PRIMARY KEY,
 		slack_id text NOT NULL,
 		type text NOT NULL,
-		started_at timestamp with time zone,
-		ended_at timestamp with time zone
+		started_at timestamp,
+		ended_at timestamp
 	)`
 
 	// Exec executes a query without returning any rows.

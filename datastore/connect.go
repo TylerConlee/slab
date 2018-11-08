@@ -55,8 +55,8 @@ func PGConnect(cfg c.Config) {
 	log.Info("Postgres connected.", map[string]interface{}{
 		"module": "datastore",
 	})
-	CreateActivitiesTable()
 	CreateUsersTable()
+	CreateActivitiesTable()
 
 }
 
