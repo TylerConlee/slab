@@ -51,6 +51,9 @@ func PGConnect(cfg c.Config) {
 			"error": err,
 		})
 	}
+	log.Info("Postgres connected.", map[string]interface{}{
+		"module": "datastore",
+	})
 
 }
 
