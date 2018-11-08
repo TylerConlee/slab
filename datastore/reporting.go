@@ -2,6 +2,8 @@ package datastore
 
 import "time"
 
+var id = 0
+
 // Check tables
 
 // If tables don't exist, create tables
@@ -9,15 +11,20 @@ import "time"
 // Save activity
 func SaveActivity(user string, activityType string) error {
 	if activityType == "set" {
-		resp, err := db.Query("INSERT INTO activities(slack_id, type, started_at) VALUES ($1,$2,$3)", user, activityType, time.Now())
-		log.Info("Slab set saved", map[string]interface{}{
-			"module": "datastore",
-			"resp":   resp,
-		})
+		if id != 0 {
+			_, err := db.Query("UPDATE activities SET ended_at = $1 WHERE id = $2", time.Now(), id)
+			id = 0
+			return err
+		}
+		err := db.QueryRow("INSERT INTO activities(slack_id, type, started_at) VALUES ($1,$2,$3) RETURNING id", user, activityType, time.Now()).Scan(&id)
 		return err
 	} else if activityType == "unset" {
-		_, err := db.Query("INSERT INTO activities(slack_id, type, started_at) VALUES ($1,$2,$3)", user, activityType, time.Now())
-		return err
+		if id != 0 {
+			_, err := db.Query("UPDATE activities SET ended_at = $1 WHERE id = $2", time.Now(), id)
+			id = 0
+			return err
+		}
+		return nil
 	}
 	_, err := db.Query("INSERT INTO activities(slack_id, type, started_at, ended_at) VALUES ($1,$2,$3,$4)", user, activityType, time.Now(), time.Now())
 	return err
