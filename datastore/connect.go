@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/go-redis/redis"
+	// pq is recommended to be loaded in blank
 	_ "github.com/lib/pq"
 	c "github.com/tylerconlee/slab/config"
 	l "github.com/tylerconlee/slab/log"
@@ -36,6 +37,8 @@ func RedisConnect(db int) {
 
 }
 
+// PGConnect uses the configuration passed from the config file to connect to
+// Postgres and ensure that the table is created properly.
 func PGConnect(cfg c.Config) {
 	conn := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
@@ -56,7 +59,6 @@ func PGConnect(cfg c.Config) {
 	log.Info("Postgres connected.", map[string]interface{}{
 		"module": "datastore",
 	})
-	CreateUsersTable()
 	CreateActivitiesTable()
 
 }
