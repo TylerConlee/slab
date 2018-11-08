@@ -83,7 +83,7 @@ func SetMessage() (attachment slack.Attachment) {
 // UnsetMessage resets the Triager role to the slab bot.
 func UnsetMessage(user *slack.User) (attachment slack.Attachment) {
 	Triager = "None"
-	if err := datastore.SaveActivity(user.Name, "unset"); err != nil {
+	if err := datastore.SaveActivity(user.ID, user.Name, "unset"); err != nil {
 		log.Error("Unable to save activity", map[string]interface{}{
 			"module":   "slack",
 			"activity": "unset",
@@ -103,7 +103,7 @@ func UnsetMessage(user *slack.User) (attachment slack.Attachment) {
 // WhoIsMessage creates and sends a Slack message that sends out the value of
 // Triager.
 func WhoIsMessage(user *slack.User) (attachment slack.Attachment) {
-	if err := datastore.SaveActivity(user.Name, "whois"); err != nil {
+	if err := datastore.SaveActivity(user.ID, user.Name, "whois"); err != nil {
 		log.Error("Unable to save activity", map[string]interface{}{
 			"module":   "slack",
 			"activity": "whois",
@@ -329,7 +329,7 @@ func StatusMessage(user *slack.User) {
 			},
 		},
 	}
-	if err := datastore.SaveActivity(user.Name, "status"); err != nil {
+	if err := datastore.SaveActivity(user.ID, user.Name, "status"); err != nil {
 		log.Error("Unable to save activity", map[string]interface{}{
 			"module":   "slack",
 			"activity": "status",
@@ -342,7 +342,7 @@ func StatusMessage(user *slack.User) {
 // HelpMessage responds to @slab help with a help message outlining all
 // available commands
 func HelpMessage(user *slack.User) {
-	if err := datastore.SaveActivity(user.Name, "help"); err != nil {
+	if err := datastore.SaveActivity(user.ID, user.Name, "help"); err != nil {
 		log.Error("Unable to save activity", map[string]interface{}{
 			"module":   "slack",
 			"activity": "help",
