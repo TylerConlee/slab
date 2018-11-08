@@ -2,6 +2,8 @@ package slack
 
 import (
 	"testing"
+
+	"github.com/tylerconlee/slack"
 )
 
 func Test_parseDMCommand(t *testing.T) {
@@ -25,7 +27,7 @@ func Test_parseDMCommand(t *testing.T) {
 func Test_parseCommand(t *testing.T) {
 	type args struct {
 		text string
-		user string
+		user *slack.User
 	}
 	tests := []struct {
 		name string
