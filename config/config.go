@@ -24,6 +24,7 @@ type Config struct {
 	Metadata      Metadata
 	Port          int
 	Plugins       Plugins
+	Postgres      Postgres
 }
 
 // Metadata holds configuration related to the server metadata used in status calls
@@ -35,6 +36,14 @@ type Metadata struct {
 type Slack struct {
 	APIKey    string
 	ChannelID string
+}
+
+type Postgres struct {
+	Host     string
+	Port     int
+	User     string
+	Password string
+	DBName   string
 }
 
 // Zendesk contains configuration values specific to the Zendesk interactions
