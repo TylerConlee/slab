@@ -40,7 +40,8 @@ func PGConnect(cfg c.Config) {
 	conn := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		cfg.Postgres.Host, cfg.Postgres.Port, cfg.Postgres.User, cfg.Postgres.Password, cfg.Postgres.DBName)
-	db, err := sql.Open("postgres", conn)
+	var err error
+	db, err = sql.Open("postgres", conn)
 	if err != nil {
 		log.Error("Error encountered attempting to connect to Postgres.", map[string]interface{}{
 			"error": err,
