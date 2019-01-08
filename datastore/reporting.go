@@ -9,21 +9,26 @@ var id = 0
 func SaveActivity(user string, name string, activityType string) error {
 	if activityType == "set" {
 		if id != 0 {
-			_, err := db.Query("UPDATE activities SET ended_at = $1 WHERE id = $2", time.Now(), id)
+			rows, err := db.Query("UPDATE activities SET ended_at = $1 WHERE id = $2", time.Now(), id)
 			err = db.QueryRow("INSERT INTO activities(slack_id, slack_name, type, started_at) VALUES ($1,$2,$3, $4) RETURNING id", user, name, activityType, time.Now()).Scan(&id)
+
+			defer rows.Close()
 			return err
 		}
 		err := db.QueryRow("INSERT INTO activities(slack_id, slack_name, type, started_at) VALUES ($1,$2,$3, $4) RETURNING id", user, name, activityType, time.Now()).Scan(&id)
 		return err
 	} else if activityType == "unset" {
 		if id != 0 {
-			_, err := db.Query("UPDATE activities SET ended_at = $1 WHERE id = $2", time.Now(), id)
+			rows, err := db.Query("UPDATE activities SET ended_at = $1 WHERE id = $2", time.Now(), id)
 			id = 0
+
+			defer rows.Close()
 			return err
 		}
 		return nil
 	}
-	_, err := db.Query("INSERT INTO activities(slack_id, slack_name, type, started_at, ended_at) VALUES ($1,$2,$3,$4, $5)", user, name, activityType, time.Now(), time.Now())
+	rows, err := db.Query("INSERT INTO activities(slack_id, slack_name, type, started_at, ended_at) VALUES ($1,$2,$3,$4, $5)", user, name, activityType, time.Now(), time.Now())
+	defer rows.Close()
 	return err
 
 }
