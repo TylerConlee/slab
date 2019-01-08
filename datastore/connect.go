@@ -39,7 +39,7 @@ func RedisConnect(db int) {
 
 // PGConnect uses the configuration passed from the config file to connect to
 // Postgres and ensure that the table is created properly.
-func PGConnect(cfg c.Config) {
+func PGConnect(cfg c.Config) (db *sql.DB) {
 	conn := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		cfg.Postgres.Host, cfg.Postgres.Port, cfg.Postgres.User, cfg.Postgres.Password, cfg.Postgres.DBName)
@@ -60,6 +60,7 @@ func PGConnect(cfg c.Config) {
 		"module": "datastore",
 	})
 	CreateActivitiesTable()
+	return db
 
 }
 
