@@ -34,7 +34,7 @@ func iteration(t *time.Ticker, interval time.Duration) {
 	// TODO: Update this to only update when the file is modified, rather
 	// than every pass
 	c := config.LoadConfig()
-	db := datastore.PGConnect(c)
+	datastore.PGConnect(c)
 	p := plugins.LoadPlugins(c)
 	if c.Slack.ChannelID != "" {
 		channel := slack.GetChannel(c.Slack.ChannelID)
@@ -123,7 +123,6 @@ func iteration(t *time.Ticker, interval time.Duration) {
 
 			"module": "main",
 		})
-		defer db.Close()
 	} else {
 		log.Info("Zendesk authorization required. Please run @slab start config to begin.", map[string]interface{}{
 

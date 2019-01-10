@@ -1,6 +1,8 @@
 package datastore
 
-import "time"
+import (
+	"time"
+)
 
 var id = 0
 
