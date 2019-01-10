@@ -61,7 +61,6 @@ func PGConnect(cfg c.Config) {
 		"module": "datastore",
 	})
 	CreateActivitiesTable()
-	defer db.Close()
 }
 
 // RSave takes a key and value pair and saves it to the Redis instance.
