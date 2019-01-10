@@ -9,6 +9,10 @@ var id = 0
 // SaveActivity takes the user data and activity type and saves it to the
 // Postgres database
 func SaveActivity(user string, name string, activityType string) error {
+	log.Info("Activity saved in database", map[string]interface{}{
+		"activityType":    activityType,
+		"openConnections": db.Stats().OpenConnections,
+	})
 	if activityType == "set" {
 		if id != 0 {
 			rows, err := db.Query("UPDATE activities SET ended_at = $1 WHERE id = $2", time.Now(), id)
@@ -31,10 +35,7 @@ func SaveActivity(user string, name string, activityType string) error {
 	}
 	rows, err := db.Query("INSERT INTO activities(slack_id, slack_name, type, started_at, ended_at) VALUES ($1,$2,$3,$4, $5)", user, name, activityType, time.Now(), time.Now())
 	defer rows.Close()
-	log.Info("Activity saved in database", map[string]interface{}{
-		"activityType":    activityType,
-		"openConnections": db.Stats().OpenConnections,
-	})
+
 	return err
 
 }
