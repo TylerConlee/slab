@@ -21,17 +21,25 @@ func RunTimer(interval time.Duration) {
 	t := time.NewTicker(interval)
 
 	for {
-		// reload the config on each pass to allow for changes to the config to
-		// be recognized
-		// TODO: Update this to only update when the file is modified, rather
-		// than every pass
-		c = config.LoadConfig()
-		p := plugins.LoadPlugins(c)
-		if c.Slack.ChannelID != "" {
-			channel := slack.GetChannel(c.Slack.ChannelID)
-			if channel == 0 {
-				slack.AddChannel(c.Slack.ChannelID, 2)
-			}
+		iteration(t, interval)
+		<-t.C
+
+	}
+}
+
+func iteration(t *time.Ticker, interval time.Duration) {
+	// reload the config on each pass to allow for changes to the config to
+	// be recognized
+	// TODO: Update this to only update when the file is modified, rather
+	// than every pass
+	c := config.LoadConfig()
+
+	p := plugins.LoadPlugins(c)
+	if c.Slack.ChannelID != "" {
+		channel := slack.GetChannel(c.Slack.ChannelID)
+		if channel == 0 {
+			slack.AddChannel(c.Slack.ChannelID, 2)
+
 		}
 		log.Info("Loaded plugins.", map[string]interface{}{
 			"module":  "main",
