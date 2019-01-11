@@ -1,41 +1,29 @@
 package datastore
 
-import (
-	"time"
-)
+import "time"
 
 var id = 0
 
 // SaveActivity takes the user data and activity type and saves it to the
 // Postgres database
 func SaveActivity(user string, name string, activityType string) error {
-	log.Info("Activity saved in database", map[string]interface{}{
-		"activityType":    activityType,
-		"openConnections": db.Stats().OpenConnections,
-	})
 	if activityType == "set" {
 		if id != 0 {
-			rows, err := db.Query("UPDATE activities SET ended_at = $1 WHERE id = $2", time.Now(), id)
+			_, err := db.Query("UPDATE activities SET ended_at = $1 WHERE id = $2", time.Now(), id)
 			err = db.QueryRow("INSERT INTO activities(slack_id, slack_name, type, started_at) VALUES ($1,$2,$3, $4) RETURNING id", user, name, activityType, time.Now()).Scan(&id)
-
-			defer rows.Close()
 			return err
 		}
 		err := db.QueryRow("INSERT INTO activities(slack_id, slack_name, type, started_at) VALUES ($1,$2,$3, $4) RETURNING id", user, name, activityType, time.Now()).Scan(&id)
 		return err
 	} else if activityType == "unset" {
 		if id != 0 {
-			rows, err := db.Query("UPDATE activities SET ended_at = $1 WHERE id = $2", time.Now(), id)
+			_, err := db.Query("UPDATE activities SET ended_at = $1 WHERE id = $2", time.Now(), id)
 			id = 0
-
-			defer rows.Close()
 			return err
 		}
 		return nil
 	}
-	rows, err := db.Query("INSERT INTO activities(slack_id, slack_name, type, started_at, ended_at) VALUES ($1,$2,$3,$4, $5)", user, name, activityType, time.Now(), time.Now())
-	defer rows.Close()
-
+	_, err := db.Query("INSERT INTO activities(slack_id, slack_name, type, started_at, ended_at) VALUES ($1,$2,$3,$4, $5)", user, name, activityType, time.Now(), time.Now())
 	return err
 
 }

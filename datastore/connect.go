@@ -15,7 +15,6 @@ var (
 	log    = l.Log
 	client *redis.Client
 	db     *sql.DB
-	Conn   string
 )
 
 // RedisConnect establishes a connection to the localhost Redis instance.
@@ -41,11 +40,11 @@ func RedisConnect(db int) {
 // PGConnect uses the configuration passed from the config file to connect to
 // Postgres and ensure that the table is created properly.
 func PGConnect(cfg c.Config) {
-	Conn = fmt.Sprintf("host=%s port=%d user=%s "+
+	conn := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		cfg.Postgres.Host, cfg.Postgres.Port, cfg.Postgres.User, cfg.Postgres.Password, cfg.Postgres.DBName)
 	var err error
-	db, err = sql.Open("postgres", Conn)
+	db, err = sql.Open("postgres", conn)
 	if err != nil {
 		log.Error("Error encountered attempting to connect to Postgres.", map[string]interface{}{
 			"error": err,
@@ -61,6 +60,7 @@ func PGConnect(cfg c.Config) {
 		"module": "datastore",
 	})
 	CreateActivitiesTable()
+
 }
 
 // RSave takes a key and value pair and saves it to the Redis instance.
