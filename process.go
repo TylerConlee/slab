@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/tylerconlee/slab/config"
-	"github.com/tylerconlee/slab/datastore"
 	"github.com/tylerconlee/slab/plugins"
 	"github.com/tylerconlee/slab/slack"
 	"github.com/tylerconlee/slab/zendesk"
@@ -34,7 +33,7 @@ func iteration(t *time.Ticker, interval time.Duration) {
 	// TODO: Update this to only update when the file is modified, rather
 	// than every pass
 	c := config.LoadConfig()
-	datastore.PGConnect(c)
+
 	p := plugins.LoadPlugins(c)
 	if c.Slack.ChannelID != "" {
 		channel := slack.GetChannel(c.Slack.ChannelID)
