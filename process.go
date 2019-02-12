@@ -73,7 +73,8 @@ func iteration(t *time.Ticker, interval time.Duration) {
 						n, c := slack.PrepSLANotification(m, notify)
 						p.SendDispatcher(n)
 						user := zendesk.GetTicketRequester(int(ticket.Requester))
-						attach := slack.SLAMessage(m, c, user.Name, user.ID)
+						org := getOrgName(ticket.ID)
+						attach := slack.SLAMessage(m, c, user.Name, user.ID, org)
 						slack.SendMessage(n, attach)
 					}
 				}
@@ -130,4 +131,16 @@ func iteration(t *time.Ticker, interval time.Duration) {
 		}
 		<-t.C
 	}
+}
+
+func getOrgName(id int) (o string) {
+	org := zendesk.GetOrganization(id)
+	var o string
+	if len(org) > 0 {
+		orglink := fmt.Sprintf("%s/agent/organizations/%d", c.Zendesk.URL, org[0].ID)
+
+		o = "<" + orglink + "| " + org[0].Name + "> "
+	}
+	return o
+
 }
