@@ -125,7 +125,7 @@ func WhoIsMessage(user *slack.User) (attachment slack.Attachment) {
 }
 
 // SLAMessage sends off the SLA notification to Slack using the configured API key
-func SLAMessage(ticket Ticket, color string, user string, uid int64) (attachment slack.Attachment) {
+func SLAMessage(ticket Ticket, color string, user string, uid int64, org string) (attachment slack.Attachment) {
 	description := ticket.Description
 	if len(ticket.Description) > 100 {
 		description = description[0:100] + "..."
@@ -145,6 +145,10 @@ func SLAMessage(ticket Ticket, color string, user string, uid int64) (attachment
 			slack.AttachmentField{
 				Title: "Description",
 				Value: description,
+			},
+			slack.AttachmentField{
+				Title: "Organization",
+				Value: org,
 			},
 			slack.AttachmentField{
 				Title: "Priority",
