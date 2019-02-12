@@ -135,7 +135,6 @@ func iteration(t *time.Ticker, interval time.Duration) {
 
 func getOrgName(id int) (o string) {
 	org := zendesk.GetOrganization(id)
-	var o string
 	if len(org) > 0 {
 		orglink := fmt.Sprintf("%s/agent/organizations/%d", c.Zendesk.URL, org[0].ID)
 
