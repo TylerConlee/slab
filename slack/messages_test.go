@@ -68,6 +68,7 @@ func TestSLAMessage(t *testing.T) {
 		color  string
 		user   string
 		uid    int64
+		org    string
 	}
 
 	tests := []struct {
@@ -89,6 +90,7 @@ func TestSLAMessage(t *testing.T) {
 				color: "danger",
 				user:  "test test",
 				uid:   123456,
+				org:   "lmnop",
 			},
 			wantAttachment: slack.Attachment{
 				Title:      "Test Ticket",
@@ -102,6 +104,10 @@ func TestSLAMessage(t *testing.T) {
 					slack.AttachmentField{
 						Title: "Description",
 						Value: "This is a test ticket description",
+					},
+					slack.AttachmentField{
+						Title: "Organization",
+						Value: "lmnop",
 					},
 					slack.AttachmentField{
 						Title: "Priority",
@@ -140,7 +146,7 @@ func TestSLAMessage(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotAttachment := SLAMessage(tt.args.ticket, tt.args.color, tt.args.user, tt.args.uid); !reflect.DeepEqual(gotAttachment, tt.wantAttachment) {
+			if gotAttachment := SLAMessage(tt.args.ticket, tt.args.color, tt.args.user, tt.args.uid, tt.args.org); !reflect.DeepEqual(gotAttachment, tt.wantAttachment) {
 				t.Errorf("SLAMessage() = %v, want %v", gotAttachment, tt.wantAttachment)
 			}
 		})
