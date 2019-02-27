@@ -452,24 +452,6 @@ func HelpMessage(user *slack.User) {
 
 }
 
-// CreateTagMessage responds to @slab tag create, taking the tag name provided
-// and responds with the first step in the create tag config wizard
-func CreateTagMessage(user *slack.User, tag string) {
-	attachment := slack.Attachment{
-		Title:      "Create Tag",
-		CallbackID: "createtag",
-		Actions: []slack.AttachmentAction{
-			slack.AttachmentAction{
-				Name:       "channel",
-				Text:       "Notification Channel",
-				Type:       "select",
-				DataSource: "conversations",
-			},
-		},
-	}
-	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionAttachments(attachment))
-}
-
 // ShowConfigMessage takes a user string and sends that user the value of the
 // config.toml configuration file. Used for identifying configuration issues.
 func ShowConfigMessage(user string) {
@@ -650,4 +632,22 @@ func UpdateMessage(ticket Ticket, user string, uid int64) {
 	}
 	n := "@here - Premium ticket updated"
 	SendMessage(n, attachment)
+}
+
+// CreateTagMessage responds to @slab tag create, taking the tag name provided
+// and responds with the first step in the create tag config wizard
+func CreateTagMessage(user *slack.User, tag string) {
+	attachment := slack.Attachment{
+		Title:      "Create Tag",
+		CallbackID: "createtag",
+		Actions: []slack.AttachmentAction{
+			slack.AttachmentAction{
+				Name:  "launch",
+				Text:  "Create Tag",
+				Type:  "button",
+				Value: "createtag",
+			},
+		},
+	}
+	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionAttachments(attachment))
 }

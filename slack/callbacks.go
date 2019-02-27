@@ -188,6 +188,25 @@ func MoreInfoSLA(payload *slack.InteractionCallback) {
 	SendEphemeralMessage("More information on ticket", attachment, payload.User.ID)
 }
 
+func CreateTagDialog(payload *slack.InteractionCallback) {
+	dialog := slack.Dialog{
+		TriggerID:      payload.TriggerID,
+		CallbackID:     "process_create_tag",
+		Title:          "Dialog",
+		NotifyOnCancel: false,
+		Elements: []slack.DialogElement{
+			slack.DialogInput{
+				Type:        "text",
+				Label:       "Test",
+				Name:        "test",
+				Placeholder: "Test Placeholder",
+				Optional:    false,
+			},
+		},
+	}
+	api.OpenDialog(payload.TriggerID, dialog)
+}
+
 func statusDecode(status string) (img string) {
 	switch status {
 	case "solved":

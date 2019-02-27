@@ -48,6 +48,8 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 		sl.AcknowledgeNewTicket(payload)
 	case "triage_set":
 		sl.SetTriager(payload)
+	case "createtag":
+		sl.CreateTagDialog(payload)
 	case "cfgwiz":
 		log.Info("Config wizard step detected", map[string]interface{}{
 			"module": "server",
