@@ -494,7 +494,7 @@ func UnknownCommandMessage(text string, user string) {
 // timestamp with the given message text. Currently, it also updates the
 // attachment specifically for the Set message output.
 func ChatUpdate(
-	payload *slack.AttachmentActionCallback,
+	payload *slack.InteractionCallback,
 	attachment slack.Attachment,
 ) {
 

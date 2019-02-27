@@ -12,7 +12,7 @@ import (
 
 // SetTriager generates a new Slack attachment to update the
 // original message and set the Triager role
-func SetTriager(payload *slack.AttachmentActionCallback) {
+func SetTriager(payload *slack.InteractionCallback) {
 	if len(payload.Actions) == 0 {
 		return
 	}
@@ -45,7 +45,7 @@ func SetTriager(payload *slack.AttachmentActionCallback) {
 
 // AcknowledgeSLA generates a new Slack attachment to state that a user has
 // acknowledged a ticket.
-func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
+func AcknowledgeSLA(payload *slack.InteractionCallback) {
 	f, _ := strconv.ParseFloat(payload.ActionTs, 10)
 	i := int64(f)
 	ts := time.Unix(i, 0)
@@ -80,7 +80,7 @@ func AcknowledgeSLA(payload *slack.AttachmentActionCallback) {
 
 // AcknowledgeNewTicket generates a new Slack attachment to state that a user
 //has acknowledged a ticket.
-func AcknowledgeNewTicket(payload *slack.AttachmentActionCallback) {
+func AcknowledgeNewTicket(payload *slack.InteractionCallback) {
 	f, _ := strconv.ParseFloat(payload.ActionTs, 10)
 	i := int64(f)
 	ts := time.Unix(i, 0)
@@ -116,7 +116,7 @@ func AcknowledgeNewTicket(payload *slack.AttachmentActionCallback) {
 // MoreInfoSLA grabs additional information from Zendesk using the information
 // from the More Info button. It then sends  an ephemeral message to the
 // requester with additional Zendesk information.
-func MoreInfoSLA(payload *slack.AttachmentActionCallback) {
+func MoreInfoSLA(payload *slack.InteractionCallback) {
 	log.Info("More info SLA button clicked.", map[string]interface{}{
 		"module": "slack",
 		"ticket": payload.Actions[0].Value,

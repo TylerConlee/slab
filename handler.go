@@ -25,7 +25,7 @@ func (s *Server) NewRouter() *mux.Router {
 
 // Callback is a handler that handles the callback from a Slack action.
 func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
-	payload := &slack.AttachmentActionCallback{}
+	payload := &slack.InteractionCallback{}
 	err := json.Unmarshal([]byte(r.PostFormValue("payload")), payload)
 	if err != nil {
 		log.Error("Error unmarshaling callback payload.", map[string]interface{}{
