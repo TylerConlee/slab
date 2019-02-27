@@ -1,5 +1,5 @@
 hash: 0fc104ec12d1c2c08071e5f76feae15e3f6959d36382f93b72afacda2a1f4f93
-updated: 2019-02-27T09:24:28.328467-08:00
+updated: 2019-02-27T11:33:41.401578-08:00
 imports:
 - name: github.com/BurntSushi/toml
   version: 3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005
@@ -7,35 +7,18 @@ imports:
   version: ba9b9adeebc03f5de9558cfb2423be4246289a78
 - name: github.com/go-redis/redis
   version: d22fde8721cc915a55aeb6b00944a76a92bfeb6e
-  subpackages:
-  - internal
-  - internal/consistenthash
-  - internal/hashtag
-  - internal/pool
-  - internal/proto
-  - internal/util
 - name: github.com/gorilla/handlers
   version: 7e0847f9db758cdebd26c149d0ae9d5d0b9c98ce
 - name: github.com/gorilla/mux
   version: 8559a4f775fc329165fe32bd4c2543de8ada8fce
-- name: github.com/gorilla/websocket
-  version: 7c8e298727d149d7c329b4dec7e94e1932ac5c11
 - name: github.com/jstemmer/go-junit-report
   version: af01ea7f8024089b458d804d5cdf190f962a9a0c
-- name: github.com/konsorten/go-windows-terminal-sequences
-  version: f55edac94c9bbba5d6182a4be46d86a2c9b5b50e
 - name: github.com/lib/pq
   version: 4ded0e9383f75c197b3a2aaa6d590ac52df6fd79
-  subpackages:
-  - oid
 - name: github.com/nlopes/slack
   version: 68a9954511dd7825dc9b3744a68b51398ce120b1
-  subpackages:
-  - slackutilsx
 - name: github.com/op/go-logging
   version: 970db520ece77730c7e4724c61121037378659d9
-- name: github.com/pkg/errors
-  version: 27936f6d90f9c8e1145f11ed52ffffbfdb9e0af7
 - name: github.com/Sirupsen/logrus
   version: fa3c1df5136d05b1b54b72794cf89579f2b39f7b
   repo: git@github.com:/sirupsen/logrus
@@ -50,7 +33,4 @@ imports:
   version: 775f8194d0f9e65c46913c7be783d3d95a29333c
   subpackages:
   - unix
-  - windows
-testImports:
-- name: github.com/tylerconlee/slack
-  version: 7c7176fa51c9e7074abb378accbd3ecefcb9f88a
+testImports: []

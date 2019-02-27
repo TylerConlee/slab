@@ -463,7 +463,7 @@ func CreateTagMessage(user *slack.User, tag string) {
 				Name:       "channel",
 				Text:       "Notification Channel",
 				Type:       "select",
-				DataSource: "channels",
+				DataSource: "conversations",
 			},
 		},
 	}
