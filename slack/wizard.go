@@ -4,8 +4,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nlopes/slack"
 	"github.com/tylerconlee/slab/config"
-	"github.com/tylerconlee/slack"
 )
 
 var (

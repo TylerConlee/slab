@@ -3,8 +3,8 @@ package slack
 import (
 	"strings"
 
+	"github.com/nlopes/slack"
 	"github.com/tylerconlee/slab/plugins"
-	"github.com/tylerconlee/slack"
 )
 
 // parseCommand takes the message that mentions the bot user and identifies
@@ -30,6 +30,17 @@ func parseCommand(text string, user *slack.User) {
 		case "unset":
 			message = "Triager has been reset. Please use `@slab set` to set Triager."
 			attachment = UnsetMessage(user)
+		case "tag":
+			switch t[2] {
+			case "create":
+				CreateTagMessage(user, t[3])
+			case "list":
+
+			case "update":
+
+			case "delete":
+
+			}
 		case "twilio":
 			p := plugins.LoadPlugins(c)
 			switch t[2] {
@@ -72,6 +83,8 @@ func parseCommand(text string, user *slack.User) {
 				SendMessage("Plugin Twilio has been updated", a)
 			}
 
+		default:
+			UnknownCommandMessage(text, user.ID)
 		}
 		SendMessage(message, attachment)
 	}

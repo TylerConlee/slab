@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/nlopes/slack"
 	sl "github.com/tylerconlee/slab/slack"
-	"github.com/tylerconlee/slack"
 )
 
 // NewRouter builds a new mux Router instance with the routes that

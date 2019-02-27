@@ -5,9 +5,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/nlopes/slack"
 	"github.com/tylerconlee/slab/datastore"
 	"github.com/tylerconlee/slab/zendesk"
-	"github.com/tylerconlee/slack"
 )
 
 // SetTriager generates a new Slack attachment to update the
