@@ -35,6 +35,7 @@ func iteration(t *time.Ticker, interval time.Duration) {
 	c := config.LoadConfig()
 
 	p := plugins.LoadPlugins(c)
+
 	if c.Slack.ChannelID != "" {
 		channel := slack.GetChannel(c.Slack.ChannelID)
 		if channel == 0 {

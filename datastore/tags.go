@@ -7,6 +7,7 @@ func CreateTagsTable() {
 	CREATE TABLE IF NOT EXISTS tags (
 		id serial PRIMARY KEY,
 		tag text NOT NULL,
+		user text NOT NULL,
 		channel text NOT NULL,
 		notify_type text NOT NULL,
 		created_at timestamp,
