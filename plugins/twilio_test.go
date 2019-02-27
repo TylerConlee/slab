@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/tylerconlee/slack"
+	"github.com/nlopes/slack"
 )
 
 func TestPlugins_EnableTwilio(t *testing.T) {

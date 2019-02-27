@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/nlopes/slack"
 	sl "github.com/tylerconlee/slab/slack"
-	"github.com/tylerconlee/slack"
 )
 
 // NewRouter builds a new mux Router instance with the routes that
@@ -25,7 +25,7 @@ func (s *Server) NewRouter() *mux.Router {
 
 // Callback is a handler that handles the callback from a Slack action.
 func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
-	payload := &slack.AttachmentActionCallback{}
+	payload := &slack.InteractionCallback{}
 	err := json.Unmarshal([]byte(r.PostFormValue("payload")), payload)
 	if err != nil {
 		log.Error("Error unmarshaling callback payload.", map[string]interface{}{
@@ -48,6 +48,8 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 		sl.AcknowledgeNewTicket(payload)
 	case "triage_set":
 		sl.SetTriager(payload)
+	case "createtag":
+		sl.CreateTagDialog(payload)
 	case "cfgwiz":
 		log.Info("Config wizard step detected", map[string]interface{}{
 			"module": "server",

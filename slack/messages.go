@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nlopes/slack"
 	"github.com/tylerconlee/slab/config"
 	"github.com/tylerconlee/slab/datastore"
 	"github.com/tylerconlee/slab/zendesk"
-	"github.com/tylerconlee/slack"
 )
 
 var (
@@ -189,7 +189,6 @@ func SLAMessage(ticket Ticket, color string, user string, uid int64, org string)
 // DiagMessage sends a DM to requestor with the current state of SLA
 // notifications for tickets
 func DiagMessage(user *slack.User) {
-	params := slack.PostMessageParameters{}
 	s := Sent.([]zendesk.NotifySent)
 	attachment := slack.Attachment{
 
@@ -229,14 +228,14 @@ func DiagMessage(user *slack.User) {
 		Footer:     fmt.Sprintf("Version: %s", version),
 		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
 	}
-	params.Attachments = append(params.Attachments, attachment)
+	attachments := []slack.Attachment{attachment}
 	message := ""
-	if len(params.Attachments) != 0 {
+	if len(attachments) != 0 {
 		_, _, channelID, err := api.OpenIMChannel(user.ID)
 		if err != nil {
 			fmt.Printf("%s\n", err)
 		}
-		api.PostMessage(channelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(params.Attachments...))
+		api.PostMessage(channelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(attachments...))
 	}
 }
 
@@ -244,8 +243,7 @@ func DiagMessage(user *slack.User) {
 // loop interval and sends the IDs and links to the tickets to the user
 // currently set as triager.
 func NewTicketMessage(tickets []Ticket) {
-
-	params := slack.PostMessageParameters{}
+	attachments := []slack.Attachment{}
 	for _, ticket := range tickets {
 		description := ticket.Description
 		if len(ticket.Description) > 100 {
@@ -291,7 +289,7 @@ func NewTicketMessage(tickets []Ticket) {
 				},
 			},
 		}
-		params.Attachments = append(params.Attachments, attachment)
+		attachments = []slack.Attachment{attachment}
 
 	}
 	message := ""
@@ -301,7 +299,7 @@ func NewTicketMessage(tickets []Ticket) {
 		message = fmt.Sprintf("The following tickets were received since the last loop:")
 	}
 
-	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(params.Attachments...))
+	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(attachments...))
 	if err != nil {
 		fmt.Printf("%s\n", err)
 		return
@@ -447,10 +445,10 @@ func HelpMessage(user *slack.User) {
 		statusCommand,
 		diagCommand,
 	}
-	params.Attachments = attachments
+
 	params.LinkNames = 1
 	message := "..."
-	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(params.Attachments...))
+	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(attachments...))
 
 }
 
@@ -468,7 +466,7 @@ func ShowConfigMessage(user string) {
 // UnknownCommandMessage sends a direct message to the user provided indicating
 // that the command that they attempted is not a valid command.
 func UnknownCommandMessage(text string, user string) {
-	message := fmt.Sprintf("Sorry, the command `%s` is an invalid command. Please type `help` for a list of all available DM commands", text)
+	message := fmt.Sprintf("Sorry, the command `%s` is an invalid command. Please type `help` for a list of all available commands", text)
 	attachment := slack.Attachment{}
 	SendDirectMessage(message, attachment, user)
 }
@@ -478,7 +476,7 @@ func UnknownCommandMessage(text string, user string) {
 // timestamp with the given message text. Currently, it also updates the
 // attachment specifically for the Set message output.
 func ChatUpdate(
-	payload *slack.AttachmentActionCallback,
+	payload *slack.InteractionCallback,
 	attachment slack.Attachment,
 ) {
 
@@ -489,15 +487,13 @@ func ChatUpdate(
 		}
 	}
 
-	params := slack.PostMessageParameters{}
-
-	params.Attachments = payload.OriginalMessage.Attachments
+	attachments := payload.OriginalMessage.Attachments
 	// Send an update to the given channel with pretext and the parameters
-	channelID, timestamp, t, err := api.UpdateMessageWithParams(
+	channelID, timestamp, t, err := api.UpdateMessage(
 		payload.Channel.ID,
 		payload.OriginalMessage.Timestamp,
-		payload.OriginalMessage.Text,
-		params,
+		slack.MsgOptionText(payload.OriginalMessage.Text, false),
+		slack.MsgOptionAttachments(attachments...),
 	)
 	log.Debug("Message updated.", map[string]interface{}{
 		"module":    "slack",
@@ -636,4 +632,22 @@ func UpdateMessage(ticket Ticket, user string, uid int64) {
 	}
 	n := "@here - Premium ticket updated"
 	SendMessage(n, attachment)
+}
+
+// CreateTagMessage responds to @slab tag create, taking the tag name provided
+// and responds with the first step in the create tag config wizard
+func CreateTagMessage(user *slack.User, tag string) {
+	attachment := slack.Attachment{
+		Title:      "Create Tag",
+		CallbackID: "createtag",
+		Actions: []slack.AttachmentAction{
+			slack.AttachmentAction{
+				Name:  "launch",
+				Text:  "Create Tag",
+				Type:  "button",
+				Value: "createtag",
+			},
+		},
+	}
+	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionAttachments(attachment))
 }

@@ -4,9 +4,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/nlopes/slack"
 	"github.com/tylerconlee/slab/datastore"
 	l "github.com/tylerconlee/slab/log"
-	"github.com/tylerconlee/slack"
 )
 
 var (
