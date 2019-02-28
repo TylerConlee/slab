@@ -651,3 +651,13 @@ func CreateTagMessage(user *slack.User) {
 	}
 	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionAttachments(attachment))
 }
+
+// ListTagMessage grabs the tags stored in the database and outputs them to
+// Slack in a DM
+func ListTagMessage(user *slack.User) {
+	tags := datastore.LoadTags()
+	log.Info("Tags received from database", map[string]interface{}{
+		"module": "slack",
+		"tags":   tags,
+	})
+}
