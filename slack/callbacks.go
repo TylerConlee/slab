@@ -241,11 +241,17 @@ func CreateTagDialog(payload *slack.InteractionCallback) {
 	api.OpenDialog(payload.TriggerID, dialog)
 }
 
+// SaveDialog takes the input collected from the Create Tag Dialog and
+// sends the data to Postgres to be saved
 func SaveDialog(payload *slack.InteractionCallback) {
+	var data map[string]string
 	log.Info("Dialog saved", map[string]interface{}{
 		"module": "slack",
+		"user":   payload.User.ID,
 		"data":   payload.DialogSubmissionCallback.Submission,
 	})
+	data = payload.DialogSubmissionCallback.Submission
+	data["user"] = payload.User.ID
 }
 
 func statusDecode(status string) (img string) {

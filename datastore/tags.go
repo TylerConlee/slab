@@ -26,3 +26,11 @@ func CreateTagsTable() {
 
 	return
 }
+
+// SaveNewTag saves a new tag into the database
+func SaveNewTag(data map[string]string) {
+	log.Info("Preparing tag for database", map[string]interface{}{
+		"module": "datastore",
+		"data":   data,
+	})
+}
