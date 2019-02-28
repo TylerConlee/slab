@@ -45,7 +45,7 @@ func LoadTags() (tags []map[string]interface{}) {
 	log.Info("Requesting tags from database", map[string]interface{}{
 		"module": "datastore",
 	})
-	rows, err := db.Query("SELECT id, tag, user, channel, notify_type, created_at, updated_at FROM tags WHERE id > 0")
+	rows, err := db.Query("SELECT id, tag, userid, channel, notify_type, created_at, updated_at FROM tags WHERE id > 0")
 	if err != nil {
 		log.Error("Error grabbing database output for tags", map[string]interface{}{
 			"module": "datastore",
