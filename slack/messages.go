@@ -669,7 +669,7 @@ func ListTagMessage(user *slack.User) {
 			Fields: []slack.AttachmentField{
 				slack.AttachmentField{
 					Title: "Channel",
-					Value: fmt.Sprintf("#%s", tag["channel"]),
+					Value: fmt.Sprintf("<#%s>", tag["channel"]),
 				},
 				slack.AttachmentField{
 					Title: "Notification Type",
@@ -677,7 +677,7 @@ func ListTagMessage(user *slack.User) {
 				},
 				slack.AttachmentField{
 					Title: "User",
-					Value: fmt.Sprintf("@%s", tag["userid"]),
+					Value: fmt.Sprintf("<@%s>", tag["userid"]),
 				},
 			},
 		}
