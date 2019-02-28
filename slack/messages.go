@@ -665,7 +665,9 @@ func ListTagMessage(user *slack.User) {
 	var attachments []slack.Attachment
 	for _, tag := range tags {
 		attachment := slack.Attachment{
-			Title: strings.ToTitle(tag["tag"].(string)),
+			Title:      strings.ToTitle(tag["tag"].(string)),
+			AuthorName: fmt.Sprintf("<@%s>", tag["user"]),
+			Footer:     fmt.Sprintf("Last updated at %s", tag["updated_at"].(string)),
 			Fields: []slack.AttachmentField{
 				slack.AttachmentField{
 					Title: "Channel",
@@ -676,20 +678,6 @@ func ListTagMessage(user *slack.User) {
 					Title: "Notification Type",
 					Value: getNotificationType(tag["notify_type"].(string)),
 					Short: true,
-				},
-				slack.AttachmentField{
-					Title: "Created at",
-					Value: tag["created_at"].(string),
-					Short: true,
-				},
-				slack.AttachmentField{
-					Title: "Updated at",
-					Value: tag["updated_at"].(string),
-					Short: true,
-				},
-				slack.AttachmentField{
-					Title: "Created by",
-					Value: fmt.Sprintf("<@%s>", tag["user"]),
 				},
 			},
 		}
