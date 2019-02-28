@@ -241,6 +241,13 @@ func CreateTagDialog(payload *slack.InteractionCallback) {
 	api.OpenDialog(payload.TriggerID, dialog)
 }
 
+func SaveDialog(payload *slack.InteractionCallback) {
+	log.Info("Dialog saved", map[string]interface{}{
+		"module": "slack",
+		"data":   payload.DialogSubmissionCallback.Submission,
+	})
+}
+
 func statusDecode(status string) (img string) {
 	switch status {
 	case "solved":
