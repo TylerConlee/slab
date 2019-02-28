@@ -188,18 +188,21 @@ func MoreInfoSLA(payload *slack.InteractionCallback) {
 	SendEphemeralMessage("More information on ticket", attachment, payload.User.ID)
 }
 
+// CreateTagDialog receives the payload from the incoming callback
+// and opens a dialog box allowing the user to create a tag they want to be
+// notified on.
 func CreateTagDialog(payload *slack.InteractionCallback) {
 	dialog := slack.Dialog{
 		TriggerID:      payload.TriggerID,
 		CallbackID:     "process_create_tag",
-		Title:          "Dialog",
+		Title:          "Create Tag",
 		NotifyOnCancel: false,
 		Elements: []slack.DialogElement{
 			slack.DialogInput{
 				Type:        "text",
-				Label:       "Test",
-				Name:        "test",
-				Placeholder: "Test Placeholder",
+				Label:       "Tag",
+				Name:        "tag",
+				Placeholder: "Insert the tag to be notified on",
 				Optional:    false,
 			},
 		},

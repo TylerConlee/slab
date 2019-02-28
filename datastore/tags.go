@@ -18,6 +18,7 @@ func CreateTagsTable() {
 	if _, err := db.Exec(tags); err != nil {
 		log.Error("Tag table creation query failed", map[string]interface{}{
 			"module": "datastore",
+			"error":  err,
 			"query":  tags,
 		})
 		return

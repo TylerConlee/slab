@@ -636,14 +636,14 @@ func UpdateMessage(ticket Ticket, user string, uid int64) {
 
 // CreateTagMessage responds to @slab tag create, taking the tag name provided
 // and responds with the first step in the create tag config wizard
-func CreateTagMessage(user *slack.User, tag string) {
+func CreateTagMessage(user *slack.User) {
 	attachment := slack.Attachment{
 		Title:      "Create Tag",
 		CallbackID: "createtag",
 		Actions: []slack.AttachmentAction{
 			slack.AttachmentAction{
 				Name:  "launch",
-				Text:  "Create Tag",
+				Text:  "Launch Tag Creator",
 				Type:  "button",
 				Value: "createtag",
 			},
