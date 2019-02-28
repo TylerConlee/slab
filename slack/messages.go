@@ -455,8 +455,10 @@ func HelpMessage(user *slack.User) {
 // ShowConfigMessage takes a user string and sends that user the value of the
 // config.toml configuration file. Used for identifying configuration issues.
 func ShowConfigMessage(user string) {
-	attachment := slack.Attachment{
-		Title: "Config",
+	attachment := []slack.Attachment{
+		slack.Attachment{
+			Title: "Config",
+		},
 	}
 	message := "Test direct message for config."
 	SendDirectMessage(message, attachment, user)
@@ -467,7 +469,7 @@ func ShowConfigMessage(user string) {
 // that the command that they attempted is not a valid command.
 func UnknownCommandMessage(text string, user string) {
 	message := fmt.Sprintf("Sorry, the command `%s` is an invalid command. Please type `help` for a list of all available commands", text)
-	attachment := slack.Attachment{}
+	attachment := []slack.Attachment{}
 	SendDirectMessage(message, attachment, user)
 }
 
