@@ -1,5 +1,7 @@
 package datastore
 
+import "time"
+
 // CreateTagsTable checks to see if the proper table exists, and if it
 // doesn't, create one.
 func CreateTagsTable() {
@@ -28,9 +30,11 @@ func CreateTagsTable() {
 }
 
 // SaveNewTag saves a new tag into the database
-func SaveNewTag(data map[string]string) {
+func SaveNewTag(data map[string]string) error {
 	log.Info("Preparing tag for database", map[string]interface{}{
 		"module": "datastore",
 		"data":   data,
 	})
+	err := db.QueryRow("INSERT INTO tags(tag, userid, channel, notify_type, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING id", data["tag"], data["user"], data["channel"], data["notify_type"], time.Now()).Scan(&id)
+	return err
 }
