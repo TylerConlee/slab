@@ -74,7 +74,8 @@ func LoadTags() (tags []map[string]interface{}) {
 
 		tags = append(tags, map[string]interface{}{
 			"id":          id,
-			"tag":         user,
+			"tag":         tag,
+			"user":        user,
 			"channel":     channel,
 			"notify_type": notifyType,
 			"created_at":  createdAt,
