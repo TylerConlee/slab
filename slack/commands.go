@@ -33,7 +33,7 @@ func parseCommand(text string, user *slack.User) {
 		case "tag":
 			switch t[2] {
 			case "create":
-				CreateTagMessage(user, t[3])
+				CreateTagMessage(user)
 			case "list":
 
 			case "update":
