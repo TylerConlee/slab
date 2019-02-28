@@ -660,4 +660,39 @@ func ListTagMessage(user *slack.User) {
 		"module": "slack",
 		"tags":   tags,
 	})
+	var attachments []slack.Attachment
+	for _, tag := range tags {
+		attachment := slack.Attachment{
+			Title: strings.ToTitle(tag["tag"].(string)),
+			Fields: []slack.AttachmentField{
+				slack.AttachmentField{
+					Title: "Channel",
+					Value: fmt.Sprintf("#%s", tag["channel"]),
+				},
+				slack.AttachmentField{
+					Title: "Notification Type",
+					Value: getNotificationType(tag["notify_type"].(string)),
+				},
+				slack.AttachmentField{
+					Title: "User",
+					Value: fmt.Sprintf("@%s", tag["userid"]),
+				},
+			},
+		}
+		attachments = append(attachments, attachment)
+	}
+	message := "These are the current active tags for Slab"
+	SendDirectMessage(message, attachments, user.ID)
+}
+
+func getNotificationType(notify string) (full string) {
+	switch notify {
+	case "new":
+		return "New Tickets"
+	case "sla":
+		return "SLA Breach Alerts"
+	case "updates":
+		return "Ticket Updates"
+	}
+	return
 }
