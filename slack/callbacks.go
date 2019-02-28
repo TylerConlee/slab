@@ -252,6 +252,7 @@ func SaveDialog(payload *slack.InteractionCallback) {
 	})
 	data = payload.DialogSubmissionCallback.Submission
 	data["user"] = payload.User.ID
+	datastore.SaveNewTag(data)
 }
 
 func statusDecode(status string) (img string) {
