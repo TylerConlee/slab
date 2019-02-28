@@ -42,7 +42,7 @@ func StartWizard(user string) {
 // progress to avoid overlap.
 func ConfigInProgressMessage(user string) {
 	message := "Oops! The configuration wizard is currently being used by another user. Please try again later."
-	attachment := slack.Attachment{}
+	attachment := []slack.Attachment{}
 	SendDirectMessage(message, attachment, user)
 }
 
@@ -50,23 +50,25 @@ func ConfigInProgressMessage(user string) {
 // that the changes made will overwrite the current configuration.
 func ConfirmWizard() {
 	message := "Hi! Let's get started using Slab!"
-	attachment := slack.Attachment{
-		Title:      "Warning! Using the Slab configuration wizard will overwrite the current configuration. Please select an option below.",
-		CallbackID: "cfgwiz",
-		Actions: []slack.AttachmentAction{
-			slack.AttachmentAction{
-				Name:  "confirm",
-				Text:  "Start Wizard",
-				Type:  "button",
-				Value: "start",
+	attachment := []slack.Attachment{
+		slack.Attachment{
+			Title:      "Warning! Using the Slab configuration wizard will overwrite the current configuration. Please select an option below.",
+			CallbackID: "cfgwiz",
+			Actions: []slack.AttachmentAction{
+				slack.AttachmentAction{
+					Name:  "confirm",
+					Text:  "Start Wizard",
+					Type:  "button",
+					Value: "start",
+				},
+				slack.AttachmentAction{
+					Name:  "view",
+					Text:  "View Current Configuration",
+					Type:  "button",
+					Value: "view",
+				},
+				// TODO: Add in button for diagnostic info
 			},
-			slack.AttachmentAction{
-				Name:  "view",
-				Text:  "View Current Configuration",
-				Type:  "button",
-				Value: "view",
-			},
-			// TODO: Add in button for diagnostic info
 		},
 	}
 	activeUser.step = 1
@@ -77,22 +79,26 @@ func ConfirmWizard() {
 // to the current active user.
 func ViewConfig() {
 	message := "Here's the current configuration for Slab:"
-	attachment := prepConfigLoad()
+	attachment := []slack.Attachment{
+		prepConfigLoad(),
+	}
 	SendDirectMessage(message, attachment, activeUser.user)
 }
 
 // ChannelSelectMessage takes a user string and sends that user a direct message
 // asking for a channel to be selected that Slab will monitor/send alerts to.
 func ChannelSelectMessage() {
-	attachment := slack.Attachment{
-		Title:      "Channels",
-		CallbackID: "cfgwiz",
-		Actions: []slack.AttachmentAction{
-			slack.AttachmentAction{
-				Name:       "channels_list",
-				Text:       "Channel for Slab",
-				Type:       "select",
-				DataSource: "channels",
+	attachment := []slack.Attachment{
+		slack.Attachment{
+			Title:      "Channels",
+			CallbackID: "cfgwiz",
+			Actions: []slack.AttachmentAction{
+				slack.AttachmentAction{
+					Name:       "channels_list",
+					Text:       "Channel for Slab",
+					Type:       "select",
+					DataSource: "channels",
+				},
 			},
 		},
 	}
@@ -108,7 +114,7 @@ func GetZendeskURL() {
 	activeUser.step = 3
 	ChannelSelect = false
 	message := "Please enter your Zendesk URL"
-	attachment := slack.Attachment{}
+	attachment := []slack.Attachment{}
 	SendDirectMessage(message, attachment, activeUser.user)
 }
 
@@ -117,7 +123,7 @@ func GetZendeskURL() {
 func GetZendeskUser() {
 	activeUser.step = 4
 	message := "Please enter your Zendesk username"
-	attachment := slack.Attachment{}
+	attachment := []slack.Attachment{}
 	SendDirectMessage(message, attachment, activeUser.user)
 }
 
@@ -126,7 +132,7 @@ func GetZendeskUser() {
 func GetZendeskAPIKey() {
 	activeUser.step = 5
 	message := "Please enter your Zendesk API Key"
-	attachment := slack.Attachment{}
+	attachment := []slack.Attachment{}
 	SendDirectMessage(message, attachment, activeUser.user)
 }
 
@@ -292,7 +298,7 @@ func prepConfigSave() {
 		"config": con,
 	})
 	success := config.SaveConfig(con)
-	attachment := slack.Attachment{}
+	attachment := []slack.Attachment{}
 	if success {
 
 		SendDirectMessage("Configuration successfully saved", attachment, activeUser.user)

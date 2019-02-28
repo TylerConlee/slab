@@ -35,7 +35,7 @@ func SaveNewTag(data map[string]string) error {
 		"module": "datastore",
 		"data":   data,
 	})
-	err := db.QueryRow("INSERT INTO tags(tag, userid, channel, notify_type, created_at) VALUES ($1, $2, $3, $4, $5) RETURNING id", data["tag"], data["user"], data["channel"], data["notify_type"], time.Now()).Scan(&id)
+	err := db.QueryRow("INSERT INTO tags(tag, userid, channel, notify_type, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", data["tag"], data["user"], data["channel"], data["notify_type"], time.Now(), time.Now()).Scan(&id)
 	return err
 }
 

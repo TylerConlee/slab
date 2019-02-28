@@ -52,9 +52,8 @@ func SendEphemeralMessage(message string, attachment slack.Attachment, user stri
 
 // SendDirectMessage takes a message, an attachment and a user and sends a
 // direct message to the user.
-func SendDirectMessage(message string, attachment slack.Attachment, user string) {
+func SendDirectMessage(message string, attachments []slack.Attachment, user string) {
 	params := slack.PostMessageParameters{}
-	attachments := []slack.Attachment{attachment}
 	params.LinkNames = 1
 	_, _, channelID, err := api.OpenIMChannel(user)
 
