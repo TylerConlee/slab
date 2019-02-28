@@ -205,6 +205,14 @@ func CreateTagDialog(payload *slack.InteractionCallback) {
 				Placeholder: "Insert the tag to be notified on",
 				Optional:    false,
 			},
+			slack.DialogInputSelect{
+				DialogInput: slack.DialogInput{
+					Type:  "select",
+					Label: "Channel",
+					Name:  "channel",
+				},
+				DataSource: "conversations",
+			},
 		},
 	}
 	api.OpenDialog(payload.TriggerID, dialog)
