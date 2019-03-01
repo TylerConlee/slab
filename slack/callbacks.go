@@ -253,6 +253,14 @@ func SaveDialog(payload *slack.InteractionCallback) {
 	data = payload.DialogSubmissionCallback.Submission
 	data["user"] = payload.User.ID
 	datastore.SaveNewTag(data)
+	t := fmt.Sprintf("Tag '%s' created by <@%s>", data["tag"], data["user"])
+	attachment := slack.Attachment{
+		Fallback:   t,
+		CallbackID: "triager_dropdown",
+		Footer:     t,
+		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
+	}
+	ChatUpdate(payload, attachment)
 }
 
 func statusDecode(status string) (img string) {
