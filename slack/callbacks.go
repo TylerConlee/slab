@@ -268,22 +268,23 @@ func UpdateTagDialog(payload *slack.InteractionCallback) {
 			},
 			slack.DialogInputSelect{
 				DialogInput: slack.DialogInput{
-					Type:     "select",
-					Label:    "Channel",
-					Name:     "channel",
-					Optional: false,
+					Type:        "select",
+					Label:       "Channel",
+					Name:        "channel",
+					Optional:    false,
+					Placeholder: tag["channel"].(string),
 				},
-				DataSource:      "conversations",
-				SelectedOptions: tag["channel"].(string),
+				DataSource: "conversations",
 			},
 			slack.DialogInputSelect{
 				DialogInput: slack.DialogInput{
-					Type:     "select",
-					Label:    "Notification Type",
-					Name:     "notify_type",
-					Optional: false,
+					Type:        "select",
+					Label:       "Notification Type",
+					Name:        "notify_type",
+					Optional:    false,
+					Placeholder: tag["notify_type"].(string),
 				},
-				SelectedOptions: tag["notify_type"].(string),
+
 				Options: []slack.DialogSelectOption{
 					slack.DialogSelectOption{
 						Label: "New Tickets",
