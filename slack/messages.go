@@ -664,11 +664,17 @@ func ListTagMessage(user *slack.User) {
 	})
 	var attachments []slack.Attachment
 	for _, tag := range tags {
+		id := strconv.Itoa(tag["id"].(int))
 		attachment := slack.Attachment{
 			Title:      strings.ToTitle(tag["tag"].(string)),
 			AuthorName: fmt.Sprintf("<@%s>", tag["user"]),
 			Footer:     fmt.Sprintf("Last updated at %s", tag["updated_at"].(string)),
 			Fields: []slack.AttachmentField{
+				slack.AttachmentField{
+					Title: "ID",
+					Value: id,
+					Short: true,
+				},
 				slack.AttachmentField{
 					Title: "Channel",
 					Value: fmt.Sprintf("<#%s>", tag["channel"]),
