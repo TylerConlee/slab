@@ -693,6 +693,18 @@ func ListTagMessage(user *slack.User) {
 	SendDirectMessage(message, attachments, user.ID)
 }
 
+// UpdateTagMessage takes the id for a given tag and opens a dialog for
+// updating the entry
+func UpdateTagMessage(user *slack.User, id string) {
+
+}
+
+// DeleteTagMessage takes an id and deletes the corresponding tag in the
+// database
+func DeleteTagMessage(user *slack.User, id string) {
+
+}
+
 func getNotificationType(notify string) (full string) {
 	switch notify {
 	case "new":

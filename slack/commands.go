@@ -37,9 +37,9 @@ func parseCommand(text string, user *slack.User) {
 			case "list":
 				ListTagMessage(user)
 			case "update":
-
+				UpdateTagMessage(user, t[3])
 			case "delete":
-
+				DeleteTagMessage(user, t[3])
 			}
 		case "twilio":
 			p := plugins.LoadPlugins(c)
