@@ -664,11 +664,17 @@ func ListTagMessage(user *slack.User) {
 	})
 	var attachments []slack.Attachment
 	for _, tag := range tags {
+		id := strconv.Itoa(tag["id"].(int))
 		attachment := slack.Attachment{
 			Title:      strings.ToTitle(tag["tag"].(string)),
 			AuthorName: fmt.Sprintf("<@%s>", tag["user"]),
 			Footer:     fmt.Sprintf("Last updated at %s", tag["updated_at"].(string)),
 			Fields: []slack.AttachmentField{
+				slack.AttachmentField{
+					Title: "ID",
+					Value: id,
+					Short: true,
+				},
 				slack.AttachmentField{
 					Title: "Channel",
 					Value: fmt.Sprintf("<#%s>", tag["channel"]),
@@ -685,6 +691,30 @@ func ListTagMessage(user *slack.User) {
 	}
 	message := "These are the current active tags for Slab"
 	SendDirectMessage(message, attachments, user.ID)
+}
+
+// UpdateTagMessage takes the id for a given tag and opens a dialog for
+// updating the entry
+func UpdateTagMessage(user *slack.User, id string) {
+	attachment := slack.Attachment{
+		Title:      "Update Tag",
+		CallbackID: "updatetag",
+		Actions: []slack.AttachmentAction{
+			slack.AttachmentAction{
+				Name:  "launch",
+				Text:  "Launch Tag Creator",
+				Type:  "button",
+				Value: id,
+			},
+		},
+	}
+	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionAttachments(attachment))
+}
+
+// DeleteTagMessage takes an id and deletes the corresponding tag in the
+// database
+func DeleteTagMessage(user *slack.User, id string) {
+
 }
 
 func getNotificationType(notify string) (full string) {
