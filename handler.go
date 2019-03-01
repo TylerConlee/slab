@@ -50,6 +50,8 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 		sl.SetTriager(payload)
 	case "createtag":
 		sl.CreateTagDialog(payload)
+	case "updatetag":
+		sl.UpdateTagDialog(payload)
 	case "process_create_tag":
 		sl.SaveDialog(payload)
 	case "cfgwiz":
