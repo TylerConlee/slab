@@ -696,7 +696,19 @@ func ListTagMessage(user *slack.User) {
 // UpdateTagMessage takes the id for a given tag and opens a dialog for
 // updating the entry
 func UpdateTagMessage(user *slack.User, id string) {
-
+	attachment := slack.Attachment{
+		Title:      "Update Tag",
+		CallbackID: "updatetag",
+		Actions: []slack.AttachmentAction{
+			slack.AttachmentAction{
+				Name:  "launch",
+				Text:  "Launch Tag Creator",
+				Type:  "button",
+				Value: id,
+			},
+		},
+	}
+	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionAttachments(attachment))
 }
 
 // DeleteTagMessage takes an id and deletes the corresponding tag in the

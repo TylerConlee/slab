@@ -84,3 +84,50 @@ func LoadTags() (tags []map[string]interface{}) {
 	}
 	return tags
 }
+
+// LoadTag takes an id and loads a single tag's information from the
+// database
+func LoadTag(id int) (loadedTag map[string]interface{}) {
+	log.Info("Requesting tag from database", map[string]interface{}{
+		"module": "datastore",
+		"tag":    id,
+	})
+	rows, err := db.Query("SELECT id, tag, userid, channel, notify_type, created_at, updated_at FROM tags WHERE id = %d", id)
+	if err != nil {
+		log.Error("Error grabbing database output for tags", map[string]interface{}{
+			"module": "datastore",
+			"error":  err,
+		})
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var (
+			id         int64
+			tag        string
+			user       string
+			channel    string
+			notifyType string
+			createdAt  string
+			updatedAt  string
+		)
+
+		if err := rows.Scan(&id, &tag, &user, &channel, &notifyType, &createdAt, &updatedAt); err != nil {
+			log.Error("Error parsing database output for tags", map[string]interface{}{
+				"module": "datastore",
+				"error":  err,
+			})
+		}
+
+		loadedTag = map[string]interface{}{
+			"id":          id,
+			"tag":         tag,
+			"user":        user,
+			"channel":     channel,
+			"notify_type": notifyType,
+			"created_at":  createdAt,
+			"updated_at":  updatedAt,
+		}
+	}
+	return loadedTag
+}

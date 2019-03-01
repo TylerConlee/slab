@@ -241,6 +241,69 @@ func CreateTagDialog(payload *slack.InteractionCallback) {
 	api.OpenDialog(payload.TriggerID, dialog)
 }
 
+// UpdateTagDialog receives the payload from the incoming callback
+// and opens a dialog box allowing the user to update a tag they want to be
+// notified on.
+func UpdateTagDialog(payload *slack.InteractionCallback) {
+	id, err := strconv.Atoi(payload.Actions[0].Value)
+	if err != nil {
+		log.Error("Error converting ID to integer", map[string]interface{}{
+			"module": "slack",
+			"error":  err,
+		})
+	}
+	tag := datastore.LoadTag(id)
+	dialog := slack.Dialog{
+		TriggerID:      payload.TriggerID,
+		CallbackID:     "process_update_tag",
+		Title:          "Update Tag",
+		NotifyOnCancel: false,
+		Elements: []slack.DialogElement{
+			slack.DialogInput{
+				Type:        "text",
+				Label:       "Tag",
+				Name:        "tag",
+				Placeholder: tag["tag"].(string),
+				Optional:    false,
+			},
+			slack.DialogInputSelect{
+				DialogInput: slack.DialogInput{
+					Type:     "select",
+					Label:    "Channel",
+					Name:     "channel",
+					Optional: false,
+				},
+				DataSource:      "conversations",
+				SelectedOptions: tag["channel"].(string),
+			},
+			slack.DialogInputSelect{
+				DialogInput: slack.DialogInput{
+					Type:     "select",
+					Label:    "Notification Type",
+					Name:     "notify_type",
+					Optional: false,
+				},
+				SelectedOptions: tag["notify_type"].(string),
+				Options: []slack.DialogSelectOption{
+					slack.DialogSelectOption{
+						Label: "New Tickets",
+						Value: "new",
+					},
+					slack.DialogSelectOption{
+						Label: "SLA Breaches",
+						Value: "sla",
+					},
+					slack.DialogSelectOption{
+						Label: "Ticket Updates",
+						Value: "updates",
+					},
+				},
+			},
+		},
+	}
+	api.OpenDialog(payload.TriggerID, dialog)
+}
+
 // SaveDialog takes the input collected from the Create Tag Dialog and
 // sends the data to Postgres to be saved
 func SaveDialog(payload *slack.InteractionCallback) {
