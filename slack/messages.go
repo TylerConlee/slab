@@ -714,6 +714,50 @@ func UpdateTagMessage(user *slack.User, id string) {
 // DeleteTagMessage takes an id and deletes the corresponding tag in the
 // database
 func DeleteTagMessage(user *slack.User, id string) {
+	tagID, err := strconv.Atoi(id)
+	if err != nil {
+		log.Error("Error converting ID to integer", map[string]interface{}{
+			"module": "slack",
+			"error":  err,
+		})
+	}
+	tag := datastore.LoadTag(tagID)
+	attachment := slack.Attachment{
+		Title:      strings.ToTitle(tag["tag"].(string)),
+		CallbackID: "tagdelete",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Channel",
+				Value: fmt.Sprintf("<#%s>", tag["channel"]),
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Created By",
+				Value: fmt.Sprintf("<@%s>", tag["user"]),
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Notification Type",
+				Value: getNotificationType(tag["notify_type"].(string)),
+				Short: true,
+			},
+		},
+		Actions: []slack.AttachmentAction{
+			slack.AttachmentAction{
+				Name:  "deletetag",
+				Text:  ":x: Delete Tag",
+				Type:  "button",
+				Value: "deletetag",
+				Style: "Danger",
+				Confirm: &slack.ConfirmationField{
+					Text:        "Are you sure?",
+					OkText:      "Delete",
+					DismissText: "Cancel",
+				},
+			},
+		},
+	}
+	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionAttachments(attachment))
 
 }
 
