@@ -363,6 +363,17 @@ func SaveDialog(payload *slack.InteractionCallback) {
 	ChatUpdate(payload, attachment)
 }
 
+// DeleteTag deletes a tag based on the tag ID provided
+func DeleteTag(payload *slack.InteractionCallback) {
+	attachment := slack.Attachment{
+		Fallback:   "Tag deleted",
+		CallbackID: "triager_dropdown",
+		Footer:     "Tag deleted successfully",
+		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
+	}
+	ChatUpdate(payload, attachment)
+}
+
 func statusDecode(status string) (img string) {
 	switch status {
 	case "solved":

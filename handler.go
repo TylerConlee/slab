@@ -52,6 +52,8 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 		sl.CreateTagDialog(payload)
 	case "updatetag":
 		sl.UpdateTagDialog(payload)
+	case "deletetag":
+		sl.DeleteTag(payload)
 	case "process_create_tag":
 		sl.SaveDialog(payload)
 	case "process_update_tag":
