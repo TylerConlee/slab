@@ -10,6 +10,14 @@ import (
 	"github.com/tylerconlee/slab/zendesk"
 )
 
+// newTS stores the timestamp of the new tag dialog message
+// so that the original message can be updated upon success
+var newTS string
+
+// updateTS stores the timestamp of the update tag dialog message
+// so that the original message can be updated upon success
+var updateTS string
+
 // SetTriager generates a new Slack attachment to update the
 // original message and set the Triager role
 func SetTriager(payload *slack.InteractionCallback) {
@@ -192,6 +200,7 @@ func MoreInfoSLA(payload *slack.InteractionCallback) {
 // and opens a dialog box allowing the user to create a tag they want to be
 // notified on.
 func CreateTagDialog(payload *slack.InteractionCallback) {
+	newTS = payload.MessageTs
 	dialog := slack.Dialog{
 		TriggerID:      payload.TriggerID,
 		CallbackID:     "process_create_tag",
@@ -245,6 +254,7 @@ func CreateTagDialog(payload *slack.InteractionCallback) {
 // and opens a dialog box allowing the user to update a tag they want to be
 // notified on.
 func UpdateTagDialog(payload *slack.InteractionCallback) {
+	updateTS = payload.MessageTs
 	id, err := strconv.Atoi(payload.Actions[0].Value)
 	if err != nil {
 		log.Error("Error converting ID to integer", map[string]interface{}{
@@ -305,6 +315,30 @@ func UpdateTagDialog(payload *slack.InteractionCallback) {
 	api.OpenDialog(payload.TriggerID, dialog)
 }
 
+// UpdateTag takes the input collected from the user and updates a tag based
+// on the tag ID provided
+func UpdateTag(payload *slack.InteractionCallback) {
+	var data map[string]string
+	log.Info("Dialog saved", map[string]interface{}{
+		"module": "slack",
+		"user":   payload.User.ID,
+		"data":   payload.DialogSubmissionCallback.Submission,
+	})
+	data = payload.DialogSubmissionCallback.Submission
+	data["user"] = payload.User.ID
+	datastore.SaveNewTag(data)
+	t := fmt.Sprintf("Tag '%s' created by <@%s>", data["tag"], data["user"])
+	attachment := slack.Attachment{
+		Fallback:   t,
+		CallbackID: "triager_dropdown",
+		Footer:     t,
+		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
+	}
+	payload.MessageTs = updateTS
+	updateTS = ""
+	ChatUpdate(payload, attachment)
+}
+
 // SaveDialog takes the input collected from the Create Tag Dialog and
 // sends the data to Postgres to be saved
 func SaveDialog(payload *slack.InteractionCallback) {
@@ -324,6 +358,8 @@ func SaveDialog(payload *slack.InteractionCallback) {
 		Footer:     t,
 		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
 	}
+	payload.MessageTs = newTS
+	newTS = ""
 	ChatUpdate(payload, attachment)
 }
 

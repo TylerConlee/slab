@@ -39,6 +39,27 @@ func SaveNewTag(data map[string]string) error {
 	return err
 }
 
+// SaveTagUpdate saves a tag update into the database
+func SaveTagUpdate(data map[string]string) error {
+	log.Info("Preparing tag to update in database", map[string]interface{}{
+		"module": "datastore",
+		"data":   data,
+	})
+	err := db.QueryRow("UPDATE tags SET tag = $1, userid = $2, channel = $3, notify_type = $4, updated_at = $5 WHERE id = $6", data["tag"], data["user"], data["channel"], data["notify_type"], time.Now(), data["id"]).Scan(&id)
+	return err
+}
+
+// DeleteTag removes the tag located at the ID
+func DeleteTag(data string) error {
+	log.Info("Preparing to delete tag", map[string]interface{}{
+		"module": "datastore",
+		"tag":    data,
+	})
+	rows, err := db.Query("DELETE FROM tags WHERE id = $1", data)
+	defer rows.Close()
+	return err
+}
+
 // LoadTags retrieves all of the tags from the database, either to list
 // or to loop through
 func LoadTags() (tags []map[string]interface{}) {
