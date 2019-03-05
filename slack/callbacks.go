@@ -326,7 +326,7 @@ func UpdateTag(payload *slack.InteractionCallback) {
 	})
 	data = payload.DialogSubmissionCallback.Submission
 	data["user"] = payload.User.ID
-	datastore.SaveNewTag(data)
+	datastore.SaveTagUpdate(data)
 	t := fmt.Sprintf("Tag '%s' created by <@%s>", data["tag"], data["user"])
 	attachment := slack.Attachment{
 		Fallback:   t,
@@ -365,6 +365,8 @@ func SaveDialog(payload *slack.InteractionCallback) {
 
 // DeleteTag deletes a tag based on the tag ID provided
 func DeleteTag(payload *slack.InteractionCallback) {
+	datastore.DeleteTag(deleteTag)
+	deleteTag = ""
 	attachment := slack.Attachment{
 		Fallback:   "Tag deleted",
 		CallbackID: "triager_dropdown",
