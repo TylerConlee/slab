@@ -336,7 +336,7 @@ func UpdateTag(payload *slack.InteractionCallback) {
 		Footer:     t,
 		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
 	}
-	payload.MessageTs = updateTS
+	payload.OriginalMessage.Timestamp = updateTS
 	updateTS = ""
 	ChatUpdate(payload, attachment)
 }
@@ -360,7 +360,7 @@ func SaveDialog(payload *slack.InteractionCallback) {
 		Footer:     t,
 		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
 	}
-	payload.MessageTs = newTS
+	payload.OriginalMessage.Timestamp = newTS
 	newTS = ""
 	ChatUpdate(payload, attachment)
 }
