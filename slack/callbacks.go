@@ -201,6 +201,10 @@ func MoreInfoSLA(payload *slack.InteractionCallback) {
 // notified on.
 func CreateTagDialog(payload *slack.InteractionCallback) {
 	newTS = payload.OriginalMessage.Timestamp
+	log.Info("Create tag dialog launching", map[string]interface{}{
+		"module":    "slack",
+		"timestamp": newTS,
+	})
 	dialog := slack.Dialog{
 		TriggerID:      payload.TriggerID,
 		CallbackID:     "process_create_tag",
@@ -255,6 +259,10 @@ func CreateTagDialog(payload *slack.InteractionCallback) {
 // notified on.
 func UpdateTagDialog(payload *slack.InteractionCallback) {
 	updateTS = payload.OriginalMessage.Timestamp
+	log.Info("Update tag dialog launching", map[string]interface{}{
+		"module":    "slack",
+		"timestamp": updateTS,
+	})
 	id, err := strconv.Atoi(payload.Actions[0].Value)
 	if err != nil {
 		log.Error("Error converting ID to integer", map[string]interface{}{
@@ -337,6 +345,10 @@ func UpdateTag(payload *slack.InteractionCallback) {
 		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
 	}
 	payload.OriginalMessage.Timestamp = updateTS
+	log.Info("Updating tag", map[string]interface{}{
+		"module":    "slack",
+		"timestamp": payload.OriginalMessage.Timestamp,
+	})
 	updateTS = ""
 	ChatUpdate(payload, attachment)
 }
@@ -361,6 +373,10 @@ func SaveDialog(payload *slack.InteractionCallback) {
 		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
 	}
 	payload.OriginalMessage.Timestamp = newTS
+	log.Info("Saving new tag", map[string]interface{}{
+		"module":    "slack",
+		"timestamp": payload.OriginalMessage.Timestamp,
+	})
 	newTS = ""
 	ChatUpdate(payload, attachment)
 }
