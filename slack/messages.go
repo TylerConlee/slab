@@ -22,6 +22,8 @@ var (
 	NumTickets int
 	// LastProcessed is a timestamp of when the last loop was ran
 	LastProcessed time.Time
+	// deleteTag is a tag ID that will be deleted
+	deleteTag string
 )
 
 // Ticket represents an individual ticket to be used in SLAMessage and
@@ -757,6 +759,7 @@ func DeleteTagMessage(user *slack.User, id string) {
 			},
 		},
 	}
+	deleteTag = id
 	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionAttachments(attachment))
 
 }

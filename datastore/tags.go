@@ -1,6 +1,9 @@
 package datastore
 
-import "time"
+import (
+	"strconv"
+	"time"
+)
 
 // CreateTagsTable checks to see if the proper table exists, and if it
 // doesn't, create one.
@@ -55,7 +58,8 @@ func DeleteTag(data string) error {
 		"module": "datastore",
 		"tag":    data,
 	})
-	rows, err := db.Query("DELETE FROM tags WHERE id = $1", data)
+	id, _ := strconv.Atoi(data)
+	rows, err := db.Query("DELETE FROM tags WHERE id = $1", id)
 	defer rows.Close()
 	return err
 }
