@@ -380,10 +380,13 @@ func SaveDialog(payload *slack.InteractionCallback) {
 		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
 	}
 	payload.AttachmentID = newAttachmentID
+	payload.OriginalMessage.Text = " "
 	payload.OriginalMessage.Timestamp = newTS
 	log.Info("Saving new tag", map[string]interface{}{
-		"module":    "slack",
-		"timestamp": payload.OriginalMessage.Timestamp,
+		"module":     "slack",
+		"timestamp":  payload.OriginalMessage.Timestamp,
+		"attachment": payload.AttachmentID,
+		"channel":    payload.Channel.ID,
 	})
 	newTS = ""
 	ChatUpdate(payload, attachment)
