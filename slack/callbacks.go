@@ -200,7 +200,7 @@ func MoreInfoSLA(payload *slack.InteractionCallback) {
 // and opens a dialog box allowing the user to create a tag they want to be
 // notified on.
 func CreateTagDialog(payload *slack.InteractionCallback) {
-	newTS = payload.ActionTs
+	newTS = payload.OriginalMessage.Timestamp
 	dialog := slack.Dialog{
 		TriggerID:      payload.TriggerID,
 		CallbackID:     "process_create_tag",
@@ -254,7 +254,7 @@ func CreateTagDialog(payload *slack.InteractionCallback) {
 // and opens a dialog box allowing the user to update a tag they want to be
 // notified on.
 func UpdateTagDialog(payload *slack.InteractionCallback) {
-	updateTS = payload.ActionTs
+	updateTS = payload.OriginalMessage.Timestamp
 	id, err := strconv.Atoi(payload.Actions[0].Value)
 	if err != nil {
 		log.Error("Error converting ID to integer", map[string]interface{}{
