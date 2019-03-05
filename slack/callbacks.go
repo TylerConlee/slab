@@ -12,15 +12,13 @@ import (
 
 // newTS stores the timestamp of the new tag dialog message
 // so that the original message can be updated upon success
-var newTS string
-
-// updateTS stores the timestamp of the update tag dialog message
-// so that the original message can be updated upon success
-var updateTS string
+var newMessage slack.Message
 
 var newAttachmentID string
 
 var updateAttachmentID string
+
+var updateMessage slack.Message
 
 // SetTriager generates a new Slack attachment to update the
 // original message and set the Triager role
@@ -204,11 +202,11 @@ func MoreInfoSLA(payload *slack.InteractionCallback) {
 // and opens a dialog box allowing the user to create a tag they want to be
 // notified on.
 func CreateTagDialog(payload *slack.InteractionCallback) {
-	newTS = payload.OriginalMessage.Timestamp
+	newMessage = payload.OriginalMessage
 	newAttachmentID = payload.AttachmentID
 	log.Info("Create tag dialog launching", map[string]interface{}{
 		"module":    "slack",
-		"timestamp": newTS,
+		"timestamp": newMessage.Timestamp,
 	})
 	dialog := slack.Dialog{
 		TriggerID:      payload.TriggerID,
@@ -263,11 +261,11 @@ func CreateTagDialog(payload *slack.InteractionCallback) {
 // and opens a dialog box allowing the user to update a tag they want to be
 // notified on.
 func UpdateTagDialog(payload *slack.InteractionCallback) {
-	updateTS = payload.OriginalMessage.Timestamp
 	updateAttachmentID = payload.AttachmentID
+	updateMessage = payload.OriginalMessage
 	log.Info("Update tag dialog launching", map[string]interface{}{
 		"module":    "slack",
-		"timestamp": updateTS,
+		"timestamp": updateMessage.Timestamp,
 	})
 	id, err := strconv.Atoi(payload.Actions[0].Value)
 	if err != nil {
@@ -351,12 +349,11 @@ func UpdateTag(payload *slack.InteractionCallback) {
 		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
 	}
 	payload.AttachmentID = updateAttachmentID
-	payload.OriginalMessage.Timestamp = updateTS
+	payload.OriginalMessage = updateMessage
 	log.Info("Updating tag", map[string]interface{}{
 		"module":    "slack",
 		"timestamp": payload.OriginalMessage.Timestamp,
 	})
-	updateTS = ""
 	ChatUpdate(payload, attachment)
 }
 
@@ -380,15 +377,14 @@ func SaveDialog(payload *slack.InteractionCallback) {
 		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
 	}
 	payload.AttachmentID = newAttachmentID
-	payload.OriginalMessage.Text = " "
-	payload.OriginalMessage.Timestamp = newTS
+	payload.OriginalMessage = newMessage
 	log.Info("Saving new tag", map[string]interface{}{
 		"module":     "slack",
 		"timestamp":  payload.OriginalMessage.Timestamp,
 		"attachment": payload.AttachmentID,
 		"channel":    payload.Channel.ID,
 	})
-	newTS = ""
+
 	ChatUpdate(payload, attachment)
 }
 
