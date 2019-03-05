@@ -37,11 +37,11 @@ func parseCommand(text string, user *slack.User) {
 			case "list":
 				ListTagMessage(user)
 			case "update":
-				if t[3] != "" {
+				if len(t) > 3 {
 					UpdateTagMessage(user, t[3])
 				}
 			case "delete":
-				if t[3] != "" {
+				if len(t) > 3 {
 					DeleteTagMessage(user, t[3])
 				}
 			}
@@ -49,7 +49,7 @@ func parseCommand(text string, user *slack.User) {
 			p := plugins.LoadPlugins(c)
 			switch t[2] {
 			case "set":
-				if t[3] != "" {
+				if len(t) > 3 {
 					s := plugins.TwilioSet(t[3])
 					SendMessage("Plugin message", s)
 				}
@@ -57,7 +57,7 @@ func parseCommand(text string, user *slack.User) {
 				s := plugins.TwilioUnset()
 				SendMessage("Plugin message", s)
 			case "configure":
-				if t[3] != "" {
+				if len(t) > 3 {
 					s := plugins.TwilioConfigure(t[3])
 					SendMessage("Plugin message", s)
 				}
