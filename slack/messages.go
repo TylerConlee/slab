@@ -501,7 +501,7 @@ func ChatUpdate(
 		slack.MsgOptionText(payload.OriginalMessage.Text, false),
 		slack.MsgOptionAttachments(attachments...),
 	)
-	log.Debug("Message updated.", map[string]interface{}{
+	log.Info("Message updated.", map[string]interface{}{
 		"module":    "slack",
 		"channel":   channelID,
 		"timestamp": timestamp,
