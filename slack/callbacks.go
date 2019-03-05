@@ -18,9 +18,9 @@ var newTS string
 // so that the original message can be updated upon success
 var updateTS string
 
-var newAttachmentID int
+var newAttachmentID string
 
-var updateAttachmentID int
+var updateAttachmentID string
 
 // SetTriager generates a new Slack attachment to update the
 // original message and set the Triager role
@@ -205,7 +205,7 @@ func MoreInfoSLA(payload *slack.InteractionCallback) {
 // notified on.
 func CreateTagDialog(payload *slack.InteractionCallback) {
 	newTS = payload.OriginalMessage.Timestamp
-	newAttachmentID = payload.OriginalMessage.Attachments[0].ID
+	newAttachmentID = payload.AttachmentID
 	log.Info("Create tag dialog launching", map[string]interface{}{
 		"module":    "slack",
 		"timestamp": newTS,
@@ -264,7 +264,7 @@ func CreateTagDialog(payload *slack.InteractionCallback) {
 // notified on.
 func UpdateTagDialog(payload *slack.InteractionCallback) {
 	updateTS = payload.OriginalMessage.Timestamp
-	updateAttachmentID = payload.OriginalMessage.Attachments[0].ID
+	updateAttachmentID = payload.AttachmentID
 	log.Info("Update tag dialog launching", map[string]interface{}{
 		"module":    "slack",
 		"timestamp": updateTS,
@@ -350,7 +350,7 @@ func UpdateTag(payload *slack.InteractionCallback) {
 		Footer:     t,
 		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
 	}
-	payload.OriginalMessage.Attachments[0].ID = updateAttachmentID
+	payload.AttachmentID = updateAttachmentID
 	payload.OriginalMessage.Timestamp = updateTS
 	log.Info("Updating tag", map[string]interface{}{
 		"module":    "slack",
@@ -379,7 +379,7 @@ func SaveDialog(payload *slack.InteractionCallback) {
 		Footer:     t,
 		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
 	}
-	payload.OriginalMessage.Attachments[0].ID = newAttachmentID
+	payload.AttachmentID = newAttachmentID
 	payload.OriginalMessage.Timestamp = newTS
 	log.Info("Saving new tag", map[string]interface{}{
 		"module":    "slack",
