@@ -326,7 +326,9 @@ func UpdateTag(payload *slack.InteractionCallback) {
 	})
 	data = payload.DialogSubmissionCallback.Submission
 	data["user"] = payload.User.ID
+	data["id"] = update
 	datastore.SaveTagUpdate(data)
+	update = ""
 	t := fmt.Sprintf("Tag '%s' created by <@%s>", data["tag"], data["user"])
 	attachment := slack.Attachment{
 		Fallback:   t,

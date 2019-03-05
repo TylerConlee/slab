@@ -24,6 +24,8 @@ var (
 	LastProcessed time.Time
 	// deleteTag is a tag ID that will be deleted
 	deleteTag string
+	// update is a tag ID that will be updated
+	update string
 )
 
 // Ticket represents an individual ticket to be used in SLAMessage and
@@ -710,6 +712,7 @@ func UpdateTagMessage(user *slack.User, id string) {
 			},
 		},
 	}
+	update = id
 	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionAttachments(attachment))
 }
 
