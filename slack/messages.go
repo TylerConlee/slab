@@ -342,7 +342,7 @@ func StatusMessage(user *slack.User) {
 			"error":    err,
 		})
 	}
-	SendMessage("...", attachment)
+	SendMessage("...", c.Slack.ChannelID, attachment)
 }
 
 // HelpMessage responds to @slab help with a help message outlining all
@@ -637,7 +637,7 @@ func UpdateMessage(ticket Ticket, user string, uid int64) {
 		},
 	}
 	n := "@here - Premium ticket updated"
-	SendMessage(n, attachment)
+	SendMessage(n, c.Slack.ChannelID, attachment)
 }
 
 // CreateTagMessage responds to @slab tag create, taking the tag name provided

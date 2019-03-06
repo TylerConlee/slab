@@ -51,19 +51,19 @@ func parseCommand(text string, user *slack.User) {
 			case "set":
 				if len(t) > 3 {
 					s := plugins.TwilioSet(t[3])
-					SendMessage("Plugin message", s)
+					SendMessage("Plugin message", c.Slack.ChannelID, s)
 				}
 			case "unset":
 				s := plugins.TwilioUnset()
-				SendMessage("Plugin message", s)
+				SendMessage("Plugin message", c.Slack.ChannelID, s)
 			case "configure":
 				if len(t) > 3 {
 					s := plugins.TwilioConfigure(t[3])
-					SendMessage("Plugin message", s)
+					SendMessage("Plugin message", c.Slack.ChannelID, s)
 				}
 			case "status":
 				s := p.TwilioStatus()
-				SendMessage("Plugin status", s)
+				SendMessage("Plugin status", c.Slack.ChannelID, s)
 			case "enable":
 				p.EnableTwilio()
 				a := slack.Attachment{
@@ -75,7 +75,7 @@ func parseCommand(text string, user *slack.User) {
 						},
 					},
 				}
-				SendMessage("Plugin Twilio has been updated", a)
+				SendMessage("Plugin Twilio has been updated", c.Slack.ChannelID, a)
 
 			case "disable":
 				p.DisableTwilio()
@@ -88,13 +88,13 @@ func parseCommand(text string, user *slack.User) {
 						},
 					},
 				}
-				SendMessage("Plugin Twilio has been updated", a)
+				SendMessage("Plugin Twilio has been updated", c.Slack.ChannelID, a)
 			}
 
 		default:
 			UnknownCommandMessage(text, user.ID)
 		}
-		SendMessage(message, attachment)
+		SendMessage(message, c.Slack.ChannelID, attachment)
 	}
 
 }

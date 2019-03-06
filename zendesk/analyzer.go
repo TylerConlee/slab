@@ -11,9 +11,10 @@ var Sent = []NotifySent{}
 // NotifySent is represetative of an individual ticket, what kind of
 // notification was last sent for that ticket, and when the SLA breach time is.
 type NotifySent struct {
-	ID     int
-	Type   int64
-	Expire time.Time
+	ID      int
+	Type    int64
+	Expire  time.Time
+	Channel string
 }
 
 // GetTimeRemaining takes an instance of a ticket and returns the value of the
@@ -68,7 +69,7 @@ func GetNotifyType(remain time.Duration) (notifyType int64) {
 // for notifications is, and then checks to see if that ticket ID and
 // notification type have been sent already. If yes, it returns True,
 // indicating a notifcation needs to be sent.
-func UpdateCache(ticket ActiveTicket) (bool, int64) {
+func UpdateCache(ticket ActiveTicket, channel string) (bool, int64) {
 	//cleanCache()
 
 	// get the expiration timestamp
@@ -86,12 +87,13 @@ func UpdateCache(ticket ActiveTicket) (bool, int64) {
 			s := rangeOnMe.Index(i)
 			f := s.FieldByName("ID")
 			if f.IsValid() {
-				if f.Interface() == ticket.ID && s.FieldByName("Type").Int() == notify {
+				if f.Interface() == ticket.ID && s.FieldByName("Type").Int() == notify && s.FieldByName("Channel").String() == channel {
 					log.Info("Ticket has already received a notification", map[string]interface{}{
 						"module":      "zendesk",
 						"ticket":      ticket.ID,
 						"notify_type": notify,
 						"expires":     expire,
+						"channel":     channel,
 					})
 					return false, 0
 				}
@@ -99,7 +101,7 @@ func UpdateCache(ticket ActiveTicket) (bool, int64) {
 			}
 
 		}
-		Sent = append(Sent, NotifySent{ticket.ID, notify, expire})
+		Sent = append(Sent, NotifySent{ticket.ID, notify, expire, channel})
 		log.Info("Ticket should receive a notification", map[string]interface{}{
 			"module":      "zendesk",
 			"ticket":      ticket.ID,

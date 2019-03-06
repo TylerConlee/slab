@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/tylerconlee/slab/config"
+	"github.com/tylerconlee/slab/datastore"
 	"github.com/tylerconlee/slab/plugins"
 	"github.com/tylerconlee/slab/slack"
 	"github.com/tylerconlee/slab/zendesk"
@@ -50,6 +51,9 @@ func iteration(t *time.Ticker, interval time.Duration) {
 		if c.Zendesk.URL != "" && c.Zendesk.APIKey != "" {
 			tick := zendesk.GetAllTickets()
 
+			// Grab tags
+			tags := datastore.LoadTags()
+
 			log.Info("Grabbed and parsed tickets from Zendesk", map[string]interface{}{
 				"module": "main",
 			})
@@ -62,23 +66,29 @@ func iteration(t *time.Ticker, interval time.Duration) {
 			// Loop through all active SLA tickets and prepare SLA notification
 			// for each.
 			for _, ticket := range active {
-
-				if ticket.Priority != nil {
-					send, notify := zendesk.UpdateCache(ticket)
-					if send {
-						log.Info("Preparing SLA notification for ticket", map[string]interface{}{
-							"module": "main",
-							"ticket": ticket.ID,
-						})
-						m := slack.Ticket(ticket)
-						n, c := slack.PrepSLANotification(m, notify)
-						p.SendDispatcher(n)
-						user := zendesk.GetTicketRequester(int(ticket.Requester))
-						org := getOrgName(ticket.ID)
-						attach := slack.SLAMessage(m, c, user.Name, user.ID, org)
-						slack.SendMessage(n, attach)
+				// Loop through all available tags
+				for _, tag := range tags {
+					if Contains(ticket.Tags, tag["tag"].(string)) && tag["notify_type"].(string) == "sla" {
+						if ticket.Priority != nil {
+							send, notify := zendesk.UpdateCache(ticket, tag["channel"].(string))
+							if send {
+								log.Info("Preparing SLA notification for ticket", map[string]interface{}{
+									"module":  "main",
+									"ticket":  ticket.ID,
+									"channel": channel,
+								})
+								m := slack.Ticket(ticket)
+								n, c := slack.PrepSLANotification(m, notify)
+								p.SendDispatcher(n)
+								user := zendesk.GetTicketRequester(int(ticket.Requester))
+								org := getOrgName(ticket.ID)
+								attach := slack.SLAMessage(m, c, user.Name, user.ID, org)
+								slack.SendMessage(n, tag["channel"].(string), attach)
+							}
+						}
 					}
 				}
+
 			}
 			if c.Zendesk.PremiumUpdates == true {
 				updated := zendesk.CheckUpdatedTicket(interval)
@@ -143,4 +153,13 @@ func getOrgName(id int) (o string) {
 	}
 	return o
 
+}
+
+func Contains(a []string, x string) bool {
+	for _, n := range a {
+		if x == n {
+			return true
+		}
+	}
+	return false
 }
