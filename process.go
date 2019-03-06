@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
+	sl "github.com/nlopes/slack"
 	"github.com/tylerconlee/slab/config"
 	"github.com/tylerconlee/slab/datastore"
 	"github.com/tylerconlee/slab/plugins"
@@ -60,36 +62,7 @@ func iteration(t *time.Ticker, interval time.Duration) {
 			log.Info("Checking ticket notifications...", map[string]interface{}{
 				"module": "main",
 			})
-			// Returns a list of all upcoming SLA breaches
-			active := zendesk.CheckSLA(tick)
-
-			// Loop through all active SLA tickets and prepare SLA notification
-			// for each.
-			for _, ticket := range active {
-				// Loop through all available tags
-				for _, tag := range tags {
-					if Contains(ticket.Tags, tag["tag"].(string)) && tag["notify_type"].(string) == "sla" {
-						if ticket.Priority != nil {
-							send, notify := zendesk.UpdateCache(ticket, tag["channel"].(string))
-							if send {
-								log.Info("Preparing SLA notification for ticket", map[string]interface{}{
-									"module":  "main",
-									"ticket":  ticket.ID,
-									"channel": channel,
-								})
-								m := slack.Ticket(ticket)
-								n, c := slack.PrepSLANotification(m, notify)
-								p.SendDispatcher(n)
-								user := zendesk.GetTicketRequester(int(ticket.Requester))
-								org := getOrgName(ticket.ID)
-								attach := slack.SLAMessage(m, c, user.Name, user.ID, org)
-								slack.SendMessage(n, tag["channel"].(string), attach)
-							}
-						}
-					}
-				}
-
-			}
+			processSLAAlerts(tick, tags, p)
 			if c.Zendesk.PremiumUpdates == true {
 				updated := zendesk.CheckUpdatedTicket(interval)
 				for _, ticket := range updated {
@@ -162,4 +135,43 @@ func Contains(a []string, x string) bool {
 		}
 	}
 	return false
+}
+
+func processSLAAlerts(tick zendesk.ZenOutput, tags []map[string]interface{}, p plugins.Plugins) {
+	// Returns a list of all upcoming SLA breaches
+	active := zendesk.CheckSLA(tick)
+
+	// Loop through all active SLA tickets and prepare SLA notification
+	// for each.
+	for _, ticket := range active {
+		// Loop through all available tags
+		for _, tag := range tags {
+			if Contains(ticket.Tags, tag["tag"].(string)) && tag["notify_type"].(string) == "sla" {
+				if ticket.Priority != nil {
+					send, notify := zendesk.UpdateCache(ticket, tag["channel"].(string))
+					if send {
+						log.Info("Preparing SLA notification for ticket", map[string]interface{}{
+							"module":  "main",
+							"ticket":  ticket.ID,
+							"channel": tag["channel"].(string),
+						})
+						m := slack.Ticket(ticket)
+						n, c := slack.PrepSLANotification(m, notify)
+						p.SendDispatcher(n)
+						user := zendesk.GetTicketRequester(int(ticket.Requester))
+						org := getOrgName(ticket.ID)
+						attach := slack.SLAMessage(m, c, user.Name, user.ID, org)
+						if strings.HasPrefix(tag["channel"].(string), "U") {
+							attachments := []sl.Attachment{attach}
+							slack.SendDirectMessage(n, attachments, tag["channel"].(string))
+						} else {
+							slack.SendMessage(n, tag["channel"].(string), attach)
+						}
+
+					}
+				}
+			}
+		}
+
+	}
 }
