@@ -3,7 +3,7 @@ import:
 - package: github.com/BurntSushi/toml
 - package: github.com/gorilla/mux
 - package: github.com/op/go-logging
-- package: github.com/nlopes/slack
+- package: github.com/tylerconlee/slack
 - package: github.com/sirupsen/logrus
   version: master
 - package: github.com/Sirupsen/logrus

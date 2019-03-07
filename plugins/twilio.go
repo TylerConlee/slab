@@ -7,8 +7,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/nlopes/slack"
 	l "github.com/tylerconlee/slab/log"
+	"github.com/tylerconlee/slack"
 )
 
 var (

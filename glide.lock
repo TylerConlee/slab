@@ -1,36 +1,55 @@
-hash: 0fc104ec12d1c2c08071e5f76feae15e3f6959d36382f93b72afacda2a1f4f93
-updated: 2019-02-27T11:33:41.401578-08:00
+hash: 39b185e83643cb9ae8769b63a52d66d93041dfa4d35057d7790bfe18d17583b9
+updated: 2018-11-08T07:21:34.020909-08:00
 imports:
 - name: github.com/BurntSushi/toml
   version: 3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005
 - name: github.com/doublefree/sumorus
   version: ba9b9adeebc03f5de9558cfb2423be4246289a78
 - name: github.com/go-redis/redis
-  version: d22fde8721cc915a55aeb6b00944a76a92bfeb6e
+  version: b3d9bf10f6666b2ee5100a6f3f84f4caf3b4e37d
+  subpackages:
+  - internal
+  - internal/consistenthash
+  - internal/hashtag
+  - internal/pool
+  - internal/proto
+  - internal/singleflight
+  - internal/util
 - name: github.com/gorilla/handlers
   version: 7e0847f9db758cdebd26c149d0ae9d5d0b9c98ce
 - name: github.com/gorilla/mux
-  version: 8559a4f775fc329165fe32bd4c2543de8ada8fce
+  version: 3d80bc801bb034e17cae38591335b3b1110f1c47
+- name: github.com/gorilla/websocket
+  version: 483fb8d7c32fcb4b5636cd293a92e3935932e2f4
 - name: github.com/jstemmer/go-junit-report
-  version: af01ea7f8024089b458d804d5cdf190f962a9a0c
+  version: 385fac0ced9acaae6dc5b39144194008ded00697
+- name: github.com/konsorten/go-windows-terminal-sequences
+  version: 5c8c8bd35d3832f5d134ae1e1e375b69a4d25242
 - name: github.com/lib/pq
   version: 4ded0e9383f75c197b3a2aaa6d590ac52df6fd79
 - name: github.com/nlopes/slack
-  version: 68a9954511dd7825dc9b3744a68b51398ce120b1
+  version: cd759032689754457520f81827abec1a4759d093
+  subpackages:
+  - slackutilsx
 - name: github.com/op/go-logging
   version: 970db520ece77730c7e4724c61121037378659d9
+- name: github.com/pkg/errors
+  version: 059132a15dd08d6704c67711dae0cf35ab991756
+- name: github.com/sirupsen/logrus
+  version: 44067abb194b1bc8b342e1f2120f8d3ea691b834
 - name: github.com/Sirupsen/logrus
-  version: fa3c1df5136d05b1b54b72794cf89579f2b39f7b
+  version: 44067abb194b1bc8b342e1f2120f8d3ea691b834
   repo: git@github.com:/sirupsen/logrus
   vcs: git
-- name: github.com/sirupsen/logrus
-  version: fa3c1df5136d05b1b54b72794cf89579f2b39f7b
+- name: github.com/tylerconlee/slack
+  version: 7c7176fa51c9e7074abb378accbd3ecefcb9f88a
 - name: golang.org/x/crypto
-  version: 7f87c0fbb88b590338857bcb720678c2583d4dea
+  version: e4dc69e5b2fd71dcaf8bd5d054eb936deb78d1fa
   subpackages:
   - ssh/terminal
 - name: golang.org/x/sys
-  version: 775f8194d0f9e65c46913c7be783d3d95a29333c
+  version: 66b7b1311ac80bbafcd2daeef9a5e6e2cd1e2399
   subpackages:
   - unix
+  - windows
 testImports: []

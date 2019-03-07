@@ -3,7 +3,7 @@ package slack
 import (
 	"testing"
 
-	"github.com/nlopes/slack"
+	"github.com/tylerconlee/slack"
 )
 
 func Test_parseDMCommand(t *testing.T) {

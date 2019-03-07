@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/nlopes/slack"
+	"github.com/tylerconlee/slack"
 )
 
 func TestSetMessage(t *testing.T) {

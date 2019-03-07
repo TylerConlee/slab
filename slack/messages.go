@@ -6,10 +6,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/nlopes/slack"
 	"github.com/tylerconlee/slab/config"
 	"github.com/tylerconlee/slab/datastore"
 	"github.com/tylerconlee/slab/zendesk"
+	"github.com/tylerconlee/slack"
 )
 
 var (
@@ -22,10 +22,6 @@ var (
 	NumTickets int
 	// LastProcessed is a timestamp of when the last loop was ran
 	LastProcessed time.Time
-	// deleteTag is a tag ID that will be deleted
-	deleteTag string
-	// update is a tag ID that will be updated
-	update string
 )
 
 // Ticket represents an individual ticket to be used in SLAMessage and
@@ -193,6 +189,7 @@ func SLAMessage(ticket Ticket, color string, user string, uid int64, org string)
 // DiagMessage sends a DM to requestor with the current state of SLA
 // notifications for tickets
 func DiagMessage(user *slack.User) {
+	params := slack.PostMessageParameters{}
 	s := Sent.([]zendesk.NotifySent)
 	attachment := slack.Attachment{
 
@@ -232,22 +229,23 @@ func DiagMessage(user *slack.User) {
 		Footer:     fmt.Sprintf("Version: %s", version),
 		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
 	}
-	attachments := []slack.Attachment{attachment}
+	params.Attachments = append(params.Attachments, attachment)
 	message := ""
-	if len(attachments) != 0 {
+	if len(params.Attachments) != 0 {
 		_, _, channelID, err := api.OpenIMChannel(user.ID)
 		if err != nil {
 			fmt.Printf("%s\n", err)
 		}
-		api.PostMessage(channelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(attachments...))
+		api.PostMessage(channelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(params.Attachments...))
 	}
 }
 
 // NewTicketMessage takes a slice of tickets that have been created in the last
 // loop interval and sends the IDs and links to the tickets to the user
 // currently set as triager.
-func NewTicketMessage(tickets []Ticket, tag string) (newTickets []slack.Attachment, message string) {
-	attachments := []slack.Attachment{}
+func NewTicketMessage(tickets []Ticket) {
+
+	params := slack.PostMessageParameters{}
 	for _, ticket := range tickets {
 		description := ticket.Description
 		if len(ticket.Description) > 100 {
@@ -277,11 +275,6 @@ func NewTicketMessage(tickets []Ticket, tag string) (newTickets []slack.Attachme
 					Value: ticket.CreatedAt.String(),
 					Short: true,
 				},
-				slack.AttachmentField{
-					Title: "Tag",
-					Value: tag,
-					Short: true,
-				},
 			},
 			Actions: []slack.AttachmentAction{
 				slack.AttachmentAction{
@@ -298,13 +291,28 @@ func NewTicketMessage(tickets []Ticket, tag string) (newTickets []slack.Attachme
 				},
 			},
 		}
-		attachments = []slack.Attachment{attachment}
+		params.Attachments = append(params.Attachments, attachment)
 
 	}
-	message = ""
+	message := ""
+	if Triager != "None" {
+		message = fmt.Sprintf("<@%s> The following tickets were received since the last loop:", Triager)
+	} else {
+		message = fmt.Sprintf("The following tickets were received since the last loop:")
+	}
 
-	return attachments, message
-
+	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(params.Attachments...))
+	if err != nil {
+		fmt.Printf("%s\n", err)
+		return
+	}
+	// Log message if succesfully sent.
+	log.Debug("New ticket message sent successfully.", map[string]interface{}{
+		"module":    "slack",
+		"channel":   channelID,
+		"timestamp": timestamp,
+		"message":   message,
+	})
 }
 
 // StatusMessage responds to @slab status with the version hash and current
@@ -332,8 +340,7 @@ func StatusMessage(user *slack.User) {
 			"error":    err,
 		})
 	}
-	attachments := []slack.Attachment{attachment}
-	SendMessage("...", c.Slack.ChannelID, attachments)
+	SendMessage("...", attachment)
 }
 
 // HelpMessage responds to @slab help with a help message outlining all
@@ -348,21 +355,110 @@ func HelpMessage(user *slack.User) {
 	}
 	params := slack.PostMessageParameters{}
 
-	attachments := []slack.Attachment{}
-
+	setCommand := slack.Attachment{
+		Title: "@slab set",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Command Name",
+				Value: "Set",
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Command Description",
+				Value: "Used to set the active Triager, returns a dropdown of users",
+				Short: true,
+			},
+		},
+		Footer:     fmt.Sprintf("Current triager: <@%s>", Triager),
+		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
+	}
+	unsetCommand := slack.Attachment{
+		Title: "@slab unset",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Command Name",
+				Value: "Unset",
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Command Description",
+				Value: "Used to unset the active Triager. Sets the Triager to 'None'",
+				Short: true,
+			},
+		},
+		Footer:     fmt.Sprintf("Current triager: <@%s>", Triager),
+		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
+	}
+	whoisCommand := slack.Attachment{
+		Title: "@slab whois",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Command Name",
+				Value: "Whois",
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Command Description",
+				Value: "Returns the name of the user currently set as Triager",
+				Short: true,
+			},
+		},
+		Footer:     fmt.Sprintf("Current triager: <@%s>", Triager),
+		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
+	}
+	statusCommand := slack.Attachment{
+		Title: "@slab status",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Command Name",
+				Value: "Status",
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Command Description",
+				Value: "Returns metadata about the Slab instance currently running",
+				Short: true,
+			},
+		},
+		Footer:     fmt.Sprintf("Current uptime: %v", time.Now().Sub(uptime).String()),
+		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
+	}
+	diagCommand := slack.Attachment{
+		Title: "@slab diag",
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Command Name",
+				Value: "Diag",
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Command Description",
+				Value: "Sends a private message to the requestor with diagnostic information about Slab",
+				Short: true,
+			},
+		},
+		Footer:     fmt.Sprintf("Current uptime: %v", time.Now().Sub(uptime).String()),
+		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
+	}
+	attachments := []slack.Attachment{
+		setCommand,
+		unsetCommand,
+		whoisCommand,
+		statusCommand,
+		diagCommand,
+	}
+	params.Attachments = attachments
 	params.LinkNames = 1
-	message := "Help for Slab can be found at <https://github.com/TylerConlee/slab/wiki|the Slab wiki>"
-	SendMessage(message, c.Slack.ChannelID, attachments)
+	message := "..."
+	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(params.Attachments...))
 
 }
 
 // ShowConfigMessage takes a user string and sends that user the value of the
 // config.toml configuration file. Used for identifying configuration issues.
 func ShowConfigMessage(user string) {
-	attachment := []slack.Attachment{
-		slack.Attachment{
-			Title: "Config",
-		},
+	attachment := slack.Attachment{
+		Title: "Config",
 	}
 	message := "Test direct message for config."
 	SendDirectMessage(message, attachment, user)
@@ -372,9 +468,44 @@ func ShowConfigMessage(user string) {
 // UnknownCommandMessage sends a direct message to the user provided indicating
 // that the command that they attempted is not a valid command.
 func UnknownCommandMessage(text string, user string) {
-	message := fmt.Sprintf("Sorry, the command `%s` is an invalid command. Please type `help` for a list of all available commands", text)
-	attachment := []slack.Attachment{}
+	message := fmt.Sprintf("Sorry, the command `%s` is an invalid command. Please type `help` for a list of all available DM commands", text)
+	attachment := slack.Attachment{}
 	SendDirectMessage(message, attachment, user)
+}
+
+// ChatUpdate takes a channel ID, a timestamp and message text
+// and updated the message in the given Slack channel at the given
+// timestamp with the given message text. Currently, it also updates the
+// attachment specifically for the Set message output.
+func ChatUpdate(
+	payload *slack.AttachmentActionCallback,
+	attachment slack.Attachment,
+) {
+
+	for i := range payload.OriginalMessage.Attachments {
+		id := strconv.Itoa(payload.OriginalMessage.Attachments[i].ID)
+		if id == payload.AttachmentID {
+			payload.OriginalMessage.Attachments[i] = attachment
+		}
+	}
+
+	params := slack.PostMessageParameters{}
+
+	params.Attachments = payload.OriginalMessage.Attachments
+	// Send an update to the given channel with pretext and the parameters
+	channelID, timestamp, t, err := api.UpdateMessageWithParams(
+		payload.Channel.ID,
+		payload.OriginalMessage.Timestamp,
+		payload.OriginalMessage.Text,
+		params,
+	)
+	log.Debug("Message updated.", map[string]interface{}{
+		"module":    "slack",
+		"channel":   channelID,
+		"timestamp": timestamp,
+		"message":   t,
+		"error":     err,
+	})
 }
 
 // VerifyUser takes a User ID string and runs the Slack GetUserInfo request. If
@@ -391,12 +522,32 @@ func VerifyUser(user string) bool {
 }
 
 // PrepSLANotification takes a given ticket and what notification level and returns a string to be sent to Slack.
-func PrepSLANotification(ticket Ticket, notify int64, tag string) (notification string, color string) {
+func PrepSLANotification(ticket Ticket, notify int64) (notification string, color string) {
 	log.Info("Preparing SLA notification message.", map[string]interface{}{
 		"module": "slack",
 		"ticket": ticket.ID,
 	})
-	var t, n, c string
+	var t, p string
+	var r bool
+
+	switch ticket.Level {
+	case "LevelOne":
+		p = c.SLA.LevelOne.Tag
+		r = c.SLA.LevelOne.Notify
+	case "LevelTwo":
+		p = c.SLA.LevelTwo.Tag
+		r = c.SLA.LevelTwo.Notify
+
+	case "LevelThree":
+		p = c.SLA.LevelThree.Tag
+		r = c.SLA.LevelThree.Notify
+
+	case "LevelFour":
+		p = c.SLA.LevelFour.Tag
+		r = c.SLA.LevelFour.Notify
+	}
+
+	var n, c string
 
 	switch notify {
 	case 1:
@@ -415,10 +566,18 @@ func PrepSLANotification(ticket Ticket, notify int64, tag string) (notification 
 		t = "3 hours"
 		c = "#43e0d3"
 	}
-	n = fmt.Sprintf("<!here> SLA for *%s* ticket #%d has less than %s until expiration.", tag, ticket.ID, t)
-	if notify == 9 {
-		n = fmt.Sprintf("<!here> Expired *%s* SLA! Ticket #%d has an expired SLA.", tag, ticket.ID)
-		c = "danger"
+	if r {
+		n = fmt.Sprintf("<!here> SLA for *%s* ticket #%d has less than %s until expiration.", p, ticket.ID, t)
+		if notify == 9 {
+			n = fmt.Sprintf("<!here> Expired *%s* SLA! Ticket #%d has an expired SLA.", p, ticket.ID)
+			c = "danger"
+		}
+	} else {
+		n = fmt.Sprintf("SLA for *%s* ticket #%d has less than %s until expiration.", p, ticket.ID, t)
+		if notify == 9 {
+			n = fmt.Sprintf("Expired *%s* SLA! Ticket #%d has an expired SLA.", p, ticket.ID)
+			c = "danger"
+		}
 	}
 
 	return n, c
@@ -428,14 +587,14 @@ func PrepSLANotification(ticket Ticket, notify int64, tag string) (notification 
 // UpdateMessage sends a message to the channel indicating a ticket with a
 // premium SLA tag associated with it has received an update. This functionality
 // is a mirror of the official Zendesk > Slack integration.
-func UpdateMessage(ticket Ticket, user string, uid int64) (attachment slack.Attachment) {
+func UpdateMessage(ticket Ticket, user string, uid int64) {
 	description := ticket.Description
 	if len(ticket.Description) > 100 {
 		description = description[0:100] + "..."
 	}
 	url := fmt.Sprintf("%s/agent/tickets/%d", c.Zendesk.URL, ticket.ID)
 	link := fmt.Sprintf("%s/agent/users/%d", c.Zendesk.URL, uid)
-	attachment = slack.Attachment{
+	attachment := slack.Attachment{
 		// Uncomment the following part to send a field too
 		Title:      ticket.Subject,
 		TitleLink:  url,
@@ -475,145 +634,6 @@ func UpdateMessage(ticket Ticket, user string, uid int64) (attachment slack.Atta
 			},
 		},
 	}
-	return attachment
-}
-
-// CreateTagMessage responds to @slab tag create, taking the tag name provided
-// and responds with the first step in the create tag config wizard
-func CreateTagMessage(user *slack.User) {
-	attachment := slack.Attachment{
-		Title:      "Create Tag",
-		CallbackID: "createtag",
-		Actions: []slack.AttachmentAction{
-			slack.AttachmentAction{
-				Name:  "launch",
-				Text:  "Launch Tag Creator",
-				Type:  "button",
-				Value: "createtag",
-			},
-		},
-	}
-	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionAttachments(attachment))
-}
-
-// ListTagMessage grabs the tags stored in the database and outputs them to
-// Slack in a DM
-func ListTagMessage(user *slack.User) {
-	tags := datastore.LoadTags()
-	log.Info("Tags received from database", map[string]interface{}{
-		"module": "slack",
-		"tags":   tags,
-	})
-	var attachments []slack.Attachment
-	for _, tag := range tags {
-		i := int(tag["id"].(int64))
-		id := strconv.Itoa(i)
-		attachment := slack.Attachment{
-			Title:      strings.ToTitle(tag["tag"].(string)),
-			AuthorName: fmt.Sprintf("<@%s>", tag["user"]),
-			Footer:     fmt.Sprintf("Last updated at %s", tag["updated_at"].(string)),
-			Fields: []slack.AttachmentField{
-				slack.AttachmentField{
-					Title: "ID",
-					Value: id,
-					Short: true,
-				},
-				slack.AttachmentField{
-					Title: "Channel",
-					Value: fmt.Sprintf("<#%s>", tag["channel"]),
-					Short: true,
-				},
-				slack.AttachmentField{
-					Title: "Notification Type",
-					Value: getNotificationType(tag["notify_type"].(string)),
-					Short: true,
-				},
-			},
-		}
-		attachments = append(attachments, attachment)
-	}
-	message := "These are the current active tags for Slab"
-	SendDirectMessage(message, attachments, user.ID)
-}
-
-// UpdateTagMessage takes the id for a given tag and opens a dialog for
-// updating the entry
-func UpdateTagMessage(user *slack.User, id string) {
-	attachment := slack.Attachment{
-		Title:      "Update Tag",
-		CallbackID: "updatetag",
-		Actions: []slack.AttachmentAction{
-			slack.AttachmentAction{
-				Name:  "launch",
-				Text:  "Launch Tag Creator",
-				Type:  "button",
-				Value: id,
-			},
-		},
-	}
-	update = id
-	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionAttachments(attachment))
-}
-
-// DeleteTagMessage takes an id and deletes the corresponding tag in the
-// database
-func DeleteTagMessage(user *slack.User, id string) {
-	tagID, err := strconv.Atoi(id)
-	if err != nil {
-		log.Error("Error converting ID to integer", map[string]interface{}{
-			"module": "slack",
-			"error":  err,
-		})
-	}
-	tag := datastore.LoadTag(tagID)
-	attachment := slack.Attachment{
-		Title:      strings.ToTitle(tag["tag"].(string)),
-		CallbackID: "tagdelete",
-		Fields: []slack.AttachmentField{
-			slack.AttachmentField{
-				Title: "Channel",
-				Value: fmt.Sprintf("<#%s>", tag["channel"]),
-				Short: true,
-			},
-			slack.AttachmentField{
-				Title: "Created By",
-				Value: fmt.Sprintf("<@%s>", tag["user"]),
-				Short: true,
-			},
-			slack.AttachmentField{
-				Title: "Notification Type",
-				Value: getNotificationType(tag["notify_type"].(string)),
-				Short: true,
-			},
-		},
-		Actions: []slack.AttachmentAction{
-			slack.AttachmentAction{
-				Name:  "deletetag",
-				Text:  ":x: Delete Tag",
-				Type:  "button",
-				Value: "deletetag",
-				Style: "Danger",
-				Confirm: &slack.ConfirmationField{
-					Text:        "Are you sure?",
-					OkText:      "Delete",
-					DismissText: "Cancel",
-				},
-			},
-		},
-	}
-	deleteTag = id
-	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionAttachments(attachment))
-
-}
-
-func getNotificationType(notify string) (full string) {
-	switch notify {
-	case "new":
-		return "New Tickets"
-	case "sla":
-		return "SLA Breach Alerts"
-	case "updates":
-		return "Ticket Updates"
-	}
-	return
+	n := "@here - Premium ticket updated"
+	SendMessage(n, attachment)
 }

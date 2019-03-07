@@ -60,7 +60,6 @@ func PGConnect(cfg c.Config) {
 		"module": "datastore",
 	})
 	CreateActivitiesTable()
-	CreateTagsTable()
 
 }
 
