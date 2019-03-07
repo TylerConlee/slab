@@ -147,7 +147,7 @@ func processUpdateAlerts(tick zendesk.ZenOutput, tags []map[string]interface{}, 
 	updated := zendesk.CheckUpdatedTicket(interval)
 	for _, ticket := range updated {
 		for _, tag := range tags {
-			if contains(ticket.Tags, tag["tag"].(string)) && tag["notify_type"].(string) == "update" {
+			if contains(ticket.Tags, tag["tag"].(string)) && tag["notify_type"].(string) == "updates" {
 				log.Info("Preparing update notification for ticket", map[string]interface{}{
 					"module": "main",
 					"ticket": ticket.ID,
