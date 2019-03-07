@@ -302,11 +302,6 @@ func NewTicketMessage(tickets []Ticket, tag string) (newTickets []slack.Attachme
 
 	}
 	message = ""
-	if Triager != "None" {
-		message = fmt.Sprintf("<@%s> The following tickets were received since the last loop:", Triager)
-	} else {
-		message = fmt.Sprintf("The following tickets were received since the last loop:")
-	}
 
 	return attachments, message
 
