@@ -12,7 +12,6 @@ import (
 // what the user is asking for.
 func parseCommand(text string, user *slack.User) {
 	var attachment slack.Attachment
-	message := "..."
 	t := strings.Fields(text)
 	if len(t) > 1 {
 		switch t[1] {
@@ -29,8 +28,10 @@ func parseCommand(text string, user *slack.User) {
 		case "help":
 			HelpMessage(user)
 		case "unset":
-			message = "Triager has been reset. Please use `@slab set` to set Triager."
 			attachment = UnsetMessage(user)
+			attachments := []slack.Attachment{attachment}
+			SendMessage("Triager has been reset. Please use `@slab set` to set Triager.", c.Slack.ChannelID, attachments)
+
 		case "tag":
 			switch t[2] {
 			case "create":
@@ -109,8 +110,6 @@ func parseCommand(text string, user *slack.User) {
 		default:
 			UnknownCommandMessage(text, user.ID)
 		}
-		attachments := []slack.Attachment{attachment}
-		SendMessage(message, c.Slack.ChannelID, attachments)
 	}
 
 }
