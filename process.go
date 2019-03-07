@@ -193,6 +193,13 @@ func processNewAlerts(tick zendesk.ZenOutput, tags []map[string]interface{}, p p
 					if strings.HasPrefix(tag["channel"].(string), "U") {
 						slack.SendDirectMessage(message, attachments, tag["channel"].(string))
 					} else {
+						if tag["channel"].(string) == c.Slack.ChannelID {
+							if slack.Triager != "None" {
+								message = fmt.Sprintf("<@%s> The following tickets were received since the last loop:", slack.Triager)
+							} else {
+								message = fmt.Sprintf("The following tickets were received since the last loop:")
+							}
+						}
 						slack.SendMessage(message, tag["channel"].(string), attachments)
 					}
 				}
