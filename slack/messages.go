@@ -589,14 +589,14 @@ func PrepSLANotification(ticket Ticket, notify int64) (notification string, colo
 // UpdateMessage sends a message to the channel indicating a ticket with a
 // premium SLA tag associated with it has received an update. This functionality
 // is a mirror of the official Zendesk > Slack integration.
-func UpdateMessage(ticket Ticket, user string, uid int64) {
+func UpdateMessage(ticket Ticket, user string, uid int64) (attachment slack.Attachment) {
 	description := ticket.Description
 	if len(ticket.Description) > 100 {
 		description = description[0:100] + "..."
 	}
 	url := fmt.Sprintf("%s/agent/tickets/%d", c.Zendesk.URL, ticket.ID)
 	link := fmt.Sprintf("%s/agent/users/%d", c.Zendesk.URL, uid)
-	attachment := slack.Attachment{
+	attachment = slack.Attachment{
 		// Uncomment the following part to send a field too
 		Title:      ticket.Subject,
 		TitleLink:  url,
@@ -636,8 +636,7 @@ func UpdateMessage(ticket Ticket, user string, uid int64) {
 			},
 		},
 	}
-	n := "@here - Premium ticket updated"
-	SendMessage(n, c.Slack.ChannelID, attachment)
+	return attachment
 }
 
 // CreateTagMessage responds to @slab tag create, taking the tag name provided
