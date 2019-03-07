@@ -8,9 +8,8 @@ import (
 
 // SendMessage takes an attachment and message and composes a message to be
 // sent to the configured Slack channel ID
-func SendMessage(message string, channel string, attachment slack.Attachment) {
+func SendMessage(message string, channel string, attachments []slack.Attachment) {
 	params := slack.PostMessageParameters{}
-	attachments := []slack.Attachment{attachment}
 	params.LinkNames = 1
 	// Send a message to the given channel with pretext and the parameters
 	channelID, timestamp, err := api.PostMessage(channel, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(attachments...))

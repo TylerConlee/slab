@@ -246,7 +246,7 @@ func DiagMessage(user *slack.User) {
 // NewTicketMessage takes a slice of tickets that have been created in the last
 // loop interval and sends the IDs and links to the tickets to the user
 // currently set as triager.
-func NewTicketMessage(tickets []Ticket) {
+func NewTicketMessage(tickets []Ticket) (newTickets []slack.Attachment, message string) {
 	attachments := []slack.Attachment{}
 	for _, ticket := range tickets {
 		description := ticket.Description
@@ -296,25 +296,15 @@ func NewTicketMessage(tickets []Ticket) {
 		attachments = []slack.Attachment{attachment}
 
 	}
-	message := ""
+	message = ""
 	if Triager != "None" {
 		message = fmt.Sprintf("<@%s> The following tickets were received since the last loop:", Triager)
 	} else {
 		message = fmt.Sprintf("The following tickets were received since the last loop:")
 	}
 
-	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(attachments...))
-	if err != nil {
-		fmt.Printf("%s\n", err)
-		return
-	}
-	// Log message if succesfully sent.
-	log.Debug("New ticket message sent successfully.", map[string]interface{}{
-		"module":    "slack",
-		"channel":   channelID,
-		"timestamp": timestamp,
-		"message":   message,
-	})
+	return attachments, message
+
 }
 
 // StatusMessage responds to @slab status with the version hash and current
@@ -342,7 +332,8 @@ func StatusMessage(user *slack.User) {
 			"error":    err,
 		})
 	}
-	SendMessage("...", c.Slack.ChannelID, attachment)
+	attachments := []slack.Attachment{attachment}
+	SendMessage("...", c.Slack.ChannelID, attachments)
 }
 
 // HelpMessage responds to @slab help with a help message outlining all
@@ -589,14 +580,14 @@ func PrepSLANotification(ticket Ticket, notify int64) (notification string, colo
 // UpdateMessage sends a message to the channel indicating a ticket with a
 // premium SLA tag associated with it has received an update. This functionality
 // is a mirror of the official Zendesk > Slack integration.
-func UpdateMessage(ticket Ticket, user string, uid int64) {
+func UpdateMessage(ticket Ticket, user string, uid int64) (attachment slack.Attachment) {
 	description := ticket.Description
 	if len(ticket.Description) > 100 {
 		description = description[0:100] + "..."
 	}
 	url := fmt.Sprintf("%s/agent/tickets/%d", c.Zendesk.URL, ticket.ID)
 	link := fmt.Sprintf("%s/agent/users/%d", c.Zendesk.URL, uid)
-	attachment := slack.Attachment{
+	attachment = slack.Attachment{
 		// Uncomment the following part to send a field too
 		Title:      ticket.Subject,
 		TitleLink:  url,
@@ -636,8 +627,7 @@ func UpdateMessage(ticket Ticket, user string, uid int64) {
 			},
 		},
 	}
-	n := "@here - Premium ticket updated"
-	SendMessage(n, c.Slack.ChannelID, attachment)
+	return attachment
 }
 
 // CreateTagMessage responds to @slab tag create, taking the tag name provided
