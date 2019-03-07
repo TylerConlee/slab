@@ -152,7 +152,7 @@ func processUpdateAlerts(tick zendesk.ZenOutput, tags []map[string]interface{}, 
 					"module": "main",
 					"ticket": ticket.ID,
 				})
-				n := fmt.Sprintf("Ticket #%d updated. Priority: %s, SLA: %s", ticket.ID, ticket.Level, ticket.Priority)
+				n := fmt.Sprintf("Ticket #%d updated. Priority: %s, Tag: %s", ticket.ID, ticket.Priority, tag["tag"])
 				m := slack.Ticket(ticket)
 				user := zendesk.GetTicketRequester(int(ticket.Requester))
 				p.SendDispatcher(n)
