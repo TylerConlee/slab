@@ -357,7 +357,7 @@ func HelpMessage(user *slack.User) {
 
 	params.LinkNames = 1
 	message := "Help for Slab can be found at <https://github.com/TylerConlee/slab/wiki|the Slab wiki>"
-	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionText(message, true), slack.MsgOptionAttachments(attachments...))
+	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(attachments...))
 
 }
 
