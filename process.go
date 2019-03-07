@@ -122,7 +122,7 @@ func processSLAAlerts(tick zendesk.ZenOutput, tags []map[string]interface{}, p p
 							"channel": tag["channel"].(string),
 						})
 						m := slack.Ticket(ticket)
-						n, c := slack.PrepSLANotification(m, notify)
+						n, c := slack.PrepSLANotification(m, notify, tag["tag"].(string))
 						p.SendDispatcher(n)
 						user := zendesk.GetTicketRequester(int(ticket.Requester))
 						org := getOrgName(ticket.ID)
@@ -189,7 +189,7 @@ func processNewAlerts(tick zendesk.ZenOutput, tags []map[string]interface{}, p p
 						"ticket": m,
 					})
 					newTickets = append(newTickets, m)
-					attachments, message := slack.NewTicketMessage(newTickets)
+					attachments, message := slack.NewTicketMessage(newTickets, tag["tag"].(string))
 					if strings.HasPrefix(tag["channel"].(string), "U") {
 						slack.SendDirectMessage(message, attachments, tag["channel"].(string))
 					} else {

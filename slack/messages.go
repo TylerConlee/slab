@@ -246,7 +246,7 @@ func DiagMessage(user *slack.User) {
 // NewTicketMessage takes a slice of tickets that have been created in the last
 // loop interval and sends the IDs and links to the tickets to the user
 // currently set as triager.
-func NewTicketMessage(tickets []Ticket) (newTickets []slack.Attachment, message string) {
+func NewTicketMessage(tickets []Ticket, tag string) (newTickets []slack.Attachment, message string) {
 	attachments := []slack.Attachment{}
 	for _, ticket := range tickets {
 		description := ticket.Description
@@ -275,6 +275,11 @@ func NewTicketMessage(tickets []Ticket) (newTickets []slack.Attachment, message 
 				slack.AttachmentField{
 					Title: "Created At",
 					Value: ticket.CreatedAt.String(),
+					Short: true,
+				},
+				slack.AttachmentField{
+					Title: "Tag",
+					Value: tag,
 					Short: true,
 				},
 			},
@@ -424,32 +429,12 @@ func VerifyUser(user string) bool {
 }
 
 // PrepSLANotification takes a given ticket and what notification level and returns a string to be sent to Slack.
-func PrepSLANotification(ticket Ticket, notify int64) (notification string, color string) {
+func PrepSLANotification(ticket Ticket, notify int64, tag string) (notification string, color string) {
 	log.Info("Preparing SLA notification message.", map[string]interface{}{
 		"module": "slack",
 		"ticket": ticket.ID,
 	})
-	var t, p string
-	var r bool
-
-	switch ticket.Level {
-	case "LevelOne":
-		p = c.SLA.LevelOne.Tag
-		r = c.SLA.LevelOne.Notify
-	case "LevelTwo":
-		p = c.SLA.LevelTwo.Tag
-		r = c.SLA.LevelTwo.Notify
-
-	case "LevelThree":
-		p = c.SLA.LevelThree.Tag
-		r = c.SLA.LevelThree.Notify
-
-	case "LevelFour":
-		p = c.SLA.LevelFour.Tag
-		r = c.SLA.LevelFour.Notify
-	}
-
-	var n, c string
+	var t, n, c string
 
 	switch notify {
 	case 1:
@@ -468,18 +453,10 @@ func PrepSLANotification(ticket Ticket, notify int64) (notification string, colo
 		t = "3 hours"
 		c = "#43e0d3"
 	}
-	if r {
-		n = fmt.Sprintf("<!here> SLA for *%s* ticket #%d has less than %s until expiration.", p, ticket.ID, t)
-		if notify == 9 {
-			n = fmt.Sprintf("<!here> Expired *%s* SLA! Ticket #%d has an expired SLA.", p, ticket.ID)
-			c = "danger"
-		}
-	} else {
-		n = fmt.Sprintf("SLA for *%s* ticket #%d has less than %s until expiration.", p, ticket.ID, t)
-		if notify == 9 {
-			n = fmt.Sprintf("Expired *%s* SLA! Ticket #%d has an expired SLA.", p, ticket.ID)
-			c = "danger"
-		}
+	n = fmt.Sprintf("<!here> SLA for *%s* ticket #%d has less than %s until expiration.", tag, ticket.ID, t)
+	if notify == 9 {
+		n = fmt.Sprintf("<!here> Expired *%s* SLA! Ticket #%d has an expired SLA.", tag, ticket.ID)
+		c = "danger"
 	}
 
 	return n, c
