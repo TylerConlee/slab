@@ -357,7 +357,7 @@ func HelpMessage(user *slack.User) {
 
 	params.LinkNames = 1
 	message := "Help for Slab can be found at <https://github.com/TylerConlee/slab/wiki|the Slab wiki>"
-	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionText(message, true), slack.MsgOptionAttachments(attachments...))
+	SendMessage(message, c.Slack.ChannelID, attachments)
 
 }
 
@@ -380,39 +380,6 @@ func UnknownCommandMessage(text string, user string) {
 	message := fmt.Sprintf("Sorry, the command `%s` is an invalid command. Please type `help` for a list of all available commands", text)
 	attachment := []slack.Attachment{}
 	SendDirectMessage(message, attachment, user)
-}
-
-// ChatUpdate takes a channel ID, a timestamp and message text
-// and updated the message in the given Slack channel at the given
-// timestamp with the given message text. Currently, it also updates the
-// attachment specifically for the Set message output.
-func ChatUpdate(
-	payload *slack.InteractionCallback,
-	attachment slack.Attachment,
-) {
-
-	for i := range payload.OriginalMessage.Attachments {
-		id := strconv.Itoa(payload.OriginalMessage.Attachments[i].ID)
-		if id == payload.AttachmentID {
-			payload.OriginalMessage.Attachments[i] = attachment
-		}
-	}
-
-	attachments := payload.OriginalMessage.Attachments
-	// Send an update to the given channel with pretext and the parameters
-	channelID, timestamp, t, err := api.UpdateMessage(
-		payload.Channel.ID,
-		payload.OriginalMessage.Timestamp,
-		slack.MsgOptionText(payload.OriginalMessage.Text, false),
-		slack.MsgOptionAttachments(attachments...),
-	)
-	log.Info("Message updated.", map[string]interface{}{
-		"module":    "slack",
-		"channel":   channelID,
-		"timestamp": timestamp,
-		"message":   t,
-		"error":     err,
-	})
 }
 
 // VerifyUser takes a User ID string and runs the Slack GetUserInfo request. If

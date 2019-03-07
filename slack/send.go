@@ -2,6 +2,7 @@ package slack
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/nlopes/slack"
 )
@@ -61,4 +62,37 @@ func SendDirectMessage(message string, attachments []slack.Attachment, user stri
 	}
 
 	api.PostMessage(channelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(attachments...))
+}
+
+// ChatUpdate takes a channel ID, a timestamp and message text
+// and updated the message in the given Slack channel at the given
+// timestamp with the given message text. Currently, it also updates the
+// attachment specifically for the Set message output.
+func ChatUpdate(
+	payload *slack.InteractionCallback,
+	attachment slack.Attachment,
+) {
+
+	for i := range payload.OriginalMessage.Attachments {
+		id := strconv.Itoa(payload.OriginalMessage.Attachments[i].ID)
+		if id == payload.AttachmentID {
+			payload.OriginalMessage.Attachments[i] = attachment
+		}
+	}
+
+	attachments := payload.OriginalMessage.Attachments
+	// Send an update to the given channel with pretext and the parameters
+	channelID, timestamp, t, err := api.UpdateMessage(
+		payload.Channel.ID,
+		payload.OriginalMessage.Timestamp,
+		slack.MsgOptionText(payload.OriginalMessage.Text, false),
+		slack.MsgOptionAttachments(attachments...),
+	)
+	log.Info("Message updated.", map[string]interface{}{
+		"module":    "slack",
+		"channel":   channelID,
+		"timestamp": timestamp,
+		"message":   t,
+		"error":     err,
+	})
 }
