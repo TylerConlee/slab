@@ -7,11 +7,9 @@ BINARY_DARWIN = $(dir $(realpath $(firstword $(MAKEFILE_LIST))))/release/darwin/
 
 all: 
 	GOOS=$(GOOS) GOARCH=$(GOARCH) go build -ldflags="-X main.Version=$(VERSION)" -o $(OUTPUT)
-deploy:
-	ssh -o StrictHostKeyChecking=no ubuntu@35.160.9.184 supervisorctl stop slab
-	scp -o StrictHostKeyChecking=no slab ubuntu@35.160.9.184:slab
-	ssh -o StrictHostKeyChecking=no ubuntu@35.160.9.184 supervisorctl start slab
-dev:
-	ssh -o StrictHostKeyChecking=no ubuntu@35.160.9.184 supervisorctl stop slab-dev
-	scp -o StrictHostKeyChecking=no slab ubuntu@35.160.9.184:slab-dev/slab
-	ssh -o StrictHostKeyChecking=no ubuntu@35.160.9.184 supervisorctl start slab-dev
+
+build-linux:
+	GOOS=linux GOARCH=amd64 go build -ldflags="-X main.Version=$(VERSION)"  -o $(BINARY_UNIX) -v
+
+build-darwin:
+	GOOS=darwin GOARCH=amd64 go build -ldflags="-X main.Version=$(VERSION)"  -o $(BINARY_DARWIN) -v

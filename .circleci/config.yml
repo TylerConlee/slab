@@ -29,32 +29,16 @@ jobs:
     docker:
       - image: circleci/golang:1.10.3
       - image: circleci/redis:4
+    parallelism: 2
     steps:
       - checkout
       - restore_cache:
           key: glide-cache-{{ .Branch }}-{{ checksum "glide.lock" }}
-      - run: go test -v $(go list ./... | grep -v /vendor/) 
-  dev-deploy:
-    working_directory: /go/src/github.com/tylerconlee/slab
-    docker:
-      - image: circleci/golang:1.10.3
-    steps:
-      - checkout
-      - restore_cache:
-          key: glide-cache-{{ .Branch }}-{{ checksum "glide.lock" }}
-      - run: make
-      - run: make dev
-  deploy:
-    working_directory: /go/src/github.com/tylerconlee/slab
-    docker:
-      - image: circleci/golang:1.10.3
-    steps:
-      - checkout
-      - restore_cache:
-          key: glide-cache-{{ .Branch }}-{{ checksum "glide.lock" }}
-      - run: make
-      - run: make deploy
-
+      - run: go get -u github.com/jstemmer/go-junit-report 
+      - run: mkdir go-test 
+      - run: go test -v $(go list ./... | grep -v /vendor/) | go-junit-report > go-test/results.xml
+      - store_test_results:
+           path: go-test/
 workflows:
   version: 2
   build_and_test:
@@ -63,16 +47,3 @@ workflows:
       - test:
           requires:
             - build
-      - dev-deploy:
-          requires:
-            - test
-          filters:
-            branches:
-              only: develop
-      - deploy:
-          requires:
-            - test
-          filters:
-            branches:
-              only: master
-      
