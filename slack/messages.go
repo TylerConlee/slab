@@ -246,7 +246,7 @@ func DiagMessage(user *slack.User) {
 // NewTicketMessage takes a slice of tickets that have been created in the last
 // loop interval and sends the IDs and links to the tickets to the user
 // currently set as triager.
-func NewTicketMessage(tickets []Ticket) (newTickets []slack.Attachment, message string) {
+func NewTicketMessage(tickets []Ticket, tag string) (newTickets []slack.Attachment, message string) {
 	attachments := []slack.Attachment{}
 	for _, ticket := range tickets {
 		description := ticket.Description
@@ -275,6 +275,11 @@ func NewTicketMessage(tickets []Ticket) (newTickets []slack.Attachment, message 
 				slack.AttachmentField{
 					Title: "Created At",
 					Value: ticket.CreatedAt.String(),
+					Short: true,
+				},
+				slack.AttachmentField{
+					Title: "Tag",
+					Value: tag,
 					Short: true,
 				},
 			},
@@ -348,102 +353,11 @@ func HelpMessage(user *slack.User) {
 	}
 	params := slack.PostMessageParameters{}
 
-	setCommand := slack.Attachment{
-		Title: "@slab set",
-		Fields: []slack.AttachmentField{
-			slack.AttachmentField{
-				Title: "Command Name",
-				Value: "Set",
-				Short: true,
-			},
-			slack.AttachmentField{
-				Title: "Command Description",
-				Value: "Used to set the active Triager, returns a dropdown of users",
-				Short: true,
-			},
-		},
-		Footer:     fmt.Sprintf("Current triager: <@%s>", Triager),
-		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
-	}
-	unsetCommand := slack.Attachment{
-		Title: "@slab unset",
-		Fields: []slack.AttachmentField{
-			slack.AttachmentField{
-				Title: "Command Name",
-				Value: "Unset",
-				Short: true,
-			},
-			slack.AttachmentField{
-				Title: "Command Description",
-				Value: "Used to unset the active Triager. Sets the Triager to 'None'",
-				Short: true,
-			},
-		},
-		Footer:     fmt.Sprintf("Current triager: <@%s>", Triager),
-		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
-	}
-	whoisCommand := slack.Attachment{
-		Title: "@slab whois",
-		Fields: []slack.AttachmentField{
-			slack.AttachmentField{
-				Title: "Command Name",
-				Value: "Whois",
-				Short: true,
-			},
-			slack.AttachmentField{
-				Title: "Command Description",
-				Value: "Returns the name of the user currently set as Triager",
-				Short: true,
-			},
-		},
-		Footer:     fmt.Sprintf("Current triager: <@%s>", Triager),
-		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
-	}
-	statusCommand := slack.Attachment{
-		Title: "@slab status",
-		Fields: []slack.AttachmentField{
-			slack.AttachmentField{
-				Title: "Command Name",
-				Value: "Status",
-				Short: true,
-			},
-			slack.AttachmentField{
-				Title: "Command Description",
-				Value: "Returns metadata about the Slab instance currently running",
-				Short: true,
-			},
-		},
-		Footer:     fmt.Sprintf("Current uptime: %v", time.Now().Sub(uptime).String()),
-		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
-	}
-	diagCommand := slack.Attachment{
-		Title: "@slab diag",
-		Fields: []slack.AttachmentField{
-			slack.AttachmentField{
-				Title: "Command Name",
-				Value: "Diag",
-				Short: true,
-			},
-			slack.AttachmentField{
-				Title: "Command Description",
-				Value: "Sends a private message to the requestor with diagnostic information about Slab",
-				Short: true,
-			},
-		},
-		Footer:     fmt.Sprintf("Current uptime: %v", time.Now().Sub(uptime).String()),
-		FooterIcon: "https://slack-files2.s3-us-west-2.amazonaws.com/avatars/2018-01-05/294943756277_b467ce1bf3a88bdb8a6a_512.png",
-	}
-	attachments := []slack.Attachment{
-		setCommand,
-		unsetCommand,
-		whoisCommand,
-		statusCommand,
-		diagCommand,
-	}
+	attachments := []slack.Attachment{}
 
 	params.LinkNames = 1
-	message := "..."
-	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(attachments...))
+	message := "Help for Slab can be found at <https://github.com/TylerConlee/slab/wiki|the Slab wiki>"
+	api.PostMessage(c.Slack.ChannelID, slack.MsgOptionText(message, true), slack.MsgOptionAttachments(attachments...))
 
 }
 
@@ -515,32 +429,12 @@ func VerifyUser(user string) bool {
 }
 
 // PrepSLANotification takes a given ticket and what notification level and returns a string to be sent to Slack.
-func PrepSLANotification(ticket Ticket, notify int64) (notification string, color string) {
+func PrepSLANotification(ticket Ticket, notify int64, tag string) (notification string, color string) {
 	log.Info("Preparing SLA notification message.", map[string]interface{}{
 		"module": "slack",
 		"ticket": ticket.ID,
 	})
-	var t, p string
-	var r bool
-
-	switch ticket.Level {
-	case "LevelOne":
-		p = c.SLA.LevelOne.Tag
-		r = c.SLA.LevelOne.Notify
-	case "LevelTwo":
-		p = c.SLA.LevelTwo.Tag
-		r = c.SLA.LevelTwo.Notify
-
-	case "LevelThree":
-		p = c.SLA.LevelThree.Tag
-		r = c.SLA.LevelThree.Notify
-
-	case "LevelFour":
-		p = c.SLA.LevelFour.Tag
-		r = c.SLA.LevelFour.Notify
-	}
-
-	var n, c string
+	var t, n, c string
 
 	switch notify {
 	case 1:
@@ -559,18 +453,10 @@ func PrepSLANotification(ticket Ticket, notify int64) (notification string, colo
 		t = "3 hours"
 		c = "#43e0d3"
 	}
-	if r {
-		n = fmt.Sprintf("<!here> SLA for *%s* ticket #%d has less than %s until expiration.", p, ticket.ID, t)
-		if notify == 9 {
-			n = fmt.Sprintf("<!here> Expired *%s* SLA! Ticket #%d has an expired SLA.", p, ticket.ID)
-			c = "danger"
-		}
-	} else {
-		n = fmt.Sprintf("SLA for *%s* ticket #%d has less than %s until expiration.", p, ticket.ID, t)
-		if notify == 9 {
-			n = fmt.Sprintf("Expired *%s* SLA! Ticket #%d has an expired SLA.", p, ticket.ID)
-			c = "danger"
-		}
+	n = fmt.Sprintf("<!here> SLA for *%s* ticket #%d has less than %s until expiration.", tag, ticket.ID, t)
+	if notify == 9 {
+		n = fmt.Sprintf("<!here> Expired *%s* SLA! Ticket #%d has an expired SLA.", tag, ticket.ID)
+		c = "danger"
 	}
 
 	return n, c

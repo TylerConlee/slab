@@ -1,6 +1,7 @@
 package slack
 
 import (
+	"strconv"
 	"strings"
 
 	"github.com/nlopes/slack"
@@ -38,10 +39,18 @@ func parseCommand(text string, user *slack.User) {
 				ListTagMessage(user)
 			case "update":
 				if len(t) > 3 {
+					_, err := strconv.Atoi(t[3])
+					if err != nil {
+						UnknownCommandMessage(text, user.ID)
+					}
 					UpdateTagMessage(user, t[3])
 				}
 			case "delete":
 				if len(t) > 3 {
+					_, err := strconv.Atoi(t[3])
+					if err != nil {
+						UnknownCommandMessage(text, user.ID)
+					}
 					DeleteTagMessage(user, t[3])
 				}
 			}
