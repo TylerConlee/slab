@@ -246,7 +246,7 @@ func DiagMessage(user *slack.User) {
 // NewTicketMessage takes a slice of tickets that have been created in the last
 // loop interval and sends the IDs and links to the tickets to the user
 // currently set as triager.
-func NewTicketMessage(tickets []Ticket) {
+func NewTicketMessage(tickets []Ticket) (newTickets []slack.Attachment, message string) {
 	attachments := []slack.Attachment{}
 	for _, ticket := range tickets {
 		description := ticket.Description
@@ -296,25 +296,15 @@ func NewTicketMessage(tickets []Ticket) {
 		attachments = []slack.Attachment{attachment}
 
 	}
-	message := ""
+	message = ""
 	if Triager != "None" {
 		message = fmt.Sprintf("<@%s> The following tickets were received since the last loop:", Triager)
 	} else {
 		message = fmt.Sprintf("The following tickets were received since the last loop:")
 	}
 
-	channelID, timestamp, err := api.PostMessage(c.Slack.ChannelID, slack.MsgOptionText(message, false), slack.MsgOptionAttachments(attachments...))
-	if err != nil {
-		fmt.Printf("%s\n", err)
-		return
-	}
-	// Log message if succesfully sent.
-	log.Debug("New ticket message sent successfully.", map[string]interface{}{
-		"module":    "slack",
-		"channel":   channelID,
-		"timestamp": timestamp,
-		"message":   message,
-	})
+	return attachments, message
+
 }
 
 // StatusMessage responds to @slab status with the version hash and current
@@ -342,7 +332,8 @@ func StatusMessage(user *slack.User) {
 			"error":    err,
 		})
 	}
-	SendMessage("...", c.Slack.ChannelID, attachment)
+	attachments := []slack.Attachment{attachment}
+	SendMessage("...", c.Slack.ChannelID, attachments)
 }
 
 // HelpMessage responds to @slab help with a help message outlining all

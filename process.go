@@ -64,32 +64,11 @@ func iteration(t *time.Ticker, interval time.Duration) {
 			})
 			processSLAAlerts(tick, tags, p)
 			processUpdateAlerts(tick, tags, p, interval)
-
+			processNewAlerts(tick, tags, p, interval)
 			slack.Sent = zendesk.Sent
 			slack.NumTickets = zendesk.NumTickets
 			slack.LastProcessed = zendesk.LastProcessed
 
-			// Returns a list of all new tickets within the last loop
-			new := zendesk.CheckNewTicket(tick, interval)
-			if new != nil {
-
-				var newTickets []slack.Ticket
-				// Loop through all tickets and add to Slack package friendly slice
-				for _, ticket := range new {
-					m := slack.Ticket(ticket)
-					log.Info("Adding new ticket to notification", map[string]interface{}{
-						"module": "main",
-						"ticket": m.ID,
-					})
-					log.Debug("Ticket information", map[string]interface{}{
-						"module": "main",
-						"ticket": m,
-					})
-					newTickets = append(newTickets, m)
-				}
-				slack.NewTicketMessage(newTickets)
-
-			}
 			log.Info("Ticket notifications sent. Returning to idle state.", map[string]interface{}{
 
 				"module": "main",
@@ -148,11 +127,12 @@ func processSLAAlerts(tick zendesk.ZenOutput, tags []map[string]interface{}, p p
 						user := zendesk.GetTicketRequester(int(ticket.Requester))
 						org := getOrgName(ticket.ID)
 						attach := slack.SLAMessage(m, c, user.Name, user.ID, org)
+						attachments := []sl.Attachment{attach}
 						if strings.HasPrefix(tag["channel"].(string), "U") {
-							attachments := []sl.Attachment{attach}
+
 							slack.SendDirectMessage(n, attachments, tag["channel"].(string))
 						} else {
-							slack.SendMessage(n, tag["channel"].(string), attach)
+							slack.SendMessage(n, tag["channel"].(string), attachments)
 						}
 
 					}
@@ -177,14 +157,46 @@ func processUpdateAlerts(tick zendesk.ZenOutput, tags []map[string]interface{}, 
 				user := zendesk.GetTicketRequester(int(ticket.Requester))
 				p.SendDispatcher(n)
 				attach := slack.UpdateMessage(m, user.Name, user.ID)
+				attachments := []sl.Attachment{attach}
 				if strings.HasPrefix(tag["channel"].(string), "U") {
-					attachments := []sl.Attachment{attach}
 					slack.SendDirectMessage(n, attachments, tag["channel"].(string))
 				} else {
-					slack.SendMessage(n, tag["channel"].(string), attach)
+					slack.SendMessage(n, tag["channel"].(string), attachments)
 				}
 			}
 		}
 
+	}
+}
+
+func processNewAlerts(tick zendesk.ZenOutput, tags []map[string]interface{}, p plugins.Plugins, interval time.Duration) {
+	// Returns a list of all new tickets within the last loop
+	new := zendesk.CheckNewTicket(tick, interval)
+	if new != nil {
+
+		var newTickets []slack.Ticket
+		// Loop through all tickets and add to Slack package friendly slice
+		for _, ticket := range new {
+			for _, tag := range tags {
+				if contains(ticket.Tags, tag["tag"].(string)) && tag["notify_type"].(string) == "new" {
+					m := slack.Ticket(ticket)
+					log.Info("Adding new ticket to notification", map[string]interface{}{
+						"module": "main",
+						"ticket": m.ID,
+					})
+					log.Debug("Ticket information", map[string]interface{}{
+						"module": "main",
+						"ticket": m,
+					})
+					newTickets = append(newTickets, m)
+					attachments, message := slack.NewTicketMessage(newTickets)
+					if strings.HasPrefix(tag["channel"].(string), "U") {
+						slack.SendDirectMessage(message, attachments, tag["channel"].(string))
+					} else {
+						slack.SendMessage(message, tag["channel"].(string), attachments)
+					}
+				}
+			}
+		}
 	}
 }
