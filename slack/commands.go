@@ -18,11 +18,15 @@ func parseCommand(text string, user *slack.User) {
 		case "set":
 
 			attachment = SetMessage()
+			attachments := []slack.Attachment{attachment}
+			SendMessage("", c.Slack.ChannelID, attachments)
 		case "diag":
 
 			DiagMessage(user)
 		case "whois":
 			attachment = WhoIsMessage(user)
+			attachments := []slack.Attachment{attachment}
+			SendMessage("", c.Slack.ChannelID, attachments)
 		case "status":
 			StatusMessage(user)
 		case "help":
