@@ -227,7 +227,9 @@ func makeRequest(user string, key string, url string) (responseData []byte) {
 	var netClient = &http.Client{
 		Timeout: time.Second * 60,
 		Transport: &http.Transport{
-			DisableKeepAlives: true,
+			MaxIdleConns:       10,
+			IdleConnTimeout:    30 * time.Second,
+			DisableCompression: true,
 		},
 	}
 
