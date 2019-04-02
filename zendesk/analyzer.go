@@ -131,22 +131,24 @@ func cleanCache(ticket ActiveTicket) {
 			"lastupdate": ticket.UpdatedAt,
 			"sentupdate": item.LastUpdate,
 		})
-		t := item.Expire.Add(15 * time.Minute)
+		if ticket.ID == item.ID {
+			t := item.Expire.Add(15 * time.Minute)
 
-		d := 1 * time.Minute
-		sentupdate := item.LastUpdate.Truncate(d)
-		ticketupdate := ticket.UpdatedAt.Truncate(d)
+			d := 1 * time.Minute
+			sentupdate := item.LastUpdate.Truncate(d)
+			ticketupdate := ticket.UpdatedAt.Truncate(d)
 
-		if t.Before(time.Now()) || sentupdate.Before(ticketupdate) {
-			log.Info("Cache cleared", map[string]interface{}{
-				"module":     "zendesk",
-				"ticket":     ticket.ID,
-				"expires":    item.Expire,
-				"lastupdate": ticketupdate,
-				"sentupdate": sentupdate,
-			})
-			Sent = append(Sent[:i], Sent[i+1:]...)
-			i--
+			if t.Before(time.Now()) || sentupdate.Before(ticketupdate) {
+				log.Info("Cache cleared", map[string]interface{}{
+					"module":     "zendesk",
+					"ticket":     ticket.ID,
+					"expires":    item.Expire,
+					"lastupdate": ticketupdate,
+					"sentupdate": sentupdate,
+				})
+				Sent = append(Sent[:i], Sent[i+1:]...)
+				i--
+			}
 		}
 	}
 
