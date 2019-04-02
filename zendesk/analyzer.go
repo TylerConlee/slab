@@ -109,6 +109,7 @@ func UpdateCache(ticket ActiveTicket, channel string) (bool, int64) {
 			"ticket":      ticket.ID,
 			"notify_type": notify,
 			"expires":     expire,
+			"lastupdate":  ticket.UpdatedAt,
 		})
 		return true, notify
 	}
