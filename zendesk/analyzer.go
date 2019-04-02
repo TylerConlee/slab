@@ -124,6 +124,13 @@ func UpdateCache(ticket ActiveTicket, channel string) (bool, int64) {
 func cleanCache(ticket ActiveTicket) {
 	for i := 0; i < len(Sent); i++ {
 		item := Sent[i]
+		log.Info("Preparing cache clear", map[string]interface{}{
+			"module":     "zendesk",
+			"ticket":     ticket.ID,
+			"expires":    item.Expire,
+			"lastupdate": ticket.UpdatedAt,
+			"sentupdate": item.LastUpdate,
+		})
 		t := item.Expire.Add(15 * time.Minute)
 
 		d := 1 * time.Minute
@@ -135,8 +142,8 @@ func cleanCache(ticket ActiveTicket) {
 				"module":     "zendesk",
 				"ticket":     ticket.ID,
 				"expires":    item.Expire,
-				"lastupdate": ticket.UpdatedAt,
-				"sentupdate": item.LastUpdate,
+				"lastupdate": ticketupdate,
+				"sentupdate": sentupdate,
 			})
 			Sent = append(Sent[:i], Sent[i+1:]...)
 			i--
