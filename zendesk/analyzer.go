@@ -11,10 +11,11 @@ var Sent = []NotifySent{}
 // NotifySent is represetative of an individual ticket, what kind of
 // notification was last sent for that ticket, and when the SLA breach time is.
 type NotifySent struct {
-	ID      int
-	Type    int64
-	Expire  time.Time
-	Channel string
+	ID         int
+	Type       int64
+	Expire     time.Time
+	LastUpdate time.Time
+	Channel    string
 }
 
 // GetTimeRemaining takes an instance of a ticket and returns the value of the
@@ -70,7 +71,7 @@ func GetNotifyType(remain time.Duration) (notifyType int64) {
 // notification type have been sent already. If yes, it returns True,
 // indicating a notifcation needs to be sent.
 func UpdateCache(ticket ActiveTicket, channel string) (bool, int64) {
-	//cleanCache()
+	cleanCache(ticket)
 
 	// get the expiration timestamp
 	expire := GetTimeRemaining(ticket)
@@ -94,6 +95,7 @@ func UpdateCache(ticket ActiveTicket, channel string) (bool, int64) {
 						"notify_type": notify,
 						"expires":     expire,
 						"channel":     channel,
+						"lastupdate":  ticket.UpdatedAt,
 					})
 					return false, 0
 				}
@@ -101,7 +103,7 @@ func UpdateCache(ticket ActiveTicket, channel string) (bool, int64) {
 			}
 
 		}
-		Sent = append(Sent, NotifySent{ticket.ID, notify, expire, channel})
+		Sent = append(Sent, NotifySent{ticket.ID, notify, expire, ticket.UpdatedAt, channel})
 		log.Info("Ticket should receive a notification", map[string]interface{}{
 			"module":      "zendesk",
 			"ticket":      ticket.ID,
@@ -118,11 +120,11 @@ func UpdateCache(ticket ActiveTicket, channel string) (bool, int64) {
 // cleanCache checks the Sent slice and loops through the tickets listed. If
 // any have gone 15 minutes past the expiration time, they are removed from the
 // slice and the length of the slice is shortened.
-func cleanCache() {
+func cleanCache(ticket ActiveTicket) {
 	for i := 0; i < len(Sent); i++ {
 		item := Sent[i]
 		t := item.Expire.Add(15 * time.Minute)
-		if t.Before(time.Now()) {
+		if t.Before(time.Now()) || item.LastUpdate.Before(ticket.UpdatedAt) {
 			Sent = append(Sent[:i], Sent[i+1:]...)
 			i--
 		}
