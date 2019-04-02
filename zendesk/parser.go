@@ -44,6 +44,7 @@ func CheckSLA(tick ZenOutput) (sla []ActiveTicket) {
 				Priority:    ticket.Priority,
 				CreatedAt:   ticket.CreatedAt,
 				Description: ticket.Description,
+				UpdatedAt:   ticket.UpdatedAt,
 			}
 			sla = append(sla, t)
 		}
