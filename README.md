@@ -39,6 +39,7 @@ glide install
 - PagerDuty integration
 - Email integration
 - New Relic / DataDog integrations?
+- Advanced filtering - custom field support, user/org support, etc.
 
 
 ## Meta
