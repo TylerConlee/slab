@@ -35,6 +35,8 @@ Glide must be installed to compile Slab. Clone the repo and run `glide install` 
 glide install
 ```
 
+## Development schedule
+
 
 ## Meta
 
