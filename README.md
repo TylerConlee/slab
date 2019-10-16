@@ -35,6 +35,11 @@ Glide must be installed to compile Slab. Clone the repo and run `glide install` 
 glide install
 ```
 
+## Feature ideas
+- PagerDuty integration
+- Email integration
+- New Relic / DataDog integrations?
+
 
 ## Meta
 
