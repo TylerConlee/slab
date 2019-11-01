@@ -23,9 +23,9 @@ var updateMessage slack.Message
 // SetTriager generates a new Slack attachment to update the
 // original message and set the Triager role
 func SetTriager(payload *slack.InteractionCallback) {
-	if len(payload.ActionCallback.AttachmentActions) == 0 {
+	/*if len(payload.ActionCallback.AttachmentActions) == 0 {
 		return
-	}
+	}*/
 
 	if VerifyUser(payload.User.ID) {
 		Triager = payload.User.ID
