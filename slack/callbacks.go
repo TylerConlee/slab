@@ -23,7 +23,7 @@ var updateMessage slack.Message
 // SetTriager generates a new Slack attachment to update the
 // original message and set the Triager role
 func SetTriager(payload *slack.InteractionCallback) {
-	if len(payload.Actions) == 0 {
+	if len(payload.ActionCallback.AttachmentActions) == 0 {
 		return
 	}
 
@@ -129,7 +129,7 @@ func AcknowledgeNewTicket(payload *slack.InteractionCallback) {
 func MoreInfoSLA(payload *slack.InteractionCallback) {
 	log.Info("More info SLA button clicked.", map[string]interface{}{
 		"module": "slack",
-		"ticket": payload.Actions[0].Value,
+		"ticket": payload.ActionCallback.AttachmentActions[0].Value,
 	})
 	if err := datastore.SaveActivity(payload.User.ID, payload.User.Name, "moreinfo"); err != nil {
 		log.Error("Unable to save activity", map[string]interface{}{
@@ -139,7 +139,7 @@ func MoreInfoSLA(payload *slack.InteractionCallback) {
 			"error":    err,
 		})
 	}
-	id, _ := strconv.Atoi(payload.Actions[0].Value)
+	id, _ := strconv.Atoi(payload.ActionCallback.AttachmentActions[0].Value)
 	// ORG Details
 	org := zendesk.GetOrganization(id)
 	// REQUESTED tickets
@@ -267,7 +267,7 @@ func UpdateTagDialog(payload *slack.InteractionCallback) {
 		"module":    "slack",
 		"timestamp": updateMessage.Timestamp,
 	})
-	id, err := strconv.Atoi(payload.Actions[0].Value)
+	id, err := strconv.Atoi(payload.ActionCallback.AttachmentActions[0].Value)
 	if err != nil {
 		log.Error("Error converting ID to integer", map[string]interface{}{
 			"module": "slack",

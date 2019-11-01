@@ -39,7 +39,7 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 	})
 	switch payload.CallbackID {
 	case "sla":
-		if payload.Actions[0].Value == "ack" {
+		if payload.ActionCallback.AttachmentActions[0].Value == "ack" {
 			sl.AcknowledgeSLA(payload)
 		} else {
 			sl.MoreInfoSLA(payload)
@@ -61,21 +61,21 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 	case "cfgwiz":
 		log.Info("Config wizard step detected", map[string]interface{}{
 			"module": "server",
-			"step":   payload.Actions[0].Value,
+			"step":   payload.ActionCallback.AttachmentActions[0].Value,
 		})
 		sl.AddChannel(payload.Channel.ID, 1)
 		if sl.ChannelSelect {
-			sl.AddChannel(payload.Actions[0].SelectedOptions[0].Value, 2)
+			sl.AddChannel(payload.ActionCallback.AttachmentActions[0].SelectedOptions[0].Value, 2)
 		}
 		switch {
-		case payload.Actions[0].Value == "start":
+		case payload.ActionCallback.AttachmentActions[0].Value == "start":
 			sl.NextStep("start")
-		case payload.Actions[0].Value == "view":
+		case payload.ActionCallback.AttachmentActions[0].Value == "view":
 			sl.ViewConfig()
-		case strings.Contains(payload.Actions[0].Value, "channel"):
-			sl.NextStep(strings.Trim(payload.Actions[0].Value, "channel"))
+		case strings.Contains(payload.ActionCallback.AttachmentActions[0].Value, "channel"):
+			sl.NextStep(strings.Trim(payload.ActionCallback.AttachmentActions[0].Value, "channel"))
 		default:
-			sl.NextStep(payload.Actions[0].SelectedOptions[0].Value)
+			sl.NextStep(payload.ActionCallback.AttachmentActions[0].SelectedOptions[0].Value)
 		}
 	}
 	return
