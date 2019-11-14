@@ -8,13 +8,7 @@ type Plugins struct {
 	PagerDuty PagerDuty
 }
 
-// Twilio contains the connection details for the Twilio API:
-// https://www.twilio.com/docs/api
-type Twilio struct {
-	AccountID string
-	Auth      string
-	Enabled   bool
-}
+
 
 // PagerDuty contains the connection details for the PagerDuty API:
 // https://v2.developer.pagerduty.com/docs/rest-api

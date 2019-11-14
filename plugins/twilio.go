@@ -26,6 +26,14 @@ var (
 	TwilioEnabled bool
 )
 
+// Twilio contains the connection details for the Twilio API:
+// https://www.twilio.com/docs/api
+type Twilio struct {
+	AccountID string
+	Auth      string
+	Enabled   bool
+}
+
 // EnableTwilio changes the Enabled Twilio option to true.
 func (p *Plugins) EnableTwilio() (attachment slack.Attachment) {
 	TwilioEnabled = true
