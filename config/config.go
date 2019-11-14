@@ -6,6 +6,7 @@ import (
 	"time"
 
 	l "github.com/tylerconlee/slab/log"
+	"github.com/tylerconlee/slab/plugins"
 
 	"github.com/BurntSushi/toml"
 )
@@ -23,7 +24,7 @@ type Config struct {
 	TriageEnabled bool
 	Metadata      Metadata
 	Port          int
-	Plugins       Plugins
+	Plugins       plugins.Plugins
 	Postgres      Postgres
 }
 

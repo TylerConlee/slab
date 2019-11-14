@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/nlopes/slack"
-	"github.com/tylerconlee/slab/plugins"
 )
 
 // parseCommand takes the message that mentions the bot user and identifies
@@ -14,6 +13,7 @@ func parseCommand(text string, user *slack.User) {
 	var attachment slack.Attachment
 	t := strings.Fields(text)
 	if len(t) > 1 {
+		// Send to plugins first to run through
 		switch t[1] {
 		case "set":
 
@@ -58,57 +58,6 @@ func parseCommand(text string, user *slack.User) {
 					}
 					DeleteTagMessage(user, t[3])
 				}
-			}
-		case "twilio":
-			p := plugins.LoadPlugins(c)
-			switch t[2] {
-			case "set":
-				if len(t) > 3 {
-					s := plugins.TwilioSet(t[3])
-					attachments := []slack.Attachment{s}
-					SendMessage("Plugin message", c.Slack.ChannelID, attachments)
-				}
-			case "unset":
-				s := plugins.TwilioUnset()
-				attachments := []slack.Attachment{s}
-				SendMessage("Plugin message", c.Slack.ChannelID, attachments)
-			case "configure":
-				if len(t) > 3 {
-					s := plugins.TwilioConfigure(t[3])
-					attachments := []slack.Attachment{s}
-					SendMessage("Plugin message", c.Slack.ChannelID, attachments)
-				}
-			case "status":
-				s := p.TwilioStatus()
-				attachments := []slack.Attachment{s}
-				SendMessage("Plugin status", c.Slack.ChannelID, attachments)
-			case "enable":
-				p.EnableTwilio()
-				a := slack.Attachment{
-					Title: "Twilio Plugin",
-					Fields: []slack.AttachmentField{
-						slack.AttachmentField{
-							Title: "Enabled",
-							Value: ":white_check_mark:",
-						},
-					},
-				}
-				attachments := []slack.Attachment{a}
-				SendMessage("Plugin Twilio has been updated", c.Slack.ChannelID, attachments)
-
-			case "disable":
-				p.DisableTwilio()
-				a := slack.Attachment{
-					Title: "Twilio Plugin",
-					Fields: []slack.AttachmentField{
-						slack.AttachmentField{
-							Title: "Enabled",
-							Value: ":x:",
-						},
-					},
-				}
-				attachments := []slack.Attachment{a}
-				SendMessage("Plugin Twilio has been updated", c.Slack.ChannelID, attachments)
 			}
 
 		default:
