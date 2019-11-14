@@ -5,8 +5,8 @@ import (
 	"os"
 	"time"
 
+	plugins "github.com/tylerconlee/slab/_plugins"
 	l "github.com/tylerconlee/slab/log"
-	"github.com/tylerconlee/slab/plugins"
 
 	"github.com/BurntSushi/toml"
 )
