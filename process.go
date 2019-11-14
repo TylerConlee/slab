@@ -6,9 +6,9 @@ import (
 	"time"
 
 	sl "github.com/nlopes/slack"
+	plugins "github.com/tylerconlee/slab/_plugins"
 	"github.com/tylerconlee/slab/config"
 	"github.com/tylerconlee/slab/datastore"
-	"github.com/tylerconlee/slab/plugins"
 	"github.com/tylerconlee/slab/slack"
 	"github.com/tylerconlee/slab/zendesk"
 )
