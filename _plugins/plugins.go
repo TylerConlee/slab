@@ -20,23 +20,6 @@ type PagerDuty struct {
 	Enabled bool
 }
 
-// LoadPlugins is sent a map of the plugin configuration. It parses the
-// configuration and determines which plugins are available.
-/*func LoadPlugins() (p Plugins) {
-	return Plugins{
-		Twilio{
-			Twilio.AccountID,
-			Twilio.Auth,
-			true,
-		},
-		PagerDuty{
-			PagerDuty.Email,
-			PagerDuty.Key,
-			true,
-		},
-	}
-}*/
-
 // SendDispatcher receives the message from the process loop and checks which
 // plugins are enabled and sends the appropriate notifications through them.
 func (p *Plugins) SendDispatcher(message string) {
@@ -65,13 +48,14 @@ func (p *Plugins) SendDispatcher(message string) {
 	}
 }
 
-func ParsePluginCommand(text string, user *slack.User) {
-	var attachment slack.Attachment
+// ParsePluginCommand is ran before the core Slab commands are parsed to determine if a given command
+// is related to a plugin or not. If it is, it returns a message and attachment which is then sent in
+// slack/commands.go
+func ParsePluginCommand(text string, user *slack.User) (message string, attachments []slack.Attachment) {
 	t := strings.Fields(text)
 	if len(t) > 1 {
 		switch t[1] {
 		case "twilio":
-			var attachment slack.Attachment
 			t := strings.Fields(text)
 			if len(t) > 1 {
 				p := LoadPlugins()
@@ -79,23 +63,23 @@ func ParsePluginCommand(text string, user *slack.User) {
 				case "set":
 					if len(t) > 3 {
 						s := TwilioSet(t[3])
-						attachments := []slack.Attachment{s}
-						SendMessage("Plugin message", c.Slack.ChannelID, attachments)
+						attachments = []slack.Attachment{s}
+						message = "Plugin message"
 					}
 				case "unset":
 					s := TwilioUnset()
-					attachments := []slack.Attachment{s}
-					SendMessage("Plugin message", c.Slack.ChannelID, attachments)
+					attachments = []slack.Attachment{s}
+					message = "Plugin message"
 				case "configure":
 					if len(t) > 3 {
 						s := TwilioConfigure(t[3])
-						attachments := []slack.Attachment{s}
-						SendMessage("Plugin message", c.Slack.ChannelID, attachments)
+						attachments = []slack.Attachment{s}
+						message = "Plugin message"
 					}
 				case "status":
 					s := p.TwilioStatus()
-					attachments := []slack.Attachment{s}
-					SendMessage("Plugin status", c.Slack.ChannelID, attachments)
+					attachments = []slack.Attachment{s}
+					message = "Plugin status"
 				case "enable":
 					p.EnableTwilio()
 					a := slack.Attachment{
@@ -107,8 +91,8 @@ func ParsePluginCommand(text string, user *slack.User) {
 							},
 						},
 					}
-					attachments := []slack.Attachment{a}
-					SendMessage("Plugin Twilio has been updated", c.Slack.ChannelID, attachments)
+					attachments = []slack.Attachment{a}
+					message = "Plugin Twilio has been updated"
 
 				case "disable":
 					p.DisableTwilio()
@@ -121,10 +105,15 @@ func ParsePluginCommand(text string, user *slack.User) {
 							},
 						},
 					}
-					attachments := []slack.Attachment{a}
-					SendMessage("Plugin Twilio has been updated", c.Slack.ChannelID, attachments)
+					attachments = []slack.Attachment{a}
+					message = "Plugin Twilio has been updated"
 				}
 			}
+		default:
+			attachments = []slack.Attachment{}
+			message = ""
 		}
+
 	}
+	return
 }
