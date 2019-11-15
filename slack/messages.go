@@ -333,6 +333,7 @@ func StatusMessage(user *slack.User) (attachments []slack.Attachment) {
 		})
 	}
 	attachments = []slack.Attachment{attachment}
+	return attachments
 }
 
 // HelpMessage responds to @slab help with a help message outlining all
@@ -346,8 +347,6 @@ func HelpMessage(user *slack.User) (message string) {
 		})
 	}
 	params := slack.PostMessageParameters{}
-
-	attachments := []slack.Attachment{}
 
 	params.LinkNames = 1
 	message = "Help for Slab can be found at <https://github.com/TylerConlee/slab/wiki|the Slab wiki>"

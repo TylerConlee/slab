@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/nlopes/slack"
+	plugins "github.com/tylerconlee/slab/_plugins"
 )
 
 // parseCommand takes the message that mentions the bot user and identifies
@@ -16,11 +17,11 @@ func parseCommand(text string, user *slack.User) {
 	t := strings.Fields(text)
 	if len(t) > 1 {
 		message, attachments = plugins.ParsePluginCommand(text, user)
-		if message = "" {
-		switch t[1] {
+		if message == "" {
+			switch t[1] {
 			case "set":
 				attachment = SetMessage()
-				attachments = []slack.Attachment{attachment}			
+				attachments = []slack.Attachment{attachment}
 			case "diag":
 
 				DiagMessage(user)
@@ -64,7 +65,7 @@ func parseCommand(text string, user *slack.User) {
 				UnknownCommandMessage(text, user.ID)
 			}
 		}
-		
+
 		SendMessage(message, c.Slack.ChannelID, attachments)
 	}
 
