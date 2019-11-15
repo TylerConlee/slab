@@ -17,6 +17,10 @@ func parseCommand(text string, user *slack.User) {
 	t := strings.Fields(text)
 	if len(t) > 1 {
 		message, attachments = plugins.ParsePluginCommand(text, user)
+		log.Info("Command received", map[string]interface{}{
+			"module":  "slack",
+			"command": t,
+		})
 		if message == "" {
 			switch t[1] {
 			case "set":
