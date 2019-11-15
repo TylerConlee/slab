@@ -309,7 +309,7 @@ func NewTicketMessage(tickets []Ticket, tag string) (newTickets []slack.Attachme
 
 // StatusMessage responds to @slab status with the version hash and current
 // uptime for the Slab process
-func StatusMessage(user *slack.User) {
+func StatusMessage(user *slack.User) (attachments []slack.Attachment) {
 	attachment := slack.Attachment{
 		Title: "Slab Status",
 		Fields: []slack.AttachmentField{
@@ -332,13 +332,12 @@ func StatusMessage(user *slack.User) {
 			"error":    err,
 		})
 	}
-	attachments := []slack.Attachment{attachment}
-	SendMessage("...", c.Slack.ChannelID, attachments)
+	attachments = []slack.Attachment{attachment}
 }
 
 // HelpMessage responds to @slab help with a help message outlining all
 // available commands
-func HelpMessage(user *slack.User) {
+func HelpMessage(user *slack.User) (message string) {
 	if err := datastore.SaveActivity(user.ID, user.Name, "help"); err != nil {
 		log.Error("Unable to save activity", map[string]interface{}{
 			"module":   "slack",
@@ -351,8 +350,8 @@ func HelpMessage(user *slack.User) {
 	attachments := []slack.Attachment{}
 
 	params.LinkNames = 1
-	message := "Help for Slab can be found at <https://github.com/TylerConlee/slab/wiki|the Slab wiki>"
-	SendMessage(message, c.Slack.ChannelID, attachments)
+	message = "Help for Slab can be found at <https://github.com/TylerConlee/slab/wiki|the Slab wiki>"
+	return message
 
 }
 

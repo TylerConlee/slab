@@ -11,58 +11,61 @@ import (
 // what the user is asking for.
 func parseCommand(text string, user *slack.User) {
 	var attachment slack.Attachment
+	attachments := []slack.Attachment{}
+	message := ""
 	t := strings.Fields(text)
 	if len(t) > 1 {
-		// Send to plugins first to run through
+		message, attachments = plugins.ParsePluginCommand(text, user)
+		if message = "" {
 		switch t[1] {
-		case "set":
+			case "set":
+				attachment = SetMessage()
+				attachments = []slack.Attachment{attachment}			
+			case "diag":
 
-			attachment = SetMessage()
-			attachments := []slack.Attachment{attachment}
-			SendMessage("", c.Slack.ChannelID, attachments)
-		case "diag":
+				DiagMessage(user)
+			case "whois":
+				attachment = WhoIsMessage(user)
+				attachments = []slack.Attachment{attachment}
+			case "status":
+				attachments = StatusMessage(user)
+			case "help":
+				message = HelpMessage(user)
+			case "unset":
+				attachment = UnsetMessage(user)
+				attachments = []slack.Attachment{attachment}
+				message = "Triager has been reset. Please use `@slab set` to set Triager."
 
-			DiagMessage(user)
-		case "whois":
-			attachment = WhoIsMessage(user)
-			attachments := []slack.Attachment{attachment}
-			SendMessage("", c.Slack.ChannelID, attachments)
-		case "status":
-			StatusMessage(user)
-		case "help":
-			HelpMessage(user)
-		case "unset":
-			attachment = UnsetMessage(user)
-			attachments := []slack.Attachment{attachment}
-			SendMessage("Triager has been reset. Please use `@slab set` to set Triager.", c.Slack.ChannelID, attachments)
-
-		case "tag":
-			switch t[2] {
-			case "create":
-				CreateTagMessage(user)
-			case "list":
-				ListTagMessage(user)
-			case "update":
-				if len(t) > 3 {
-					_, err := strconv.Atoi(t[3])
-					if err != nil {
-						UnknownCommandMessage(text, user.ID)
+			case "tag":
+				switch t[2] {
+				case "create":
+					CreateTagMessage(user)
+				case "list":
+					ListTagMessage(user)
+				case "update":
+					if len(t) > 3 {
+						_, err := strconv.Atoi(t[3])
+						if err != nil {
+							UnknownCommandMessage(text, user.ID)
+						}
+						UpdateTagMessage(user, t[3])
 					}
-					UpdateTagMessage(user, t[3])
-				}
-			case "delete":
-				if len(t) > 3 {
-					_, err := strconv.Atoi(t[3])
-					if err != nil {
-						UnknownCommandMessage(text, user.ID)
+				case "delete":
+					if len(t) > 3 {
+						_, err := strconv.Atoi(t[3])
+						if err != nil {
+							UnknownCommandMessage(text, user.ID)
+						}
+						DeleteTagMessage(user, t[3])
 					}
-					DeleteTagMessage(user, t[3])
 				}
+
+			default:
+				UnknownCommandMessage(text, user.ID)
 			}
-
-		default:
-			UnknownCommandMessage(text, user.ID)
 		}
+		
+		SendMessage(message, c.Slack.ChannelID, attachments)
 	}
 
 }
