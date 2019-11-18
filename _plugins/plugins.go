@@ -6,6 +6,9 @@ import (
 	"github.com/nlopes/slack"
 )
 
+var commands map[string]func([]string) ([]slack.Attachment, string)
+var send map[string]func(*Plugins, string)
+
 // Plugins contains a list of all available plugins
 type Plugins struct {
 	Twilio    Twilio
@@ -27,24 +30,8 @@ func (p *Plugins) SendDispatcher(message string) {
 		"module": "plugin",
 		"plugin": p,
 	})
-	if TwilioPhone == "" {
-		log.Info("To phone number for Twilio not set.", map[string]interface{}{
-			"module": "plugin",
-			"plugin": "twilio",
-		})
-	}
-	if TwilioFrom == "" {
-		log.Info("From phone number for Twilio not set.", map[string]interface{}{
-			"module": "plugin",
-			"plugin": "twilio",
-		})
-	}
-	if (TwilioEnabled) && (TwilioPhone != "") {
-		log.Info("Plugin loaded. Sending Twilio message.", map[string]interface{}{
-			"module": "plugin",
-			"plugin": "twilio",
-		})
-		p.SendTwilio(message)
+	for _, function := range send {
+		function(p, message)
 	}
 }
 
@@ -54,66 +41,15 @@ func (p *Plugins) SendDispatcher(message string) {
 func ParsePluginCommand(text string, user *slack.User) (message string, attachments []slack.Attachment) {
 	t := strings.Fields(text)
 	if len(t) > 1 {
-		switch t[1] {
-		case "twilio":
-			t := strings.Fields(text)
-			if len(t) > 1 {
-				p := LoadPlugins()
-				switch t[2] {
-				case "set":
-					if len(t) > 3 {
-						s := TwilioSet(t[3])
-						attachments = []slack.Attachment{s}
-						message = "Plugin message"
-					}
-				case "unset":
-					s := TwilioUnset()
-					attachments = []slack.Attachment{s}
-					message = "Plugin message"
-				case "configure":
-					if len(t) > 3 {
-						s := TwilioConfigure(t[3])
-						attachments = []slack.Attachment{s}
-						message = "Plugin message"
-					}
-				case "status":
-					s := p.TwilioStatus()
-					attachments = []slack.Attachment{s}
-					message = "Plugin status"
-				case "enable":
-					p.EnableTwilio()
-					a := slack.Attachment{
-						Title: "Twilio Plugin",
-						Fields: []slack.AttachmentField{
-							slack.AttachmentField{
-								Title: "Enabled",
-								Value: ":white_check_mark:",
-							},
-						},
-					}
-					attachments = []slack.Attachment{a}
-					message = "Plugin Twilio has been updated"
+		for command, function := range commands {
+			if t[1] == command {
+				function(t)
+			} else {
+				attachments = []slack.Attachment{}
+				message = ""
 
-				case "disable":
-					p.DisableTwilio()
-					a := slack.Attachment{
-						Title: "Twilio Plugin",
-						Fields: []slack.AttachmentField{
-							slack.AttachmentField{
-								Title: "Enabled",
-								Value: ":x:",
-							},
-						},
-					}
-					attachments = []slack.Attachment{a}
-					message = "Plugin Twilio has been updated"
-				}
 			}
-		default:
-			attachments = []slack.Attachment{}
-			message = ""
 		}
-
 	}
 	return
 }
