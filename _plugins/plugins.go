@@ -6,8 +6,13 @@ import (
 	"github.com/nlopes/slack"
 )
 
-var commands map[string]func([]string) ([]slack.Attachment, string)
-var send map[string]func(*Plugins, string)
+var Commands map[string]func([]string) ([]slack.Attachment, string)
+var Send map[string]func(*Plugins, string)
+
+func init() {
+	Commands = make(map[string]func([]string) ([]slack.Attachment, string))
+	Send = make(map[string]func(*Plugins, string))
+}
 
 // Plugins contains a list of all available plugins
 type Plugins struct {
@@ -30,7 +35,7 @@ func (p *Plugins) SendDispatcher(message string) {
 		"module": "plugin",
 		"plugin": p,
 	})
-	for _, function := range send {
+	for _, function := range Send {
 		function(p, message)
 	}
 }
@@ -41,7 +46,7 @@ func (p *Plugins) SendDispatcher(message string) {
 func ParsePluginCommand(text string, user *slack.User) (message string, attachments []slack.Attachment) {
 	t := strings.Fields(text)
 	if len(t) > 1 {
-		for command, function := range commands {
+		for command, function := range Commands {
 			if t[1] == command {
 				function(t)
 			} else {

@@ -27,8 +27,8 @@ var (
 )
 
 func init() {
-	commands["twilio"] = twilioCommands
-	send["twilio"] = (*Plugins).SendTwilio
+	Commands["twilio"] = twilioCommands
+	Send["twilio"] = (*Plugins).SendTwilio
 }
 
 func twilioCommands(t []string) (attachments []slack.Attachment, message string) {
