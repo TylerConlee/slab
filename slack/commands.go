@@ -16,11 +16,13 @@ func parseCommand(text string, user *slack.User) {
 	message := ""
 	t := strings.Fields(text)
 	if len(t) > 1 {
-		message, attachments = plugins.ParsePluginCommand(text, user)
-		log.Info("Command received", map[string]interface{}{
+		log.Info("Command identified", map[string]interface{}{
 			"module":  "slack",
 			"command": t,
 		})
+
+		message, attachments = plugins.ParsePluginCommand(text, user)
+
 		if message == "" {
 			switch t[1] {
 			case "set":
@@ -68,6 +70,12 @@ func parseCommand(text string, user *slack.User) {
 			default:
 				UnknownCommandMessage(text, user.ID)
 			}
+		} else {
+			log.Info("Plugin command processed", map[string]interface{}{
+				"module":  "slack",
+				"command": t,
+				"message": message,
+			})
 		}
 
 		SendMessage(message, c.Slack.ChannelID, attachments)
