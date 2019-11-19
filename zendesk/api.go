@@ -66,8 +66,12 @@ func GetAllTickets() (tickets ZenOutput) {
 				}
 			}
 		}
+	} else {
+		l.Log.Info("Ticket output contains a nil next page", map[string]interface{}{
+			"module": "zendesk",
+			"ticket": tickets.NextPage,
+		})
 	}
-
 	NumTickets = len(tickets.Tickets)
 	LastProcessed = time.Now()
 	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
