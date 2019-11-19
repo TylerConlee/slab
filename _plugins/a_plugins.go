@@ -40,6 +40,10 @@ func (p *Plugins) SendDispatcher(message string) {
 func ParsePluginCommand(text string, user *slack.User) (message string, attachments []slack.Attachment) {
 	t := strings.Fields(text)
 	if len(t) > 1 {
+		log.Info("Plugin command received", map[string]interface{}{
+			"module":  "plugin",
+			"command": t,
+		})
 		for command, function := range Commands {
 			if t[1] == command {
 				function(t)
@@ -50,5 +54,5 @@ func ParsePluginCommand(text string, user *slack.User) (message string, attachme
 			}
 		}
 	}
-	return
+	return message, attachments
 }

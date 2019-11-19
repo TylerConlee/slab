@@ -124,7 +124,7 @@ func UpdateCache(ticket ActiveTicket, channel string) (bool, int64) {
 func cleanCache(ticket ActiveTicket) {
 	for i := 0; i < len(Sent); i++ {
 		item := Sent[i]
-		log.Info("Preparing cache clear", map[string]interface{}{
+		log.Debug("Preparing cache clear", map[string]interface{}{
 			"module":     "zendesk",
 			"ticket":     ticket.ID,
 			"expires":    item.Expire,
@@ -139,7 +139,7 @@ func cleanCache(ticket ActiveTicket) {
 			ticketupdate := ticket.UpdatedAt.Truncate(d)
 
 			if t.Before(time.Now()) || sentupdate.Before(ticketupdate) {
-				log.Info("Cache cleared", map[string]interface{}{
+				log.Debug("Cache cleared", map[string]interface{}{
 					"module":     "zendesk",
 					"ticket":     ticket.ID,
 					"expires":    item.Expire,
