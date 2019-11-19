@@ -93,7 +93,6 @@ func getNextPage(nextURL string) (output ZenOutput) {
 // GetTicketEvents grabs the latest ticket events from Zendesk and returns the
 // JSON
 // Zendesk Endpoint: /api/v2/incremental/ticket_events.json
-
 func GetTicketEvents() (tickets EventOutput) {
 	log.Info("Requesting latest ticket events for updates", map[string]interface{}{
 		"module": "zendesk",
