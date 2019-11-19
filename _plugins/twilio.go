@@ -8,11 +8,9 @@ import (
 	"strings"
 
 	"github.com/nlopes/slack"
-	l "github.com/tylerconlee/slab/log"
 )
 
 var (
-	log = l.Log
 
 	// TwilioPhone is the "to" phone number that's set through Slack (@slab twilio
 	//	set)
@@ -101,13 +99,13 @@ type Twilio struct {
 // EnableTwilio changes the Enabled Twilio option to true.
 func (p *Plugins) EnableTwilio() (attachment slack.Attachment) {
 	TwilioEnabled = true
-	return p.checkStatus()
+	return p.checkTwilioStatus()
 }
 
 // DisableTwilio changes the Enabled Twilio option to false.
 func (p *Plugins) DisableTwilio() (attachment slack.Attachment) {
 	TwilioEnabled = false
-	return p.checkStatus()
+	return p.checkTwilioStatus()
 }
 
 // TwilioSet changes the TwilioPhone to the value of the number passed to
@@ -150,7 +148,7 @@ func TwilioUnset() (attachment slack.Attachment) {
 
 // TwilioStatus returns the current setting
 func (p *Plugins) TwilioStatus() (attachment slack.Attachment) {
-	return p.checkStatus()
+	return p.checkTwilioStatus()
 }
 
 // SendTwilio sends a message to the phone number currently set
@@ -229,7 +227,7 @@ func TwilioConfigure(n string) (attachment slack.Attachment) {
 	return attachment
 }
 
-func (p *Plugins) checkStatus() (attachment slack.Attachment) {
+func (p *Plugins) checkTwilioStatus() (attachment slack.Attachment) {
 	s := ":x:"
 	if p.Twilio.Enabled {
 		s = ":white_check_mark:"

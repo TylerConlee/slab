@@ -4,10 +4,12 @@ import (
 	"strings"
 
 	"github.com/nlopes/slack"
+	l "github.com/tylerconlee/slab/log"
 )
 
 var Commands map[string]func([]string) ([]slack.Attachment, string)
 var Send map[string]func(*Plugins, string)
+var log = l.Log
 
 func init() {
 	Commands = make(map[string]func([]string) ([]slack.Attachment, string))
@@ -18,14 +20,6 @@ func init() {
 type Plugins struct {
 	Twilio    Twilio
 	PagerDuty PagerDuty
-}
-
-// PagerDuty contains the connection details for the PagerDuty API:
-// https://v2.developer.pagerduty.com/docs/rest-api
-type PagerDuty struct {
-	Email   string
-	Key     string
-	Enabled bool
 }
 
 // SendDispatcher receives the message from the process loop and checks which
