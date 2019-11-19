@@ -50,5 +50,5 @@ func ParsePluginCommand(text string, user *slack.User) (message string, attachme
 			}
 		}
 	}
-	return
+	return message, attachments
 }
