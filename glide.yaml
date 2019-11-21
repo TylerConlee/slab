@@ -4,7 +4,6 @@ import:
 - package: github.com/gorilla/mux
 - package: github.com/op/go-logging
 - package: github.com/nlopes/slack
-  version: ^0.4.0
 - package: github.com/sirupsen/logrus
   version: master
 - package: golang.org/x/crypto
