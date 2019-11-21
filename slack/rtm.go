@@ -76,6 +76,10 @@ func startRTM() {
 
 	// When a new event occurs in Slack, track it here
 	for msg := range rtm.IncomingEvents {
+		log.Debug("Incoming Slack event", map[string]interface{}{
+			"module": "slack",
+			"event":  msg,
+		})
 		switch ev := msg.Data.(type) {
 
 		// When a user connects to Slack for the first time. Logged message
@@ -107,10 +111,7 @@ func startRTM() {
 
 		// If a new message is sent, check to see if the bot user is mentioned.
 		case *slack.MessageEvent:
-			log.Debug("New message event", map[string]interface{}{
-				"module":  "slack",
-				"message": ev.Msg.Text,
-			})
+
 			if chk == 1 {
 				// GetChannelList to see if the incoming message comes from DM
 				// or regular channel. If DM, identify the user and if they're
