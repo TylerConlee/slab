@@ -1,5 +1,5 @@
-hash: 5ba382869f5d424df7a4765d64651d46720ed9c1f9a19caac418819f1c89a7fd
-updated: 2019-11-21T14:22:02.552225-08:00
+hash: e99681e976b350c4f9440386c8f6d41d40124208b599cf1c335422213d1f5dbc
+updated: 2019-11-21T14:42:18.517227-08:00
 imports:
 - name: github.com/BurntSushi/toml
   version: 3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005
@@ -30,7 +30,7 @@ imports:
   - oid
   - scram
 - name: github.com/nlopes/slack
-  version: 02cf2263b3497c02bf886a92a101dca4c022b23e
+  version: c4750fe73d883a2b1edff13e0d2e09290512b405
   subpackages:
   - internal/errorsx
   - internal/timex
