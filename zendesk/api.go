@@ -66,8 +66,12 @@ func GetAllTickets() (tickets ZenOutput) {
 				}
 			}
 		}
+	} else {
+		l.Log.Info("Ticket output contains a nil next page", map[string]interface{}{
+			"module": "zendesk",
+			"ticket": tickets.NextPage,
+		})
 	}
-
 	NumTickets = len(tickets.Tickets)
 	LastProcessed = time.Now()
 	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
@@ -89,7 +93,6 @@ func getNextPage(nextURL string) (output ZenOutput) {
 // GetTicketEvents grabs the latest ticket events from Zendesk and returns the
 // JSON
 // Zendesk Endpoint: /api/v2/incremental/ticket_events.json
-
 func GetTicketEvents() (tickets EventOutput) {
 	log.Info("Requesting latest ticket events for updates", map[string]interface{}{
 		"module": "zendesk",
@@ -122,6 +125,7 @@ func GetTicket(id int) (ticket Ticket) {
 		log.Error("Error parsing Zendesk JSON", map[string]interface{}{
 			"module": "zendesk",
 			"error":  err,
+			"resp":   bytes,
 		})
 	}
 	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
@@ -268,6 +272,7 @@ func parseTicketJSON(data []byte) (output ZenOutput) {
 		log.Error("Error parsing Zendesk JSON", map[string]interface{}{
 			"module": "zendesk",
 			"error":  err,
+			"resp":   bytes,
 		})
 	}
 	return output

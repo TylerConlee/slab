@@ -8,11 +8,9 @@ import (
 	"strings"
 
 	"github.com/nlopes/slack"
-	l "github.com/tylerconlee/slab/log"
 )
 
 var (
-	log = l.Log
 
 	// TwilioPhone is the "to" phone number that's set through Slack (@slab twilio
 	//	set)
@@ -26,16 +24,88 @@ var (
 	TwilioEnabled bool
 )
 
+func init() {
+	Commands["twilio"] = twilioCommands
+	Send["twilio"] = (*Plugins).SendTwilio
+}
+
+func twilioCommands(t []string) (attachments []slack.Attachment, message string) {
+	switch t[1] {
+	case "twilio":
+		if len(t) > 1 {
+			p := LoadPlugins()
+			switch t[2] {
+			case "set":
+				if len(t) > 3 {
+					s := TwilioSet(t[3])
+					attachments = []slack.Attachment{s}
+					message = "Plugin message"
+				}
+			case "unset":
+				s := TwilioUnset()
+				attachments = []slack.Attachment{s}
+				message = "Plugin message"
+			case "configure":
+				if len(t) > 3 {
+					s := TwilioConfigure(t[3])
+					attachments = []slack.Attachment{s}
+					message = "Plugin message"
+				}
+			case "status":
+				s := p.TwilioStatus()
+				attachments = []slack.Attachment{s}
+				message = "Plugin status"
+			case "enable":
+				p.EnableTwilio()
+				a := slack.Attachment{
+					Title: "Twilio Plugin",
+					Fields: []slack.AttachmentField{
+						slack.AttachmentField{
+							Title: "Enabled",
+							Value: ":white_check_mark:",
+						},
+					},
+				}
+				attachments = []slack.Attachment{a}
+				message = "Plugin Twilio has been updated"
+
+			case "disable":
+				p.DisableTwilio()
+				a := slack.Attachment{
+					Title: "Twilio Plugin",
+					Fields: []slack.AttachmentField{
+						slack.AttachmentField{
+							Title: "Enabled",
+							Value: ":x:",
+						},
+					},
+				}
+				attachments = []slack.Attachment{a}
+				message = "Plugin Twilio has been updated"
+			}
+		}
+	}
+	return attachments, message
+}
+
+// Twilio contains the connection details for the Twilio API:
+// https://www.twilio.com/docs/api
+type Twilio struct {
+	AccountID string
+	Auth      string
+	Enabled   bool
+}
+
 // EnableTwilio changes the Enabled Twilio option to true.
 func (p *Plugins) EnableTwilio() (attachment slack.Attachment) {
 	TwilioEnabled = true
-	return p.checkStatus()
+	return p.checkTwilioStatus()
 }
 
 // DisableTwilio changes the Enabled Twilio option to false.
 func (p *Plugins) DisableTwilio() (attachment slack.Attachment) {
 	TwilioEnabled = false
-	return p.checkStatus()
+	return p.checkTwilioStatus()
 }
 
 // TwilioSet changes the TwilioPhone to the value of the number passed to
@@ -78,12 +148,31 @@ func TwilioUnset() (attachment slack.Attachment) {
 
 // TwilioStatus returns the current setting
 func (p *Plugins) TwilioStatus() (attachment slack.Attachment) {
-	return p.checkStatus()
+	return p.checkTwilioStatus()
 }
 
 // SendTwilio sends a message to the phone number currently set
 // as TwilioPhone using the connection data found in the config
 func (p *Plugins) SendTwilio(message string) {
+	if TwilioPhone == "" {
+		log.Info("To phone number for Twilio not set.", map[string]interface{}{
+			"module": "plugin",
+			"plugin": "twilio",
+		})
+	}
+	if TwilioFrom == "" {
+		log.Info("From phone number for Twilio not set.", map[string]interface{}{
+			"module": "plugin",
+			"plugin": "twilio",
+		})
+	}
+	if (TwilioEnabled) && (TwilioPhone != "") {
+		log.Info("Plugin loaded. Sending Twilio message.", map[string]interface{}{
+			"module": "plugin",
+			"plugin": "twilio",
+		})
+
+	}
 
 	// Prep text message
 	msgData := url.Values{}
@@ -138,7 +227,7 @@ func TwilioConfigure(n string) (attachment slack.Attachment) {
 	return attachment
 }
 
-func (p *Plugins) checkStatus() (attachment slack.Attachment) {
+func (p *Plugins) checkTwilioStatus() (attachment slack.Attachment) {
 	s := ":x:"
 	if p.Twilio.Enabled {
 		s = ":white_check_mark:"

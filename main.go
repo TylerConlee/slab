@@ -23,7 +23,7 @@ var (
 	serverPort int
 	freq       time.Duration
 	db         int
-	logLevel   string
+	logLevel   = "info"
 )
 
 func main() {
@@ -36,7 +36,7 @@ func main() {
 	c = config.LoadConfig()
 
 	// Start timer process. Takes an int as the number of minutes to loop
-
+	log.SetLogLevel(logLevel)
 	datastore.RedisConnect(db)
 	datastore.PGConnect(c)
 	termChan := make(chan os.Signal, 1)
