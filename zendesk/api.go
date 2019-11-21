@@ -125,6 +125,7 @@ func GetTicket(id int) (ticket Ticket) {
 		log.Error("Error parsing Zendesk JSON", map[string]interface{}{
 			"module": "zendesk",
 			"error":  err,
+			"resp":   bytes,
 		})
 	}
 	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
