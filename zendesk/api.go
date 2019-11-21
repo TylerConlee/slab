@@ -272,6 +272,7 @@ func parseTicketJSON(data []byte) (output ZenOutput) {
 		log.Error("Error parsing Zendesk JSON", map[string]interface{}{
 			"module": "zendesk",
 			"error":  err,
+			"resp":   bytes,
 		})
 	}
 	return output
