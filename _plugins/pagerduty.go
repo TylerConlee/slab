@@ -25,22 +25,6 @@ func pagerdutyCommands(t []string) (attachments []slack.Attachment, message stri
 		if len(t) > 1 {
 			p := LoadPlugins()
 			switch t[2] {
-			case "set":
-				if len(t) > 3 {
-					s := PagerDutySet(t[3])
-					attachments = []slack.Attachment{s}
-					message = "Plugin message"
-				}
-			case "unset":
-				s := PagerDutyUnset()
-				attachments = []slack.Attachment{s}
-				message = "Plugin message"
-			case "configure":
-				if len(t) > 3 {
-					s := PagerDutyConfigure(t[3])
-					attachments = []slack.Attachment{s}
-					message = "Plugin message"
-				}
 			case "status":
 				s := p.PagerDutyStatus()
 				attachments = []slack.Attachment{s}
