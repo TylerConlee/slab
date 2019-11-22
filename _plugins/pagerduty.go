@@ -21,34 +21,34 @@ func init() {
 
 func pagerdutyCommands(t []string) (attachments []slack.Attachment, message string) {
 	switch t[1] {
-	case "twilio":
+	case "pagerduty":
 		if len(t) > 1 {
 			p := LoadPlugins()
 			switch t[2] {
 			case "set":
 				if len(t) > 3 {
-					s := TwilioSet(t[3])
+					s := PagerDutySet(t[3])
 					attachments = []slack.Attachment{s}
 					message = "Plugin message"
 				}
 			case "unset":
-				s := TwilioUnset()
+				s := PagerDutyUnset()
 				attachments = []slack.Attachment{s}
 				message = "Plugin message"
 			case "configure":
 				if len(t) > 3 {
-					s := TwilioConfigure(t[3])
+					s := PagerDutyConfigure(t[3])
 					attachments = []slack.Attachment{s}
 					message = "Plugin message"
 				}
 			case "status":
-				s := p.TwilioStatus()
+				s := p.PagerDutyStatus()
 				attachments = []slack.Attachment{s}
 				message = "Plugin status"
 			case "enable":
-				p.EnableTwilio()
+				p.EnablePagerDuty()
 				a := slack.Attachment{
-					Title: "Twilio Plugin",
+					Title: "PagerDuty Plugin",
 					Fields: []slack.AttachmentField{
 						slack.AttachmentField{
 							Title: "Enabled",
@@ -57,12 +57,12 @@ func pagerdutyCommands(t []string) (attachments []slack.Attachment, message stri
 					},
 				}
 				attachments = []slack.Attachment{a}
-				message = "Plugin Twilio has been updated"
+				message = "Plugin PagerDuty has been updated"
 
 			case "disable":
-				p.DisableTwilio()
+				p.DisablePagerDuty()
 				a := slack.Attachment{
-					Title: "Twilio Plugin",
+					Title: "PagerDuty Plugin",
 					Fields: []slack.AttachmentField{
 						slack.AttachmentField{
 							Title: "Enabled",
@@ -71,7 +71,7 @@ func pagerdutyCommands(t []string) (attachments []slack.Attachment, message stri
 					},
 				}
 				attachments = []slack.Attachment{a}
-				message = "Plugin Twilio has been updated"
+				message = "Plugin PagerDuty has been updated"
 			}
 		}
 	}
@@ -102,8 +102,7 @@ func (p *Plugins) PagerDutyStatus() (attachment slack.Attachment) {
 	return p.checkPagerdutyStatus()
 }
 
-// SendTwilio sends a message to the phone number currently set
-// as TwilioPhone using the connection data found in the config
+// SendPagerDuty sends a message to PagerDuty and returns a list of incidents
 func (p *Plugins) SendPagerDuty(message string) {
 
 	// Connect to PagerDuty
