@@ -33,7 +33,7 @@ func GetAllTickets() (tickets ZenOutput) {
 
 	tickets = parseTicketJSON(resp)
 	nextPage := ""
-	if tickets.NextPage != nil {
+	if tickets.NextPage != nil && tickets.NextPage != "<nil>" {
 		if tickets.NextPage.(string) != zen && strings.Contains(tickets.NextPage.(string), "page") {
 			nextPage = tickets.NextPage.(string)
 		}
