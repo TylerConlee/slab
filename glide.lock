@@ -1,5 +1,5 @@
-hash: e99681e976b350c4f9440386c8f6d41d40124208b599cf1c335422213d1f5dbc
-updated: 2019-11-21T14:42:18.517227-08:00
+hash: c49f83815441fa63f603b3e0e39201f70eb9a251ad67735c6c098a41ea896c4e
+updated: 2019-11-25T10:52:28.024029-08:00
 imports:
 - name: github.com/BurntSushi/toml
   version: 3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005
@@ -14,6 +14,10 @@ imports:
   - internal/pool
   - internal/proto
   - internal/util
+- name: github.com/google/go-querystring
+  version: 44c6ddd0a2342c386950e880b658017258da92fc
+  subpackages:
+  - query
 - name: github.com/gorilla/handlers
   version: 8a3748addc242fc560bd6d4ff28b0374c010b1b4
 - name: github.com/gorilla/mux
@@ -37,6 +41,8 @@ imports:
   - slackutilsx
 - name: github.com/op/go-logging
   version: 970db520ece77730c7e4724c61121037378659d9
+- name: github.com/PagerDuty/go-pagerduty
+  version: b4a4067bdbde86de1d3fdf15c3c01e76bee9127c
 - name: github.com/pkg/errors
   version: 27936f6d90f9c8e1145f11ed52ffffbfdb9e0af7
 - name: github.com/sirupsen/logrus

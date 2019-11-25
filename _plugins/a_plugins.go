@@ -7,7 +7,10 @@ import (
 	l "github.com/tylerconlee/slab/log"
 )
 
+// Commands is a map of all of the text commands needed to trigger individual plugins
 var Commands map[string]func([]string) ([]slack.Attachment, string)
+
+// Send is a map of every function used to send plugin messages
 var Send map[string]func(*Plugins, string)
 var log = l.Log
 

@@ -3,6 +3,7 @@ package plugins
 import (
 	"net/http"
 
+	"github.com/PagerDuty/go-pagerduty"
 	"github.com/nlopes/slack"
 )
 
@@ -14,7 +15,7 @@ var (
 
 func init() {
 	Commands["pagerduty"] = pagerdutyCommands
-	// Send["pagerduty"] = (*Plugins).DemoPagerDuty
+	Send["pagerduty"] = (*Plugins).SendPagerDuty
 }
 
 func pagerdutyCommands(t []string) (attachments []slack.Attachment, message string) {
@@ -65,8 +66,8 @@ func pagerdutyCommands(t []string) (attachments []slack.Attachment, message stri
 
 // PagerDuty contains the connection details for the PagerDuty API:
 type PagerDuty struct {
-	AccountID string
-	Auth      string
+	APIKey    string
+	ServiceID string
 	Enabled   bool
 }
 
@@ -88,6 +89,30 @@ func (p *Plugins) PagerDutyStatus() (attachment slack.Attachment) {
 }
 
 // SendPagerDuty sends a message to PagerDuty and returns a list of incidents
+func (p *Plugins) SendPagerDuty(message string) {
+	event := pagerduty.Event{
+		Type:        "trigger",
+		ServiceKey:  p.PagerDuty.ServiceID,
+		Description: message,
+	}
+	resp, err := pagerduty.CreateEvent(event)
+
+	if err != nil {
+		log.Error("Error sending PagerDuty Event", map[string]interface{}{
+			"module": "plugins",
+			"plugin": "pagerduty",
+			"error":  err,
+		})
+	}
+	log.Info("Response from PagerDuty", map[string]interface{}{
+		"module":   "plugins",
+		"plugin":   "pagerduty",
+		"response": resp,
+	})
+
+}
+
+// DemoPagerDuty grabs a demo list of incidents from PagerDuty
 func (p *Plugins) DemoPagerDuty() {
 
 	// Connect to PagerDuty
