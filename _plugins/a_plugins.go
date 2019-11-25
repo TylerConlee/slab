@@ -50,6 +50,7 @@ func ParsePluginCommand(text string, user *slack.User) (message string, attachme
 		for command, function := range Commands {
 			if t[1] == command {
 				attachments, message = function(t)
+				return message, attachments
 			} else {
 				attachments = []slack.Attachment{}
 				message = ""
