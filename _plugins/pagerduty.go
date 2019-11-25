@@ -55,13 +55,13 @@ type PagerDuty struct {
 
 // EnablePagerDuty changes the Enabled PagerDuty option to true.
 func (p *Plugins) EnablePagerDuty() (attachment slack.Attachment) {
-	PagerDutyEnabled = true
+	p.PagerDuty.Enabled = true
 	return p.checkPagerdutyStatus()
 }
 
 // DisablePagerDuty changes the Enabled PagerDuty option to false.
 func (p *Plugins) DisablePagerDuty() (attachment slack.Attachment) {
-	PagerDutyEnabled = false
+	p.PagerDuty.Enabled = false
 	return p.checkPagerdutyStatus()
 }
 
