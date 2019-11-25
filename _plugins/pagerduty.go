@@ -29,16 +29,7 @@ func pagerdutyCommands(t []string) (attachments []slack.Attachment, message stri
 				attachments = []slack.Attachment{s}
 				message = "Plugin status"
 			case "enable":
-				p.EnablePagerDuty()
-				a := slack.Attachment{
-					Title: "PagerDuty Plugin",
-					Fields: []slack.AttachmentField{
-						slack.AttachmentField{
-							Title: "Enabled",
-							Value: ":white_check_mark:",
-						},
-					},
-				}
+				a := p.EnablePagerDuty()
 				attachments = []slack.Attachment{a}
 				message = "Plugin PagerDuty has been updated"
 
@@ -46,16 +37,7 @@ func pagerdutyCommands(t []string) (attachments []slack.Attachment, message stri
 				p.DemoPagerDuty()
 
 			case "disable":
-				p.DisablePagerDuty()
-				a := slack.Attachment{
-					Title: "PagerDuty Plugin",
-					Fields: []slack.AttachmentField{
-						slack.AttachmentField{
-							Title: "Enabled",
-							Value: ":x:",
-						},
-					},
-				}
+				a := p.DisablePagerDuty()
 				attachments = []slack.Attachment{a}
 				message = "Plugin PagerDuty has been updated"
 			}
@@ -90,26 +72,27 @@ func (p *Plugins) PagerDutyStatus() (attachment slack.Attachment) {
 
 // SendPagerDuty sends a message to PagerDuty and returns a list of incidents
 func (p *Plugins) SendPagerDuty(message string) {
-	event := pagerduty.Event{
-		Type:        "trigger",
-		ServiceKey:  p.PagerDuty.ServiceID,
-		Description: message,
-	}
-	resp, err := pagerduty.CreateEvent(event)
+	if PagerDutyEnabled {
+		event := pagerduty.Event{
+			Type:        "trigger",
+			ServiceKey:  p.PagerDuty.ServiceID,
+			Description: message,
+		}
+		resp, err := pagerduty.CreateEvent(event)
 
-	if err != nil {
-		log.Error("Error sending PagerDuty Event", map[string]interface{}{
-			"module": "plugins",
-			"plugin": "pagerduty",
-			"error":  err,
+		if err != nil {
+			log.Error("Error sending PagerDuty Event", map[string]interface{}{
+				"module": "plugins",
+				"plugin": "pagerduty",
+				"error":  err,
+			})
+		}
+		log.Info("Response from PagerDuty", map[string]interface{}{
+			"module":   "plugins",
+			"plugin":   "pagerduty",
+			"response": resp,
 		})
 	}
-	log.Info("Response from PagerDuty", map[string]interface{}{
-		"module":   "plugins",
-		"plugin":   "pagerduty",
-		"response": resp,
-	})
-
 }
 
 // DemoPagerDuty grabs a demo list of incidents from PagerDuty
