@@ -29,16 +29,7 @@ func pagerdutyCommands(t []string) (attachments []slack.Attachment, message stri
 				attachments = []slack.Attachment{s}
 				message = "Plugin status"
 			case "enable":
-				p.EnablePagerDuty()
-				a := slack.Attachment{
-					Title: "PagerDuty Plugin",
-					Fields: []slack.AttachmentField{
-						slack.AttachmentField{
-							Title: "Enabled",
-							Value: ":white_check_mark:",
-						},
-					},
-				}
+				a := p.EnablePagerDuty()
 				attachments = []slack.Attachment{a}
 				message = "Plugin PagerDuty has been updated"
 
@@ -46,16 +37,7 @@ func pagerdutyCommands(t []string) (attachments []slack.Attachment, message stri
 				p.DemoPagerDuty()
 
 			case "disable":
-				p.DisablePagerDuty()
-				a := slack.Attachment{
-					Title: "PagerDuty Plugin",
-					Fields: []slack.AttachmentField{
-						slack.AttachmentField{
-							Title: "Enabled",
-							Value: ":x:",
-						},
-					},
-				}
+				a := p.DisablePagerDuty()
 				attachments = []slack.Attachment{a}
 				message = "Plugin PagerDuty has been updated"
 			}
