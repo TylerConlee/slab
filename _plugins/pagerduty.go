@@ -75,11 +75,17 @@ func (p *Plugins) PagerDutyStatus() (attachment slack.Attachment) {
 // SendPagerDuty sends a message to PagerDuty and returns a list of incidents
 func (p *Plugins) SendPagerDuty(message string) {
 	if PagerDutyEnabled {
+
 		event := pagerduty.Event{
 			Type:        "trigger",
 			ServiceKey:  p.PagerDuty.ServiceID,
 			Description: message,
 		}
+		log.Debug("Pagerduty request created", map[string]interface{}{
+			"module":  "plugins",
+			"plugin":  "pagerduty",
+			"request": event,
+		})
 		resp, err := pagerduty.CreateEvent(event)
 
 		if err != nil {
