@@ -21,3 +21,9 @@ import:
   version: ^1.4.0
 - package: github.com/lib/pq
   version: ^1.0.0
+- package: github.com/PagerDuty/go-pagerduty
+  version: ~1.0.4
+- package: github.com/google/go-querystring
+  version: ~1.0.0
+  subpackages:
+  - query

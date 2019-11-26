@@ -7,7 +7,10 @@ import (
 	l "github.com/tylerconlee/slab/log"
 )
 
+// Commands is a map of all of the text commands needed to trigger individual plugins
 var Commands map[string]func([]string) ([]slack.Attachment, string)
+
+// Send is a map of every function used to send plugin messages
 var Send map[string]func(*Plugins, string)
 var log = l.Log
 
@@ -47,11 +50,11 @@ func ParsePluginCommand(text string, user *slack.User) (message string, attachme
 		for command, function := range Commands {
 			if t[1] == command {
 				attachments, message = function(t)
-			} else {
-				attachments = []slack.Attachment{}
-				message = ""
-
+				return message, attachments
 			}
+			attachments = []slack.Attachment{}
+			message = ""
+
 		}
 	}
 	return message, attachments

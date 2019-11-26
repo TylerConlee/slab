@@ -1,10 +1,9 @@
 package plugins
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/http"
 
+	"github.com/PagerDuty/go-pagerduty"
 	"github.com/nlopes/slack"
 )
 
@@ -21,57 +20,26 @@ func init() {
 
 func pagerdutyCommands(t []string) (attachments []slack.Attachment, message string) {
 	switch t[1] {
-	case "twilio":
+	case "pagerduty":
 		if len(t) > 1 {
 			p := LoadPlugins()
 			switch t[2] {
-			case "set":
-				if len(t) > 3 {
-					s := TwilioSet(t[3])
-					attachments = []slack.Attachment{s}
-					message = "Plugin message"
-				}
-			case "unset":
-				s := TwilioUnset()
-				attachments = []slack.Attachment{s}
-				message = "Plugin message"
-			case "configure":
-				if len(t) > 3 {
-					s := TwilioConfigure(t[3])
-					attachments = []slack.Attachment{s}
-					message = "Plugin message"
-				}
 			case "status":
-				s := p.TwilioStatus()
+				s := p.PagerDutyStatus()
 				attachments = []slack.Attachment{s}
 				message = "Plugin status"
 			case "enable":
-				p.EnableTwilio()
-				a := slack.Attachment{
-					Title: "Twilio Plugin",
-					Fields: []slack.AttachmentField{
-						slack.AttachmentField{
-							Title: "Enabled",
-							Value: ":white_check_mark:",
-						},
-					},
-				}
+				a := p.EnablePagerDuty()
 				attachments = []slack.Attachment{a}
-				message = "Plugin Twilio has been updated"
+				message = "Plugin PagerDuty has been updated"
+
+			case "demo":
+				p.DemoPagerDuty()
 
 			case "disable":
-				p.DisableTwilio()
-				a := slack.Attachment{
-					Title: "Twilio Plugin",
-					Fields: []slack.AttachmentField{
-						slack.AttachmentField{
-							Title: "Enabled",
-							Value: ":x:",
-						},
-					},
-				}
+				a := p.DisablePagerDuty()
 				attachments = []slack.Attachment{a}
-				message = "Plugin Twilio has been updated"
+				message = "Plugin PagerDuty has been updated"
 			}
 		}
 	}
@@ -80,19 +48,21 @@ func pagerdutyCommands(t []string) (attachments []slack.Attachment, message stri
 
 // PagerDuty contains the connection details for the PagerDuty API:
 type PagerDuty struct {
-	AccountID string
-	Auth      string
+	APIKey    string
+	ServiceID string
 	Enabled   bool
 }
 
 // EnablePagerDuty changes the Enabled PagerDuty option to true.
 func (p *Plugins) EnablePagerDuty() (attachment slack.Attachment) {
+	p.PagerDuty.Enabled = true
 	PagerDutyEnabled = true
 	return p.checkPagerdutyStatus()
 }
 
 // DisablePagerDuty changes the Enabled PagerDuty option to false.
 func (p *Plugins) DisablePagerDuty() (attachment slack.Attachment) {
+	p.PagerDuty.Enabled = false
 	PagerDutyEnabled = false
 	return p.checkPagerdutyStatus()
 }
@@ -102,9 +72,39 @@ func (p *Plugins) PagerDutyStatus() (attachment slack.Attachment) {
 	return p.checkPagerdutyStatus()
 }
 
-// SendTwilio sends a message to the phone number currently set
-// as TwilioPhone using the connection data found in the config
+// SendPagerDuty sends a message to PagerDuty and returns a list of incidents
 func (p *Plugins) SendPagerDuty(message string) {
+	if PagerDutyEnabled {
+
+		event := pagerduty.Event{
+			Type:        "trigger",
+			ServiceKey:  p.PagerDuty.ServiceID,
+			Description: message,
+		}
+		log.Debug("Pagerduty request created", map[string]interface{}{
+			"module":  "plugins",
+			"plugin":  "pagerduty",
+			"request": event,
+		})
+		resp, err := pagerduty.CreateEvent(event)
+
+		if err != nil {
+			log.Error("Error sending PagerDuty Event", map[string]interface{}{
+				"module": "plugins",
+				"plugin": "pagerduty",
+				"error":  err,
+			})
+		}
+		log.Info("Response from PagerDuty", map[string]interface{}{
+			"module":   "plugins",
+			"plugin":   "pagerduty",
+			"response": resp,
+		})
+	}
+}
+
+// DemoPagerDuty grabs a demo list of incidents from PagerDuty
+func (p *Plugins) DemoPagerDuty() {
 
 	// Connect to PagerDuty
 	urlStr := "https://api.pagerduty.com/incidents"
@@ -121,17 +121,11 @@ func (p *Plugins) SendPagerDuty(message string) {
 		})
 	}
 
-	// Parse response
-	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
-		var data map[string]interface{}
-		decoder := json.NewDecoder(resp.Body)
-		err := decoder.Decode(&data)
-		if err == nil {
-			fmt.Println(data["sid"])
-		}
-	} else {
-		fmt.Println(resp.Status)
-	}
+	log.Info("Response received from PagerDuty", map[string]interface{}{
+		"module":   "plugin",
+		"plugin":   "pagerduty",
+		"response": resp.Body,
+	})
 }
 
 func (p *Plugins) checkPagerdutyStatus() (attachment slack.Attachment) {
