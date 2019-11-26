@@ -38,6 +38,8 @@ func parseCommand(text string, user *slack.User) {
 				attachments = StatusMessage(user)
 			case "help":
 				message = HelpMessage(user)
+			case "history":
+				attachments = HistoryMessage(user)
 			case "unset":
 				attachment = UnsetMessage(user)
 				attachments = []slack.Attachment{attachment}

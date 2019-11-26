@@ -307,6 +307,35 @@ func NewTicketMessage(tickets []Ticket, tag string) (newTickets []slack.Attachme
 
 }
 
+// HistoryMessage responds to @slab history with the last 10 commands that were run
+func HistoryMessage(user *slack.User) (attachments []slack.Attachment) {
+	attachment := slack.Attachment{
+		Title: "Last 10 Slab Commands",
+		// this obviously needs to be HistoryMessage-ified below
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Version",
+				Value: version,
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Uptime",
+				Value: time.Now().Sub(uptime).String(),
+				Short: true,
+			},
+		},
+	}
+	if err := datastore.SaveActivity(user.ID, user.Name, "history"); err != nil {
+		log.Error("Unable to save activity", map[string]interface{}{
+			"module":   "slack",
+			"activity": "history",
+			"error":    err,
+		})
+	}
+	attachments = []slack.Attachment{attachment}
+	return attachments
+}
+
 // StatusMessage responds to @slab status with the version hash and current
 // uptime for the Slab process
 func StatusMessage(user *slack.User) (attachments []slack.Attachment) {
