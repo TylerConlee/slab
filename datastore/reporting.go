@@ -15,8 +15,8 @@ type Activity struct {
 	slackID      string
 	slackName    string
 	activityType string
-	startedAt    string
-	endedAt      string
+	startedAt    time.Time
+	endedAt      time.Time
 }
 
 // SaveActivity takes the user data and activity type and saves it to the
