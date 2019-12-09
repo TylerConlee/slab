@@ -1,6 +1,9 @@
 package datastore
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 var id = 0
 
@@ -15,8 +18,8 @@ type Activity struct {
 	slackID      string
 	slackName    string
 	activityType string
-	startedAt    time.Time
-	endedAt      time.Time
+	startedAt    sql.NullTime
+	endedAt      sql.NullTime
 }
 
 // SaveActivity takes the user data and activity type and saves it to the
