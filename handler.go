@@ -22,6 +22,7 @@ func (s *Server) NewRouter() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/slack", s.Callback).Methods("POST")
 	r.HandleFunc("/api", s.Index).Methods("GET")
+	r.HandleFunc("/reporting", s.HandleReporting).Methods("GET")
 	return r
 }
 
