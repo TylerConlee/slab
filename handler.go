@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tylerconlee/slab/datastore"
+
 	"github.com/gorilla/mux"
 	"github.com/nlopes/slack"
 	sl "github.com/tylerconlee/slab/slack"
@@ -93,6 +95,15 @@ func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	WriteJSON(w, &status, http.StatusOK)
+}
+
+// HandleReporting is a handler that outputs the last 30 activities in JSON form from Postgres.
+func (s *Server) HandleReporting(w http.ResponseWriter, r *http.Request) {
+	var opts = datastore.ActivityOptions{}
+	activities, err := datastore.LoadActivity(opts)
+	if err != nil {
+		WriteJSON(w, &activities, http.StatusOK)
+	}
 }
 
 // WriteJSON takes the ResponseWriter, a generic structure of data and a status
