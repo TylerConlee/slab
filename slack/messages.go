@@ -310,15 +310,15 @@ func NewTicketMessage(tickets []Ticket, tag string) (newTickets []slack.Attachme
 // HistoryMessage responds to @slab history with the last 10 commands that were run
 func HistoryMessage(user *slack.User) (attachments []slack.Attachment) {
 	opts := datastore.ActivityOptions{
-		quantity: 10,
+		Quantity: 10,
 	}
 	activities, err := datastore.LoadActivity(opts)
 
-	for activity := range activities {
+	for _, activity := range activities {
 		attachment := slack.Attachment{
-			Title:      activity.activityType,
-			AuthorName: activity.slackName,
-			AuthorLink: activity.slackID,
+			Title:      activity.ActivityType,
+			AuthorName: activity.SlackName,
+			AuthorLink: activity.SlackID,
 			AuthorIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/google/119/bust-in-silhouette_1f464.png",
 			Fields: []slack.AttachmentField{
 				slack.AttachmentField{

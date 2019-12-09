@@ -9,17 +9,17 @@ var id = 0
 
 // ActivityOptions allows us to pass multiple optional parameters to the LoadActivity function, including a filter for activityType and a cap on how many are loaded
 type ActivityOptions struct {
-	activityType string
-	quantity     int
+	ActivityType string
+	Quantity     int
 }
 
 // Activity represents a single activity listed in the database
 type Activity struct {
-	slackID      string
-	slackName    string
-	activityType string
-	startedAt    sql.NullTime
-	endedAt      sql.NullTime
+	SlackID      string
+	SlackName    string
+	ActivityType string
+	StartedAt    sql.NullTime
+	EndedAt      sql.NullTime
 }
 
 // SaveActivity takes the user data and activity type and saves it to the
@@ -48,10 +48,10 @@ func SaveActivity(user string, name string, activityType string) error {
 
 // LoadActivity requests a list of activity/activities from the database to use in the History command, or in reporting
 func LoadActivity(opts ActivityOptions) (activities []Activity, err error) {
-	if opts.quantity == 0 {
-		opts.quantity = 30
+	if opts.Quantity == 0 {
+		opts.Quantity = 30
 	}
-	rows, err := db.Query("select slack_id, slack_name, type, started_at, ended_at from activities ORDER BY started_at DESC LIMIT $1;", opts.quantity)
+	rows, err := db.Query("select slack_id, slack_name, type, started_at, ended_at from activities ORDER BY started_at DESC LIMIT $1;", opts.Quantity)
 	if err != nil {
 		log.Error("Error encountered attempting to load from Postgres.", map[string]interface{}{
 			"error": err,
@@ -60,7 +60,7 @@ func LoadActivity(opts ActivityOptions) (activities []Activity, err error) {
 	defer rows.Close()
 	for rows.Next() {
 		act := Activity{}
-		err := rows.Scan(&act.slackID, &act.slackName, &act.activityType, &act.startedAt, &act.endedAt)
+		err := rows.Scan(&act.SlackID, &act.SlackName, &act.ActivityType, &act.StartedAt, &act.EndedAt)
 		if err != nil {
 			log.Error("Error scanning loaded activity.", map[string]interface{}{
 				"error": err,
