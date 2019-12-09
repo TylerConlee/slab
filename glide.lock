@@ -1,5 +1,5 @@
-hash: c49f83815441fa63f603b3e0e39201f70eb9a251ad67735c6c098a41ea896c4e
-updated: 2019-11-26T14:22:46.236649-08:00
+hash: b1f8ca43708225cb52a2f359d93f95d96119e7670dfd6d30949134fe4ded5cad
+updated: 2019-12-09T13:24:36.332271-08:00
 imports:
 - name: github.com/BurntSushi/toml
   version: 3012a1dbe2e4bd1391d42b32f0577cb7bbc7f005
@@ -47,6 +47,10 @@ imports:
   version: 7f95ac13edff643b8ce5398b6ccab125f8a20c1a
 - name: github.com/sirupsen/logrus
   version: 67a7fdcf741f4d5cee82cb9800994ccfd4393ad0
+- name: github.com/stretchr/testify
+  version: 221dbe5ed46703ee255b1da0dec05086f5035f62
+  subpackages:
+  - assert
 - name: golang.org/x/crypto
   version: ac88ee75c92c889b97e05591e9a39b6480c538b3
   subpackages:
