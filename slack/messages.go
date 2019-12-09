@@ -313,7 +313,13 @@ func HistoryMessage(user *slack.User) (attachments []slack.Attachment) {
 		Quantity: 10,
 	}
 	activities, err := datastore.LoadActivity(opts)
-
+	if err != nil {
+		log.Error("Unable to run command", map[string]interface{}{
+			"module":   "slack",
+			"activity": "history",
+			"error":    err,
+		})
+	}
 	for _, activity := range activities {
 		attachment := slack.Attachment{
 			Title:      activity.ActivityType,
@@ -323,12 +329,12 @@ func HistoryMessage(user *slack.User) (attachments []slack.Attachment) {
 			Fields: []slack.AttachmentField{
 				slack.AttachmentField{
 					Title: "Started At",
-					Value: activity.startedAt.String(),
+					Value: activity.StartedAt.String(),
 					Short: true,
 				},
 				slack.AttachmentField{
 					Title: "Ended At",
-					Value: activity.endedAt.String(),
+					Value: activity.EndedAt.String(),
 					Short: true,
 				},
 			},
