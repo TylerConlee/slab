@@ -329,12 +329,12 @@ func HistoryMessage(user *slack.User) (attachments []slack.Attachment) {
 			Fields: []slack.AttachmentField{
 				slack.AttachmentField{
 					Title: "Started At",
-					Value: activity.StartedAt.String(),
+					Value: activity.StartedAt.Time.String(),
 					Short: true,
 				},
 				slack.AttachmentField{
 					Title: "Ended At",
-					Value: activity.EndedAt.String(),
+					Value: activity.EndedAt.Time.String(),
 					Short: true,
 				},
 			},
