@@ -1,10 +1,30 @@
 package datastore
 
 import (
+	"database/sql/driver"
 	"time"
 )
 
 var id = 0
+
+type NullTime struct {
+	Time  time.Time
+	Valid bool // Valid is true if Time is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (nt *NullTime) Scan(value interface{}) error {
+	nt.Time, nt.Valid = value.(time.Time)
+	return nil
+}
+
+// Value implements the driver Valuer interface.
+func (nt NullTime) Value() (driver.Value, error) {
+	if !nt.Valid {
+		return nil, nil
+	}
+	return nt.Time, nil
+}
 
 // ActivityOptions allows us to pass multiple optional parameters to the LoadActivity function, including a filter for activityType and a cap on how many are loaded
 type ActivityOptions struct {
@@ -17,8 +37,8 @@ type Activity struct {
 	SlackID      string
 	SlackName    string
 	ActivityType string
-	StartedAt    time.Time
-	EndedAt      time.Time
+	StartedAt    NullTime
+	EndedAt      NullTime
 }
 
 // SaveActivity takes the user data and activity type and saves it to the
