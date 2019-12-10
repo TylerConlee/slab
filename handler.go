@@ -101,10 +101,9 @@ func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
 // HandleReporting is a handler that outputs the last 30 activities in JSON form from Postgres.
 func (s *Server) HandleReporting(w http.ResponseWriter, r *http.Request) {
 	var opts = datastore.ActivityOptions{}
-	activities, err := datastore.LoadActivity(opts)
-	if err != nil {
-		WriteJSON(w, &activities, http.StatusOK)
-	}
+	activities, _ := datastore.LoadActivity(opts)
+	WriteJSON(w, &activities, http.StatusOK)
+
 }
 
 // WriteJSON takes the ResponseWriter, a generic structure of data and a status
