@@ -22,36 +22,9 @@ var updateMessage slack.Message
 
 // SetTriager generates a new Slack attachment to update the
 // original message and set the Triager role
-func SetTriager(payload *slack.InteractionCallback) {
-	if len(payload.ActionCallback.AttachmentActions) == 0 {
-		return
-	}
+//func SetTriager(user *slack.User) {
 
-	if VerifyUser(payload.User.ID) {
-		Triager = payload.User.ID
-		datastore.RSave("triager", payload.User.ID)
-		if err := datastore.SaveActivity(payload.User.ID, payload.User.Name, "set"); err != nil {
-			log.Error("Unable to save activity", map[string]interface{}{
-				"module":   "slack",
-				"activity": "set",
-				"triager":  Triager,
-				"error":    err,
-			})
-		}
-		t := fmt.Sprintf("<@%s> is now set as Triager", Triager)
-		log.Info("Triager set.", map[string]interface{}{
-			"module":  "slack",
-			"triager": Triager,
-		})
-		attachment := slack.Attachment{
-			Fallback:   "You would be able to select the triager here.",
-			CallbackID: "triager_dropdown",
-			Footer:     t,
-			FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
-		}
-		ChatUpdate(payload, attachment)
-	}
-}
+//}
 
 // AcknowledgeSLA generates a new Slack attachment to state that a user has
 // acknowledged a ticket.
