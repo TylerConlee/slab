@@ -49,8 +49,6 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 		}
 	case "newticket":
 		sl.AcknowledgeNewTicket(payload)
-	case "triage_set":
-		sl.SetTriager(payload)
 	case "createtag":
 		sl.CreateTagDialog(payload)
 	case "updatetag":
