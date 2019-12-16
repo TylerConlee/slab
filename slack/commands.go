@@ -26,7 +26,7 @@ func parseCommand(text string, user *slack.User) {
 		if message == "" {
 			switch t[1] {
 			case "set":
-				attachment = SetMessage()
+				attachment = SetMessage(user)
 				attachments = []slack.Attachment{attachment}
 			case "diag":
 

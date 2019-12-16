@@ -53,34 +53,43 @@ type NotifySent struct {
 
 // SetMessage creates and sends a message to Slack with a menu attachment,
 // allowing users to set the triager staff member.
-func SetMessage() (attachment slack.Attachment) {
-	attachment = slack.Attachment{
-		Fallback:   "You would be able to select the triager here.",
-		CallbackID: "triage_set",
-		// Show the current triager
-		Fields: []slack.AttachmentField{
-			slack.AttachmentField{
-				Title: "Current Triager",
-				Value: fmt.Sprintf("<@%s>", Triager),
-			},
-		},
-
-		// Show a dropdown of all users to select new Triager target
-		Actions: []slack.AttachmentAction{
-			slack.AttachmentAction{
-				Name:  "triage_select",
-				Text:  ":white_check_mark: Set",
-				Type:  "button",
-				Value: "ack",
-				Style: "primary",
-				Confirm: &slack.ConfirmationField{
-					Text:        "Are you sure?",
-					OkText:      "Take it",
-					DismissText: "Leave it",
+func SetMessage(user *slack.User) (attachment slack.Attachment) {
+	if VerifyUser(user.ID) {
+		old := Triager
+		Triager = user.ID
+		datastore.RSave("triager", user.ID)
+		if err := datastore.SaveActivity(user.ID, user.Name, "set"); err != nil {
+			log.Error("Unable to save activity", map[string]interface{}{
+				"module":   "slack",
+				"activity": "set",
+				"triager":  Triager,
+				"error":    err,
+			})
+		}
+		log.Info("Triager set.", map[string]interface{}{
+			"module":  "slack",
+			"triager": Triager,
+		})
+		attachment = slack.Attachment{
+			Fallback:   "You would be able to select the triager here.",
+			CallbackID: "triager_dropdown",
+			Footer:     "Triager successfully updated.",
+			FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
+			Fields: []slack.AttachmentField{
+				slack.AttachmentField{
+					Title: "Previous Triager",
+					Value: fmt.Sprintf("<@%s>", old),
+					Short: true,
+				},
+				slack.AttachmentField{
+					Title: "Current Triager",
+					Value: fmt.Sprintf("<@%s>", Triager),
+					Short: true,
 				},
 			},
-		},
+		}
 	}
+
 	return attachment
 }
 
