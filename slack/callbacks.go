@@ -20,12 +20,6 @@ var updateAttachmentID string
 
 var updateMessage slack.Message
 
-// SetTriager generates a new Slack attachment to update the
-// original message and set the Triager role
-//func SetTriager(user *slack.User) {
-
-//}
-
 // AcknowledgeSLA generates a new Slack attachment to state that a user has
 // acknowledged a ticket.
 func AcknowledgeSLA(payload *slack.InteractionCallback) {
