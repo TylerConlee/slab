@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/tylerconlee/slab/datastore"
+
 	"github.com/gorilla/mux"
 	"github.com/nlopes/slack"
 	sl "github.com/tylerconlee/slab/slack"
@@ -20,6 +22,7 @@ func (s *Server) NewRouter() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/slack", s.Callback).Methods("POST")
 	r.HandleFunc("/api", s.Index).Methods("GET")
+	r.HandleFunc("/reporting", s.HandleReporting).Methods("GET")
 	return r
 }
 
@@ -50,8 +53,6 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 		}
 	case "newticket":
 		sl.AcknowledgeNewTicket(payload)
-	case "triage_set":
-		sl.SetTriager(payload)
 	case "createtag":
 		sl.CreateTagDialog(payload)
 	case "updatetag":
@@ -97,6 +98,14 @@ func (s *Server) Index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	WriteJSON(w, &status, http.StatusOK)
+}
+
+// HandleReporting is a handler that outputs the last 30 activities in JSON form from Postgres.
+func (s *Server) HandleReporting(w http.ResponseWriter, r *http.Request) {
+	var opts = datastore.ActivityOptions{}
+	activities, _ := datastore.LoadActivity(opts)
+	WriteJSON(w, &activities, http.StatusOK)
+
 }
 
 // WriteJSON takes the ResponseWriter, a generic structure of data and a status

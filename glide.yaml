@@ -27,3 +27,7 @@ import:
   version: ~1.0.0
   subpackages:
   - query
+- package: github.com/stretchr/testify
+  version: ^1.4.0
+  subpackages:
+  - assert
