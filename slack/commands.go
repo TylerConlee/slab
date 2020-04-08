@@ -94,6 +94,8 @@ func parseDMCommand(text string, user string) {
 		ConfirmWizard()
 	case "list channels":
 		ListChannels(user)
+	case "add channel":
+		DMAddChannel(user)
 	default:
 		UnknownCommandMessage(text, user)
 	}

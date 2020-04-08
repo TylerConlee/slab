@@ -63,6 +63,8 @@ func (s *Server) Callback(w http.ResponseWriter, r *http.Request) {
 		sl.SaveDialog(payload)
 	case "process_update_tag":
 		sl.UpdateTag(payload)
+	case "addchan":
+		sl.AddChannelCallback(payload)
 	case "cfgwiz":
 		log.Info("Config wizard step detected", map[string]interface{}{
 			"module": "server",

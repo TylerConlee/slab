@@ -674,6 +674,24 @@ func ListChannels(user string) {
 	SendDirectMessage(message, attachments, user)
 }
 
+func DMAddChannel(user string) {
+	attachment := []slack.Attachment{
+		slack.Attachment{
+			Title:      "Channels",
+			CallbackID: "addchan",
+			Actions: []slack.AttachmentAction{
+				slack.AttachmentAction{
+					Name:       "channels_list",
+					Text:       "Channel for Slab",
+					Type:       "select",
+					DataSource: "channels",
+				},
+			},
+		},
+	}
+	SendDirectMessage("Select a channel for Slab to report in.", attachment, user)
+}
+
 func getNotificationType(notify string) (full string) {
 	switch notify {
 	case "new":
