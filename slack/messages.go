@@ -658,6 +658,22 @@ func DeleteTagMessage(user *slack.User, id string) {
 
 }
 
+func ListChannels(user string) {
+	log.Info("Listing channels via DM", map[string]interface{}{
+		"module": "slack",
+		"user":   user,
+	})
+	var attachments []slack.Attachment
+	for _, channel := range ChannelList {
+		attachment := slack.Attachment{
+			Title: channel.ID,
+		}
+		attachments = append(attachments, attachment)
+	}
+	message := "These are the current active Channels for Slab"
+	SendDirectMessage(message, attachments, user)
+}
+
 func getNotificationType(notify string) (full string) {
 	switch notify {
 	case "new":
