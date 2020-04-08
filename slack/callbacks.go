@@ -368,6 +368,21 @@ func DeleteTag(payload *slack.InteractionCallback) {
 	ChatUpdate(payload, attachment)
 }
 
+func AddChannelCallback(payload *slack.InteractionCallback) {
+	log.Info("Adding channel to ChannelList", map[string]interface{}{
+		"module":  "slack",
+		"channel": payload.ActionCallback.AttachmentActions[0].SelectedOptions[0].Text,
+	})
+	AddChannel(payload.ActionCallback.AttachmentActions[0].SelectedOptions[0].Value, 2)
+	attachment := slack.Attachment{
+		Fallback:   "Channel added",
+		CallbackID: "add_channel",
+		Footer:     "Channel added successfully",
+		FooterIcon: "https://emojipedia-us.s3.amazonaws.com/thumbs/120/apple/114/white-heavy-check-mark_2705.png",
+	}
+	ChatUpdate(payload, attachment)
+}
+
 func statusDecode(status string) (img string) {
 	switch status {
 	case "solved":
