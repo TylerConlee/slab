@@ -92,6 +92,8 @@ func parseDMCommand(text string, user string) {
 	case "start config":
 		StartWizard(user)
 		ConfirmWizard()
+	case "list channels":
+		ListChannels(user)
 	default:
 		UnknownCommandMessage(text, user)
 	}
