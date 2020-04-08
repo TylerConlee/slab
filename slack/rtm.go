@@ -155,7 +155,7 @@ func startRTM() {
 								"error":  err,
 							})
 						}
-						parseCommand(ev.Msg.Text, sender)
+						parseCommand(ev.Msg.Text, sender, ev.Channel)
 					}
 				} else if (c == 0) && (string(ev.Channel[0]) == "D") && (strings.Contains(ev.Msg.Text, user.ID)) {
 					t := strings.TrimPrefix(ev.Msg.Text, "<@"+user.ID+"> ")

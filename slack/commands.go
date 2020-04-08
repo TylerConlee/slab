@@ -10,7 +10,7 @@ import (
 
 // parseCommand takes the message that mentions the bot user and identifies
 // what the user is asking for.
-func parseCommand(text string, user *slack.User) {
+func parseCommand(text string, user *slack.User, channel string) {
 	var attachment slack.Attachment
 	attachments := []slack.Attachment{}
 	message := ""
@@ -19,6 +19,7 @@ func parseCommand(text string, user *slack.User) {
 		log.Info("Command identified", map[string]interface{}{
 			"module":  "slack",
 			"command": t,
+			"channel": channel,
 		})
 
 		message, attachments = plugins.ParsePluginCommand(text, user)
@@ -80,7 +81,7 @@ func parseCommand(text string, user *slack.User) {
 			})
 		}
 
-		SendMessage(message, c.Slack.ChannelID, attachments)
+		SendMessage(message, channel, attachments)
 	}
 
 }
