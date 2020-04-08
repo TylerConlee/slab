@@ -26,8 +26,9 @@ func Test_parseDMCommand(t *testing.T) {
 
 func Test_parseCommand(t *testing.T) {
 	type args struct {
-		text string
-		user *slack.User
+		text    string
+		user    *slack.User
+		channel string
 	}
 	tests := []struct {
 		name string
@@ -37,7 +38,7 @@ func Test_parseCommand(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			parseCommand(tt.args.text, tt.args.user)
+			parseCommand(tt.args.text, tt.args.user, tt.args.channel)
 		})
 	}
 }
