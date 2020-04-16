@@ -172,6 +172,10 @@ func processUpdateAlerts(tick zendesk.ZenOutput, tags []map[string]interface{}, 
 func processNewAlerts(tick zendesk.ZenOutput, tags []map[string]interface{}, p plugins.Plugins, interval time.Duration) {
 	// Returns a list of all new tickets within the last loop
 	new := zendesk.CheckNewTicket(tick, interval)
+	log.Debug("New tickets processed", map[string]interface{}{
+		"module":      "main",
+		"new_tickets": new,
+	})
 	if new != nil {
 
 		var newTickets []slack.Ticket
