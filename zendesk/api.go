@@ -74,7 +74,7 @@ func GetAllTickets() (tickets ZenOutput) {
 	}
 	NumTickets = len(tickets.Tickets)
 	LastProcessed = time.Now()
-	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
+	log.Info("Request Complete for getAllTickets(). Parsing Ticket Data", map[string]interface{}{
 		"module":      "zendesk",
 		"num_tickets": NumTickets,
 	})
@@ -103,7 +103,7 @@ func GetTicketEvents() (tickets EventOutput) {
 	resp := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
 
 	tickets = parseEventJSON(resp)
-	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
+	log.Info("Request Complete for getTicketEvents(). Parsing Ticket Data", map[string]interface{}{
 		"module":      "zendesk",
 		"num_tickets": len(tickets.Event),
 	})
@@ -128,7 +128,7 @@ func GetTicket(id int) (ticket Ticket) {
 			"resp":   bytes,
 		})
 	}
-	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
+	log.Info("Request Complete for GetTicket(). Parsing Ticket Data", map[string]interface{}{
 		"module": "zendesk",
 	})
 	return tick.Ticket
@@ -145,7 +145,7 @@ func GetTicketRequester(user int) (output User) {
 
 	zen := c.Zendesk.URL + "/api/v2/users/" + strconv.Itoa(user) + ".json"
 	data := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
-	log.Info("Request Complete. Parsing Ticket Data", map[string]interface{}{
+	log.Info("Request Complete for GetTicketRequester(). Parsing Ticket Data", map[string]interface{}{
 		"module": "zendesk",
 		"user":   user,
 	})
@@ -171,7 +171,7 @@ func GetOrganization(user int) (org Orgs) {
 	})
 	zen := c.Zendesk.URL + "/api/v2/users/" + strconv.Itoa(user) + "/organizations.json"
 	data := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
-	log.Info("Request Complete. Parsing Organization Data", map[string]interface{}{
+	log.Info("Request Complete for GetOrganization(). Parsing Organization Data", map[string]interface{}{
 		"module": "zendesk",
 		"user":   user,
 	})
@@ -199,7 +199,7 @@ func GetRequestedTickets(user int) (output ZenOutput) {
 	})
 	zen := c.Zendesk.URL + "/api/v2/users/" + strconv.Itoa(user) + "/tickets/requested.json"
 	data := makeRequest(c.Zendesk.User, c.Zendesk.APIKey, zen)
-	log.Info("Request Complete. Parsing Organization Data", map[string]interface{}{
+	log.Info("Request Complete for GetRequestedTickets(). Parsing Organization Data", map[string]interface{}{
 		"module": "zendesk",
 		"user":   user,
 	})
