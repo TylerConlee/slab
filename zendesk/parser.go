@@ -56,7 +56,7 @@ func CheckSLA(tick ZenOutput) (sla []ActiveTicket) {
 // CheckNewTicket loops over the Zendesk output from GetAllTickets and
 // determines if there are tickets that have been created since the last loop
 func CheckNewTicket(tick ZenOutput, interval time.Duration) (new []ActiveTicket) {
-	previousLoop := time.Now().Add(-interval * 2)
+	previousLoop := time.Now().Add(-interval * 3)
 	nowLoop := time.Now()
 	log.Info("Checking for new tickets", map[string]interface{}{
 		"module":      "zendesk",
