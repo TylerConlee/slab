@@ -37,8 +37,7 @@ func main() {
 
 	// Start timer process. Takes an int as the number of minutes to loop
 	log.SetLogLevel(logLevel)
-	datastore.RedisConnect(db)
-	datastore.PGConnect(c)
+	datastore.Connect(c)
 	termChan := make(chan os.Signal, 1)
 	s := startServer()
 	ticker := time.NewTicker(time.Minute)
