@@ -2,7 +2,7 @@ package datastore
 
 import "time"
 
-// CreateTagsTable checks to see if the proper table exists, and if it
+// CreateTriagerTable checks to see if the proper table exists, and if it
 // doesn't, create one.
 func CreateTriagerTable() {
 	const triager = `
@@ -25,13 +25,36 @@ func CreateTriagerTable() {
 	return
 }
 
+// CreateChannelsTable checks to see if the proper table exists, and if it
+// doesn't, create one.
+func CreateChannelsTable() {
+	const channels = `
+	CREATE TABLE IF NOT EXISTS channels (
+		id serial PRIMARY KEY,
+		channels text NOT NULL,
+		updated_at timestamp
+	)`
+
+	// Exec executes a query without returning any rows.
+	if _, err := db.Exec(channels); err != nil {
+		log.Error("Channels table creation query failed", map[string]interface{}{
+			"module": "datastore",
+			"error":  err,
+			"query":  channels,
+		})
+		return
+	}
+
+	return
+}
+
 // SaveTriager saves a new triager into the database
 func SaveTriager(data string) error {
 	log.Info("Preparing triager for database", map[string]interface{}{
 		"module": "datastore",
 		"data":   data,
 	})
-	err := db.QueryRow("INSERT INTO triager(userid,  updated_at) VALUES ($1, $2, $3) RETURNING id", data, time.Now()).Scan(&id)
+	err := db.QueryRow("INSERT INTO triager(userid,  updated_at) VALUES ($1, $2) RETURNING id", data, time.Now()).Scan(&id)
 	return err
 }
 
@@ -57,6 +80,46 @@ func LoadTriager() (triager string, err error) {
 		})
 		triager = "None"
 	}
+
+	return
+}
+
+// SaveChannels saves channels into the database and updates the existing
+// record if one exists
+func SaveChannels(data []string) error {
+	log.Info("Preparing channels for database", map[string]interface{}{
+		"module": "datastore",
+		"data":   data,
+	})
+	err := db.QueryRow("INSERT INTO channels(channels,  updated_at) VALUES ($1, $2) WHERE id = 1 ON CONFLICT (id) DO UPDATE SET channels = $1 RETURNING id", data, time.Now()).Scan(&id)
+	return err
+}
+
+// LoadChannels grabs the list of channels from the database and returns them
+// in a slice of strings.
+func LoadChannels() (channels []string, err error) {
+	log.Info("Requesting channels from database", map[string]interface{}{
+		"module": "datastore",
+	})
+	row, err := db.Query("SELECT channels FROM channels;")
+	if err != nil {
+		log.Error("Error grabbing database output for triager", map[string]interface{}{
+			"module": "datastore",
+			"error":  err,
+		})
+	}
+	defer row.Close()
+	var response string
+	if err = row.Scan(&response); err != nil {
+		log.Error("Error parsing database output for channels", map[string]interface{}{
+			"module": "datastore",
+			"error":  err,
+		})
+	}
+	log.Debug("Response output", map[string]interface{}{
+		"module":  "datastore",
+		"reponse": response,
+	})
 
 	return
 }
