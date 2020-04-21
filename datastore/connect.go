@@ -15,7 +15,7 @@ var (
 	db  *sql.DB
 )
 
-// PGConnect uses the configuration passed from the config file to connect to
+// Connect uses the configuration passed from the config file to connect to
 // Postgres and ensure that the table is created properly.
 func Connect(cfg c.Config) {
 	conn := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -40,4 +40,5 @@ func Connect(cfg c.Config) {
 	CreateActivitiesTable()
 	CreateTagsTable()
 	CreateTriagerTable()
+	CreateChannelsTable()
 }
