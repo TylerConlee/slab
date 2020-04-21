@@ -61,7 +61,7 @@ func PGConnect(cfg c.Config) {
 	})
 	CreateActivitiesTable()
 	CreateTagsTable()
-
+	CreateTriagerTable()
 }
 
 // RSave takes a key and value pair and saves it to the Redis instance.
