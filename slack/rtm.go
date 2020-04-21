@@ -42,7 +42,13 @@ func StartSlack(v string, key string) {
 		"module": "slack",
 		"team":   d.Domain,
 	})
-	t := datastore.Load("triager")
+	t, err := datastore.LoadTriager()
+	if err != nil {
+		log.Error("Error retrieving triager from database", map[string]interface{}{
+			"module": "slack",
+			"error":  err,
+		})
+	}
 	log.Info("Triager loaded from Redis", map[string]interface{}{
 		"module":  "main",
 		"triager": t,

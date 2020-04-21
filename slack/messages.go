@@ -57,7 +57,7 @@ func SetMessage(user *slack.User) (attachment slack.Attachment) {
 	if VerifyUser(user.ID) {
 		old := Triager
 		Triager = user.ID
-		datastore.RSave("triager", user.ID)
+		datastore.SaveTriager(user.ID)
 		if err := datastore.SaveActivity(user.ID, user.Name, "set"); err != nil {
 			log.Error("Unable to save activity", map[string]interface{}{
 				"module":   "slack",
