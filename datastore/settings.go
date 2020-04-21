@@ -31,8 +31,10 @@ func CreateChannelsTable() {
 	const channels = `
 	CREATE TABLE IF NOT EXISTS channels (
 		id serial PRIMARY KEY,
-		channels text NOT NULL,
-		updated_at timestamp
+		channel_id text NOT NULL,
+		updated_at timestamp,
+		private boolean
+
 	)`
 
 	// Exec executes a query without returning any rows.
@@ -86,40 +88,43 @@ func LoadTriager() (triager string, err error) {
 
 // SaveChannels saves channels into the database and updates the existing
 // record if one exists
-func SaveChannels(data []string) error {
+func SaveChannels(data map[string]interface{}) error {
 	log.Info("Preparing channels for database", map[string]interface{}{
 		"module": "datastore",
 		"data":   data,
 	})
-	err := db.QueryRow("INSERT INTO channels(channels,  updated_at) VALUES ($1, $2) WHERE id = 1 ON CONFLICT (id) DO UPDATE SET channels = $1 RETURNING id", data, time.Now()).Scan(&id)
+	err := db.QueryRow("INSERT INTO channels(channels, private, updated_at) VALUES ($1, $2, $3) WHERE id = 1 ON CONFLICT (id) DO UPDATE SET channels = $1 RETURNING id", data["channel_id"], data["private"], time.Now()).Scan(&id)
 	return err
 }
 
 // LoadChannels grabs the list of channels from the database and returns them
 // in a slice of strings.
-func LoadChannels() (channels []string, err error) {
+func LoadChannels(dm bool) (channels []string, err error) {
 	log.Info("Requesting channels from database", map[string]interface{}{
 		"module": "datastore",
 	})
-	row, err := db.Query("SELECT channels FROM channels;")
+	rows, err := db.Query("SELECT channel_id FROM channels WHERE private = $1", dm)
 	if err != nil {
-		log.Error("Error grabbing database output for triager", map[string]interface{}{
+		log.Error("Error grabbing database output for channels", map[string]interface{}{
 			"module": "datastore",
 			"error":  err,
 		})
 	}
-	defer row.Close()
-	var response string
-	if err = row.Scan(&response); err != nil {
-		log.Error("Error parsing database output for channels", map[string]interface{}{
-			"module": "datastore",
-			"error":  err,
-		})
-	}
-	log.Debug("Response output", map[string]interface{}{
-		"module":  "datastore",
-		"reponse": response,
-	})
+	defer rows.Close()
 
+	for rows.Next() {
+		var (
+			channelID string
+		)
+
+		if err := rows.Scan(&channelID); err != nil {
+			log.Error("Error parsing database output for channels", map[string]interface{}{
+				"module": "datastore",
+				"error":  err,
+			})
+		}
+
+		channels = append(channels, channelID)
+	}
 	return
 }
