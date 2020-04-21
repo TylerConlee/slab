@@ -55,7 +55,7 @@ func LoadTriager() (triager string, err error) {
 			"module": "datastore",
 			"error":  err,
 		})
-		triager = "None"
+		triager = ""
 	}
 
 	return
