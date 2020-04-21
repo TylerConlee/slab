@@ -26,12 +26,12 @@ func CreateTriagerTable() {
 }
 
 // SaveTriager saves a new triager into the database
-func SaveTriager(data map[string]string) error {
+func SaveTriager(data string) error {
 	log.Info("Preparing triager for database", map[string]interface{}{
 		"module": "datastore",
 		"data":   data,
 	})
-	err := db.QueryRow("INSERT INTO triager(userid,  updated_at) VALUES ($1, $2, $3) RETURNING id", data["triager"], time.Now()).Scan(&id)
+	err := db.QueryRow("INSERT INTO triager(userid,  updated_at) VALUES ($1, $2, $3) RETURNING id", data, time.Now()).Scan(&id)
 	return err
 }
 
