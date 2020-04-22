@@ -85,7 +85,7 @@ func SaveChannels(data map[string]interface{}) error {
 		"module": "datastore",
 		"data":   data,
 	})
-	err := db.QueryRow("INSERT INTO channels(channel_id, private, updated_at) VALUES ($1, $2, $3)", data["channel_id"], data["private"], time.Now()).Scan(&id)
+	err := db.QueryRow("INSERT INTO channels(channel_id, private, updated_at) VALUES ($1, $2, $3) RETURNING id", data["channel_id"], data["private"], time.Now()).Scan(&id)
 	log.Debug("Saved channel to database", map[string]interface{}{
 		"module": "datastore",
 		"data":   data,
