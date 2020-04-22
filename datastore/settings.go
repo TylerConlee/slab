@@ -33,7 +33,7 @@ func CreateChannelsTable() {
 		id serial PRIMARY KEY,
 		channel_id text NOT NULL,
 		updated_at timestamp,
-		private boolean
+		private boolean,
 		key int
 	)`
 
