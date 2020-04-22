@@ -40,16 +40,10 @@ func GetChannel(channel string) (chantype int) {
 func AddChannel(channel string, chantype int) {
 	if chantype == 1 {
 		DMChannelList = append(DMChannelList, Channel{ID: channel})
-		datastore.SaveChannels(map[string]interface{}{
-			"channel": channel,
-			"private": true,
-		})
+		datastore.SaveChannels(channel, true)
 	} else {
 		ChannelList = append(ChannelList, Channel{ID: channel})
-		datastore.SaveChannels(map[string]interface{}{
-			"channel": channel,
-			"private": false,
-		})
+		datastore.SaveChannels(channel, false)
 	}
 }
 

@@ -33,8 +33,7 @@ func CreateChannelsTable() {
 		id serial PRIMARY KEY,
 		channel_id text NOT NULL,
 		updated_at timestamp,
-		private boolean,
-		key int UNIQUE
+		private boolean
 	)`
 
 	// Exec executes a query without returning any rows.
@@ -80,15 +79,16 @@ func LoadTriager() (triager string, err error) {
 
 // SaveChannels saves channels into the database and updates the existing
 // record if one exists
-func SaveChannels(data map[string]interface{}) error {
+func SaveChannels(channelID string, private bool) error {
 	log.Info("Preparing channel for database", map[string]interface{}{
-		"module": "datastore",
-		"data":   data,
+		"module":  "datastore",
+		"channel": channelID,
+		"private": private,
 	})
-	err := db.QueryRow("INSERT INTO channels(channel_id, private, updated_at) VALUES ($1, $2, $3) RETURNING id", data["channel_id"], data["private"], time.Now()).Scan(&id)
+	err := db.QueryRow("INSERT INTO channels(channel_id, private, updated_at) VALUES ($1, $2, $3) RETURNING id", channelID, private, time.Now()).Scan(&id)
 	log.Debug("Saved channel to database", map[string]interface{}{
 		"module": "datastore",
-		"data":   data,
+		"data":   channelID,
 	})
 	return err
 }
