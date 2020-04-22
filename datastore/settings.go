@@ -122,5 +122,9 @@ func LoadChannels(dm bool) (channels []string, err error) {
 
 		channels = append(channels, channelID)
 	}
+	log.Debug("Channels loaded", map[string]interface{}{
+		"module":   "datastore",
+		"channels": channels,
+	})
 	return
 }
