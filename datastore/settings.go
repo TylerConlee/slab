@@ -81,12 +81,12 @@ func LoadTriager() (triager string, err error) {
 // SaveChannels saves channels into the database and updates the existing
 // record if one exists
 func SaveChannels(data map[string]interface{}) error {
-	log.Info("Preparing channels for database", map[string]interface{}{
+	log.Info("Preparing channel for database", map[string]interface{}{
 		"module": "datastore",
 		"data":   data,
 	})
-	err := db.QueryRow("INSERT INTO channels(channels, private, updated_at, key) VALUES ($1, $2, $3, $4) ON CONFLICT (key) DO UPDATE SET channels = $1 RETURNING id", data["channel_id"], data["private"], time.Now(), 0).Scan(&id)
-	log.Debug("Saved channels to database", map[string]interface{}{
+	err := db.QueryRow("INSERT INTO channels(channel_id, private, updated_at) VALUES ($1, $2, $3)", data["channel_id"], data["private"], time.Now()).Scan(&id)
+	log.Debug("Saved channel to database", map[string]interface{}{
 		"module": "datastore",
 		"data":   data,
 	})
