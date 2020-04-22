@@ -66,7 +66,7 @@ func LoadTriager() (triager string, err error) {
 	log.Info("Requesting triager from database", map[string]interface{}{
 		"module": "datastore",
 	})
-	err = db.QueryRow("SELECT triager FROM triager ORDER BY updated_at DESC LIMIT 1;").Scan(&triager)
+	err = db.QueryRow("SELECT userid FROM triager ORDER BY updated_at DESC LIMIT 1;").Scan(&triager)
 	if err != nil {
 		log.Error("Error parsing database output for triager", map[string]interface{}{
 			"module": "datastore",
