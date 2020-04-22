@@ -34,7 +34,7 @@ func CreateChannelsTable() {
 		channel_id text NOT NULL,
 		updated_at timestamp,
 		private boolean
-
+		key int
 	)`
 
 	// Exec executes a query without returning any rows.
@@ -85,7 +85,7 @@ func SaveChannels(data map[string]interface{}) error {
 		"module": "datastore",
 		"data":   data,
 	})
-	err := db.QueryRow("INSERT INTO channels(channels, private, updated_at) VALUES ($1, $2, $3) WHERE id = 0 ON CONFLICT (id) DO UPDATE SET channels = $1 RETURNING id", data["channel_id"], data["private"], time.Now()).Scan(&id)
+	err := db.QueryRow("INSERT INTO channels(channels, private, updated_at, key) VALUES ($1, $2, $3, $4) WHERE key = 0 ON CONFLICT (id) DO UPDATE SET channels = $1 RETURNING id", data["channel_id"], data["private"], time.Now(), 0).Scan(&id)
 	log.Debug("Saved channels to database", map[string]interface{}{
 		"module": "datastore",
 		"data":   data,
