@@ -24,7 +24,9 @@ func StartSlack(v string, key string) {
 	LoadPublicChannels()
 	LoadPrivateChannels()
 	log.Info("Starting connection to Slack", map[string]interface{}{
-		"module": "slack",
+		"module":           "slack",
+		"public_channels":  ChannelList,
+		"private_channels": DMChannelList,
 	})
 	version = v
 	uptime = time.Now()

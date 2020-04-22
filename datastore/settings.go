@@ -66,17 +66,9 @@ func LoadTriager() (triager string, err error) {
 	log.Info("Requesting triager from database", map[string]interface{}{
 		"module": "datastore",
 	})
-	row, err := db.Query("SELECT updated_at, triager FROM triager ORDER BY updated_at DESC LIMIT 1;")
+	err = db.QueryRow("SELECT updated_at, triager FROM triager ORDER BY updated_at DESC LIMIT 1;").Scan(&triager)
 	if err != nil {
-		log.Error("Error grabbing database output for triager", map[string]interface{}{
-			"module": "datastore",
-			"error":  err,
-		})
-	}
-	defer row.Close()
-
-	if err = row.Scan(&triager); err != nil {
-		log.Error("Error parsing database output for tags", map[string]interface{}{
+		log.Error("Error parsing database output for triager", map[string]interface{}{
 			"module": "datastore",
 			"error":  err,
 		})
@@ -94,6 +86,10 @@ func SaveChannels(data map[string]interface{}) error {
 		"data":   data,
 	})
 	err := db.QueryRow("INSERT INTO channels(channels, private, updated_at) VALUES ($1, $2, $3) WHERE id = 1 ON CONFLICT (id) DO UPDATE SET channels = $1 RETURNING id", data["channel_id"], data["private"], time.Now()).Scan(&id)
+	log.Debug("Saved channels to database", map[string]interface{}{
+		"module": "datastore",
+		"data":   data,
+	})
 	return err
 }
 
