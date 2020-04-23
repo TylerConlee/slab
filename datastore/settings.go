@@ -95,7 +95,7 @@ func SaveChannels(channelID string, private bool) (err error) {
 		return err
 	}
 
-	err = db.QueryRow("INSERT INTO channels(channel_id, private, updated_at) VALUES ($1, $2, $3) RETURNING id ON CONFLICT (channel_id) DO NOTHING;", channelID, private, time.Now()).Scan(&id)
+	err = db.QueryRow("INSERT INTO channels(channel_id, private, updated_at) VALUES ($1, $2, $3) RETURNING id;", channelID, private, time.Now()).Scan(&id)
 	log.Debug("Saved channel to database", map[string]interface{}{
 		"module": "datastore",
 		"data":   channelID,
