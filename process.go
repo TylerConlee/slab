@@ -40,11 +40,11 @@ func iteration(t *time.Ticker, interval time.Duration) {
 	p := plugins.LoadPlugins()
 
 	if c.Slack.ChannelID != "" {
-		channel := slack.GetChannel(c.Slack.ChannelID)
+		/*channel := slack.GetChannel(c.Slack.ChannelID)
 		if channel == 0 {
 			slack.AddChannel(c.Slack.ChannelID, 2)
 
-		}
+		}*/
 		log.Info("Loaded plugins.", map[string]interface{}{
 			"module":  "main",
 			"plugins": p,
