@@ -200,6 +200,15 @@ func CreateTagDialog(payload *slack.InteractionCallback) {
 			slack.DialogInputSelect{
 				DialogInput: slack.DialogInput{
 					Type:     "select",
+					Label:    "User/Group to Notify",
+					Name:     "group",
+					Optional: true,
+				},
+				DataSource: "users",
+			},
+			slack.DialogInputSelect{
+				DialogInput: slack.DialogInput{
+					Type:     "select",
 					Label:    "Notification Type",
 					Name:     "notify_type",
 					Optional: false,
@@ -264,6 +273,16 @@ func UpdateTagDialog(payload *slack.InteractionCallback) {
 					Placeholder: tag["channel"].(string),
 				},
 				DataSource: "conversations",
+			},
+			slack.DialogInputSelect{
+				DialogInput: slack.DialogInput{
+					Type:        "select",
+					Label:       "User/Group to Notify",
+					Name:        "group",
+					Optional:    true,
+					Placeholder: tag["group"].(string),
+				},
+				DataSource: "users",
 			},
 			slack.DialogInputSelect{
 				DialogInput: slack.DialogInput{
@@ -368,6 +387,8 @@ func DeleteTag(payload *slack.InteractionCallback) {
 	ChatUpdate(payload, attachment)
 }
 
+// AddChannelCallback takes the response from the `@slab add channel` command
+// and adds a channel to the ChannelList variable
 func AddChannelCallback(payload *slack.InteractionCallback) {
 	log.Info("Adding channel to ChannelList", map[string]interface{}{
 		"module":  "slack",
