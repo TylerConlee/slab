@@ -79,18 +79,44 @@ func LoadTriager() (triager string, err error) {
 
 // SaveChannels saves channels into the database and updates the existing
 // record if one exists
-func SaveChannels(channelID string, private bool) error {
+func SaveChannels(channelID string, private bool) (err error) {
 	log.Info("Preparing channel for database", map[string]interface{}{
 		"module":  "datastore",
 		"channel": channelID,
 		"private": private,
 	})
-	err := db.QueryRow("INSERT INTO channels(channel_id, private, updated_at) VALUES ($1, $2, $3) RETURNING id ON CONFLICT (channel_id) DO NOTHING;", channelID, private, time.Now()).Scan(&id)
+	channel, err := LoadChannel(channelID)
+	if channel != "" {
+		log.Debug("Channel already exists", map[string]interface{}{
+			"module":           "datastore",
+			"new_channel":      channelID,
+			"existing_channel": channel,
+		})
+		return err
+	}
+
+	err = db.QueryRow("INSERT INTO channels(channel_id, private, updated_at) VALUES ($1, $2, $3) RETURNING id ON CONFLICT (channel_id) DO NOTHING;", channelID, private, time.Now()).Scan(&id)
 	log.Debug("Saved channel to database", map[string]interface{}{
 		"module": "datastore",
 		"data":   channelID,
 	})
 	return err
+}
+
+func LoadChannel(channelID string) (channel string, err error) {
+	log.Info("Pulling single channel from database", map[string]interface{}{
+		"module":  "datastore",
+		"channel": channelID,
+	})
+	err = db.QueryRow("SELECT channel_id FROM channels WHERE channel_id = $1", channelID).Scan(&channel)
+	if err != nil {
+		log.Error("Error parsing database output for individual channel", map[string]interface{}{
+			"module": "datastore",
+			"error":  err,
+		})
+		channel = ""
+	}
+	return
 }
 
 // LoadChannels grabs the list of channels from the database and returns them
