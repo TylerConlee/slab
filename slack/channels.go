@@ -47,6 +47,8 @@ func AddChannel(channel string, chantype int) {
 	}
 }
 
+// LoadPublicChannels asks the datastore for all channels not marked private
+// and adds those channels to the ChannelList
 func LoadPublicChannels() {
 	public, err := datastore.LoadChannels(false)
 	if err != nil {
@@ -56,10 +58,13 @@ func LoadPublicChannels() {
 		})
 	}
 	for _, p := range public {
+
 		ChannelList = append(ChannelList, Channel{ID: p})
 	}
 }
 
+// LoadPrivateChannels asks the datastore for all channels marked private
+// and adds those channels to the DMChannelList
 func LoadPrivateChannels() {
 	private, err := datastore.LoadChannels(true)
 	if err != nil {

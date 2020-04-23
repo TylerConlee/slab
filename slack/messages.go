@@ -576,6 +576,11 @@ func ListTagMessage(user *slack.User) {
 					Short: true,
 				},
 				slack.AttachmentField{
+					Title: "Group",
+					Value: fmt.Sprintf("<@%s>", tag["group"]),
+					Short: true,
+				},
+				slack.AttachmentField{
 					Title: "Notification Type",
 					Value: getNotificationType(tag["notify_type"].(string)),
 					Short: true,
@@ -658,6 +663,8 @@ func DeleteTagMessage(user *slack.User, id string) {
 
 }
 
+// ListChannels gets a list of every channel in the ChannelList
+// and sends a DM to the user with that list
 func ListChannels(user string) {
 	log.Info("Listing channels via DM", map[string]interface{}{
 		"module": "slack",
@@ -674,6 +681,8 @@ func ListChannels(user string) {
 	SendDirectMessage(message, attachments, user)
 }
 
+// DMAddChannel shows a list of channels to the user that can be added to the
+// ChannelList for Slab to operate in.,
 func DMAddChannel(user string) {
 	attachment := []slack.Attachment{
 		slack.Attachment{

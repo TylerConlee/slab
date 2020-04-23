@@ -13,6 +13,7 @@ func CreateTagsTable() {
 		id serial PRIMARY KEY,
 		tag text NOT NULL,
 		userid text NOT NULL,
+		groupid text NOT NULL,
 		channel text NOT NULL,
 		notify_type text NOT NULL,
 		created_at timestamp,
@@ -38,7 +39,7 @@ func SaveNewTag(data map[string]string) error {
 		"module": "datastore",
 		"data":   data,
 	})
-	err := db.QueryRow("INSERT INTO tags(tag, userid, channel, notify_type, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id", data["tag"], data["user"], data["channel"], data["notify_type"], time.Now(), time.Now()).Scan(&id)
+	err := db.QueryRow("INSERT INTO tags(tag, userid, groupid, channel, notify_type, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id", data["tag"], data["user"], data["group"], data["channel"], data["notify_type"], time.Now(), time.Now()).Scan(&id)
 	return err
 }
 
@@ -48,7 +49,7 @@ func SaveTagUpdate(data map[string]string) error {
 		"module": "datastore",
 		"data":   data,
 	})
-	err := db.QueryRow("UPDATE tags SET tag = $1, userid = $2, channel = $3, notify_type = $4, updated_at = $5 WHERE id = $6", data["tag"], data["user"], data["channel"], data["notify_type"], time.Now(), data["id"]).Scan(&id)
+	err := db.QueryRow("UPDATE tags SET tag = $1, userid = $2, groupid = $3, channel = $4, notify_type = $5, updated_at = $6 WHERE id = $7", data["tag"], data["user"], data["group"], data["channel"], data["notify_type"], time.Now(), data["id"]).Scan(&id)
 	return err
 }
 
@@ -70,7 +71,7 @@ func LoadTags() (tags []map[string]interface{}) {
 	log.Info("Requesting tags from database", map[string]interface{}{
 		"module": "datastore",
 	})
-	rows, err := db.Query("SELECT id, tag, userid, channel, notify_type, created_at, updated_at FROM tags WHERE id > 0")
+	rows, err := db.Query("SELECT id, tag, userid, groupid, channel, notify_type, created_at, updated_at FROM tags WHERE id > 0")
 	if err != nil {
 		log.Error("Error grabbing database output for tags", map[string]interface{}{
 			"module": "datastore",
@@ -84,13 +85,14 @@ func LoadTags() (tags []map[string]interface{}) {
 			id         int64
 			tag        string
 			user       string
+			group      string
 			channel    string
 			notifyType string
 			createdAt  string
 			updatedAt  string
 		)
 
-		if err := rows.Scan(&id, &tag, &user, &channel, &notifyType, &createdAt, &updatedAt); err != nil {
+		if err := rows.Scan(&id, &tag, &user, &group, &channel, &notifyType, &createdAt, &updatedAt); err != nil {
 			log.Error("Error parsing database output for tags", map[string]interface{}{
 				"module": "datastore",
 				"error":  err,
@@ -101,6 +103,7 @@ func LoadTags() (tags []map[string]interface{}) {
 			"id":          id,
 			"tag":         tag,
 			"user":        user,
+			"group":       group,
 			"channel":     channel,
 			"notify_type": notifyType,
 			"created_at":  createdAt,
@@ -117,7 +120,7 @@ func LoadTag(id int) (loadedTag map[string]interface{}) {
 		"module": "datastore",
 		"tag":    id,
 	})
-	rows, err := db.Query("SELECT id, tag, userid, channel, notify_type, created_at, updated_at FROM tags WHERE id = $1", id)
+	rows, err := db.Query("SELECT id, tag, userid, group, channel, notify_type, created_at, updated_at FROM tags WHERE id = $1", id)
 	if err != nil {
 		log.Error("Error grabbing database output for tags", map[string]interface{}{
 			"module": "datastore",
@@ -131,13 +134,14 @@ func LoadTag(id int) (loadedTag map[string]interface{}) {
 			id         int64
 			tag        string
 			user       string
+			group      string
 			channel    string
 			notifyType string
 			createdAt  string
 			updatedAt  string
 		)
 
-		if err := rows.Scan(&id, &tag, &user, &channel, &notifyType, &createdAt, &updatedAt); err != nil {
+		if err := rows.Scan(&id, &tag, &user, &group, &channel, &notifyType, &createdAt, &updatedAt); err != nil {
 			log.Error("Error parsing database output for tags", map[string]interface{}{
 				"module": "datastore",
 				"error":  err,
@@ -148,6 +152,7 @@ func LoadTag(id int) (loadedTag map[string]interface{}) {
 			"id":          id,
 			"tag":         tag,
 			"user":        user,
+			"group":       group,
 			"channel":     channel,
 			"notify_type": notifyType,
 			"created_at":  createdAt,
