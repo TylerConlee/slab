@@ -468,11 +468,12 @@ func PrepSLANotification(ticket Ticket, notify int64, tag string, group string) 
 		c = "#43e0d3"
 	}
 
-	if group != "" {
+	/*if group != "" {
 		n = fmt.Sprintf("<@%s> SLA for *%s* ticket #%d has less than %s until expiration.", group, tag, ticket.ID, t)
 	} else {
-		n = fmt.Sprintf("<!here> SLA for *%s* ticket #%d has less than %s until expiration.", tag, ticket.ID, t)
-	}
+	*/
+	n = fmt.Sprintf("<!here> SLA for *%s* ticket #%d has less than %s until expiration.", tag, ticket.ID, t)
+	//}
 	if notify == 9 {
 		n = fmt.Sprintf("<!here> Expired *%s* SLA! Ticket #%d has an expired SLA.", tag, ticket.ID)
 		c = "danger"
