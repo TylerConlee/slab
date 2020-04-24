@@ -177,7 +177,7 @@ func CreateTagDialog(payload *slack.InteractionCallback) {
 	})
 
 	// Get list of groups from Slack's GetUserGroups
-	groups, err := api.GetUserGroups()
+	/*groups, err := api.GetUserGroups()
 	if err != nil {
 		log.Error("Error getting user groups", map[string]interface{}{
 			"module": "slack",
@@ -191,7 +191,7 @@ func CreateTagDialog(payload *slack.InteractionCallback) {
 			Value: group.ID,
 		}
 		groupList = append(groupList, option)
-	}
+	}*/
 
 	dialog := slack.Dialog{
 		TriggerID:      payload.TriggerID,
@@ -215,7 +215,7 @@ func CreateTagDialog(payload *slack.InteractionCallback) {
 				},
 				DataSource: "conversations",
 			},
-			slack.DialogInputSelect{
+			/*slack.DialogInputSelect{
 				DialogInput: slack.DialogInput{
 					Type:     "select",
 					Label:    "User/Group to Notify",
@@ -223,7 +223,7 @@ func CreateTagDialog(payload *slack.InteractionCallback) {
 					Optional: true,
 				},
 				Options: groupList,
-			},
+			},*/
 			slack.DialogInputSelect{
 				DialogInput: slack.DialogInput{
 					Type:     "select",
