@@ -443,7 +443,7 @@ func VerifyUser(user string) bool {
 }
 
 // PrepSLANotification takes a given ticket and what notification level and returns a string to be sent to Slack.
-func PrepSLANotification(ticket Ticket, notify int64, tag string) (notification string, color string) {
+func PrepSLANotification(ticket Ticket, notify int64, tag string, group string) (notification string, color string) {
 	log.Info("Preparing SLA notification message.", map[string]interface{}{
 		"module": "slack",
 		"ticket": ticket.ID,
@@ -467,7 +467,12 @@ func PrepSLANotification(ticket Ticket, notify int64, tag string) (notification 
 		t = "3 hours"
 		c = "#43e0d3"
 	}
-	n = fmt.Sprintf("<!here> SLA for *%s* ticket #%d has less than %s until expiration.", tag, ticket.ID, t)
+
+	if group != "" {
+		n = fmt.Sprintf("<@%s> SLA for *%s* ticket #%d has less than %s until expiration.", group, tag, ticket.ID, t)
+	} else {
+		n = fmt.Sprintf("<!here> SLA for *%s* ticket #%d has less than %s until expiration.", tag, ticket.ID, t)
+	}
 	if notify == 9 {
 		n = fmt.Sprintf("<!here> Expired *%s* SLA! Ticket #%d has an expired SLA.", tag, ticket.ID)
 		c = "danger"

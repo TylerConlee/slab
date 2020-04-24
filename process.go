@@ -122,7 +122,7 @@ func processSLAAlerts(tick zendesk.ZenOutput, tags []map[string]interface{}, p p
 							"channel": tag["channel"].(string),
 						})
 						m := slack.Ticket(ticket)
-						n, c := slack.PrepSLANotification(m, notify, tag["tag"].(string))
+						n, c := slack.PrepSLANotification(m, notify, tag["tag"].(string), tag["group"].(string))
 						p.SendDispatcher(n)
 						user := zendesk.GetTicketRequester(int(ticket.Requester))
 						org := getOrgName(ticket.ID)
