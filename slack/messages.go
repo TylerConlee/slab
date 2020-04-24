@@ -443,7 +443,7 @@ func VerifyUser(user string) bool {
 }
 
 // PrepSLANotification takes a given ticket and what notification level and returns a string to be sent to Slack.
-func PrepSLANotification(ticket Ticket, notify int64, tag string) (notification string, color string) {
+func PrepSLANotification(ticket Ticket, notify int64, tag string, group string) (notification string, color string) {
 	log.Info("Preparing SLA notification message.", map[string]interface{}{
 		"module": "slack",
 		"ticket": ticket.ID,
@@ -467,7 +467,12 @@ func PrepSLANotification(ticket Ticket, notify int64, tag string) (notification 
 		t = "3 hours"
 		c = "#43e0d3"
 	}
-	n = fmt.Sprintf("<!here> SLA for *%s* ticket #%d has less than %s until expiration.", tag, ticket.ID, t)
+
+	if group != "" {
+		n = fmt.Sprintf("<@%s> SLA for *%s* ticket #%d has less than %s until expiration.", group, tag, ticket.ID, t)
+	} else {
+		n = fmt.Sprintf("<!here> SLA for *%s* ticket #%d has less than %s until expiration.", tag, ticket.ID, t)
+	}
 	if notify == 9 {
 		n = fmt.Sprintf("<!here> Expired *%s* SLA! Ticket #%d has an expired SLA.", tag, ticket.ID)
 		c = "danger"
@@ -576,6 +581,11 @@ func ListTagMessage(user *slack.User) {
 					Short: true,
 				},
 				slack.AttachmentField{
+					Title: "Group",
+					Value: fmt.Sprintf("<@%s>", tag["group"]),
+					Short: true,
+				},
+				slack.AttachmentField{
 					Title: "Notification Type",
 					Value: getNotificationType(tag["notify_type"].(string)),
 					Short: true,
@@ -658,6 +668,8 @@ func DeleteTagMessage(user *slack.User, id string) {
 
 }
 
+// ListChannels gets a list of every channel in the ChannelList
+// and sends a DM to the user with that list
 func ListChannels(user string) {
 	log.Info("Listing channels via DM", map[string]interface{}{
 		"module": "slack",
@@ -674,6 +686,8 @@ func ListChannels(user string) {
 	SendDirectMessage(message, attachments, user)
 }
 
+// DMAddChannel shows a list of channels to the user that can be added to the
+// ChannelList for Slab to operate in.,
 func DMAddChannel(user string) {
 	attachment := []slack.Attachment{
 		slack.Attachment{
