@@ -16,7 +16,7 @@ func init() {
 		ForceColors:   true,
 		FullTimestamp: true,
 	}
-	Log.e.SetReportCaller(true)
+	//Log.e.SetReportCaller(true)
 }
 
 func (s *Logger) Fatal(c map[string]interface{}) {
